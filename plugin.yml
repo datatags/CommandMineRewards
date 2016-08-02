@@ -1,0 +1,18 @@
+name: CommandMineRewards
+main: me.AlanZ.CommandMineRewards
+author: AlanZ
+version: 1.0
+commands:
+    cmr:
+      description: The command for utilizing CMR
+      usage: /<command> [reload|multiplier|help] [multiplierValue]
+permissions:
+    cmr.use:
+      description: The permission required to receive rewards from CMR
+      default: OP
+    cmr.reload:
+      description: The permission required to reload the CMR config
+      default: OP
+    cmr.multiplier:
+      description: The permission required to adjust the reward chance multiplier
+      default: OP

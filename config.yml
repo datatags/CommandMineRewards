@@ -1,0 +1,17 @@
+Blocks: # Name of block, not ID for now.
+  - 'cobblestone'
+  - 'stone'
+  - 'mossy_cobblestone'
+multiplier: 1
+Rewards:
+    1:  # Add reward names numerically for now.
+        # Chance out of 100
+        chance: 5
+        commands: # Specify the command(s) to be run if the chance is met
+          - 'token give %player% 10'
+          - 'eco give %player% 2000'
+          - 'broadcast %player% received rewards'
+    2:
+        chance: 20
+        commands:
+          - 'eco give %player% 500'
