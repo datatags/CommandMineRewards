@@ -2,11 +2,9 @@ package me.AlanZ;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,26 +14,27 @@ public class CommandMineRewards extends JavaPlugin {
 	public Permission reloadPermission = new Permission("cmr.reload");
 	public Permission multiplierPermission = new Permission("cmr.multiplier");
 	
-	int multiplier;
-	
-	FileConfiguration config = this.getConfig();
+	double multiplier;
+	boolean debug;
 	List<String> blocks = new ArrayList<String>();
-	List<String> commands1 = new ArrayList<String>();
-	List<String> commands2 = new ArrayList<String>();
 	
 	@Override
 	public void onEnable() {
-		
-		getConfig().options().copyDefaults(true);
-		config.addDefault("Blocks", new String[]{"stone","cobblestone","mossy_cobblestone"});
-		config.addDefault("multiplier", 1);
-		config.addDefault("Rewards.1.chance", 20);
-		config.addDefault("Rewards.1.commands", new String[]{"token give %player% 10","eco give %player% 2000","broadcast %player% received rewards"});
-		config.addDefault("Rewards.2.chance", 20);
-		config.addDefault("Rewards.2.commands", new String[]{"eco give %player% 500"});
-		saveDefaultConfig();
+		List<String> defBlocks = new ArrayList<String>();
+		defBlocks.add("stone");
+		defBlocks.add("cobblestone");
+		defBlocks.add("mossy_cobblestone");
+		this.getConfig().addDefault("Blocks", defBlocks);
+		this.getConfig().addDefault("multiplier", 1);
+		this.getConfig().addDefault("Rewards.1.chance", 5);
+		this.getConfig().addDefault("Rewards.1.commands", new String[]{"token give %player% 10","eco give %player% 2000","broadcast %player% received rewards"});
+		this.getConfig().addDefault("Rewards.2.chance", 20);
+		this.getConfig().addDefault("Rewards.2.commands", new String[]{"eco give %player% 500"});
+		this.getConfig().addDefault("debug", false);
+		this.getConfig().options().copyDefaults(true);
+		saveConfig();
 		reload();
-		
+		if (debug) {getLogger().info("Blocks loading test:  " + blocks);}
 		new BlockListener(this);
 		
 		getLogger().info("CommandMineRewards (by AlanZ) is enabled!");
@@ -47,11 +46,13 @@ public class CommandMineRewards extends JavaPlugin {
 	}
 	
 	public void reload() {
-		blocks = config.getStringList("Blocks");
-		multiplier = config.getInt("multiplier");
+		reloadConfig();
+		blocks = this.getConfig().getStringList("Blocks");
+		multiplier = this.getConfig().getDouble("multiplier");
+		debug = this.getConfig().getBoolean("debug");
 	}
 	
-public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
 		if (cmd.getName().equalsIgnoreCase("cmr")) {
 			
@@ -61,6 +62,10 @@ public boolean onCommand(CommandSender sender, Command cmd, String label, String
 				if (sender.hasPermission(reloadPermission)) {
 					reload();
 					sender.sendMessage(ChatColor.YELLOW + "Multiplier and list of blocks has been reloaded, list of rewards will be updated automatically.");
+					if (debug) {
+						sender.sendMessage(ChatColor.YELLOW + "Multiplier:  " + multiplier + ".  Blocks:  " + blocks + ".  Debug:  " + debug + ".");
+						sender.sendMessage(ChatColor.YELLOW + "Multiplier:  " + this.getConfig().getDouble("multiplier") + ".  Blocks:  " + this.getConfig().getStringList("blocks") + ".  Debug:  " + this.getConfig().getBoolean("debug") + ".");
+					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "You do not have permission to reload the config!");
 				}
@@ -74,12 +79,12 @@ public boolean onCommand(CommandSender sender, Command cmd, String label, String
 				if (sender.hasPermission(multiplierPermission)) {
 					if (args.length == 2) {
 						try {
-							multiplier = Integer.parseInt(args[1]);
+							multiplier = Double.parseDouble(args[1]);
 						} catch (NumberFormatException e) {
-							sender.sendMessage(ChatColor.RED + "Invalid integer!");
+							sender.sendMessage(ChatColor.RED + "Invalid number!");
 							return false;
 						}
-						config.set("multiplier", multiplier);
+						this.getConfig().set("multiplier", multiplier);
 						saveConfig();
 						sender.sendMessage(ChatColor.GREEN + "Multiplier successfully updated!  New multiplier:  " + multiplier);
 					} else if (args.length == 1) {

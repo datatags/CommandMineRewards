@@ -19,14 +19,12 @@ public class BlockListener implements Listener {
 		this.that = plugin;
 	}
 	
-	//NOTE:  Any lines that are commented out are for debugging.
-	
 	@EventHandler
 	public void onEvent(BlockBreakEvent e) {
+		if (that.debug) {that.getLogger().info("Blocks list:  " + that.getConfig().getStringList("Blocks"));}
 		Player player = e.getPlayer();
 		if (player.hasPermission(that.usePermission)) {
 			boolean blockFound = false; 
-//			List<String> blocks = (ArrayList<String>) that.getConfig().getStringList("Blocks");
 			for (String block : that.blocks) {
 				if(e.getBlock().getType() == Material.valueOf(block.toUpperCase())) {
 					blockFound = true;
@@ -35,26 +33,26 @@ public class BlockListener implements Listener {
 			}
 			if (blockFound) {
 				int rewardCount = (new HashSet<String>(that.getConfig().getConfigurationSection("Rewards").getKeys(false))).size();
-				List<Integer> rewardChances = new ArrayList<Integer>();
+				List<Double> rewardChances = new ArrayList<Double>();
 				for (int i = 1; i < rewardCount + 1; i++) {				
-					rewardChances.add((that.getConfig().getInt("Rewards." + i + ".chance") * that.multiplier));
+					rewardChances.add((that.getConfig().getDouble("Rewards." + i + ".chance") * that.multiplier));
 				}
-//				that.getLogger().info("rewardChances:  " + rewardChances);
-				int random;
+				if(that.debug){that.getLogger().info("rewardChances:  " + rewardChances);}
+				double random;
 				List<Integer> rewardTrue = new ArrayList<Integer>();
 				int element = -1;
-				for (int chance : rewardChances) {
+				for (double chance : rewardChances) {
 					element++;
-					random = (int) Math.floor(Math.random() * 100);
-					that.getLogger().info("Random number is " + random);
+					random = Math.floor(Math.random() * 100);
+					if(that.debug){that.getLogger().info("Random number is " + random);}
 					if (random < chance) {
-//						that.getLogger().info(random + " < " + chance + ", so adding element " + element + " to rewardTrue.");
+						if(that.debug){that.getLogger().info(random + " < " + chance + ", so adding element " + element + " to rewardTrue.");}
 						rewardTrue.add(element);
-					}// else {
-//						that.getLogger().info(random + " is NOT less than " + chance + ", so skipping element " + element + ".");
-//					}
+					} else {
+						if(that.debug){that.getLogger().info(random + " is NOT less than " + chance + ", so skipping element " + element + ".");}
+					}
 				}
-//				that.getLogger().info("rewardTrue is now " + rewardTrue);
+				if(that.debug){that.getLogger().info("rewardTrue is now " + rewardTrue);}
 				List<String> commands;
 				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 				for (int j : rewardTrue) {
