@@ -1,9 +1,10 @@
 package me.AlanZ;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -21,9 +22,10 @@ public class BlockListener implements Listener {
 	
 	@EventHandler
 	public void onEvent(BlockBreakEvent e) {
+		if (that.debug) {that.getLogger().info("----------START OF REWARD CALCS--------");}
 		if (that.debug) {that.getLogger().info("Blocks list:  " + that.getConfig().getStringList("Blocks"));}
 		Player player = e.getPlayer();
-		if (player.hasPermission(that.usePermission)) {
+		GameMode gm = player.getGameMode();
 			boolean blockFound = false; 
 			for (String block : that.blocks) {
 				if(e.getBlock().getType() == Material.valueOf(block.toUpperCase())) {
@@ -32,38 +34,51 @@ public class BlockListener implements Listener {
 				}
 			}
 			if (blockFound) {
-				int rewardCount = (new HashSet<String>(that.getConfig().getConfigurationSection("Rewards").getKeys(false))).size();
+				// No longer needed   int rewardCount = (new HashSet<String>(that.getConfig().getConfigurationSection("Rewards").getKeys(false))).size();
 				List<Double> rewardChances = new ArrayList<Double>();
-				for (int i = 1; i < rewardCount + 1; i++) {				
-					rewardChances.add((that.getConfig().getDouble("Rewards." + i + ".chance") * that.multiplier));
+				List<String> activeRewards = new ArrayList<String>();
+				for (String temp : that.getConfig().getConfigurationSection("Rewards").getKeys(false)) {	
+					if (player.hasPermission("cmr.use." + temp) || player.hasPermission("cmr.use.*")) { //This big mess means add the "selected" reward, the one contained in "temp", (as long as, if enabled, the player is in survival mode,) AND (the player has either the permission cmr.use.(reward name stored in temp) OR the player has cmr.use)
+						if ((that.getConfig().getBoolean("Rewards." + temp + ".survivalOnly") && gm == GameMode.SURVIVAL) || !that.getConfig().getBoolean("Rewards." + temp + ".survivalOnly")) {
+							activeRewards.add(temp);
+							rewardChances.add((that.getConfig().getDouble("Rewards." + temp + ".chance") * that.multiplier));
+						} else if (that.debug){
+							that.getLogger().info("Player " + player.getName() + " did not receive reward " + temp + " because they were in the wrong game mode!");
+						}
+					} else if (that.debug) {
+						that.getLogger().info("Player " + player.getName() + " did not receive reward " + temp + " for lack of permission!");
+					}
 				}
 				if(that.debug){that.getLogger().info("rewardChances:  " + rewardChances);}
+				if(that.debug){that.getLogger().info("activeRewards:  " + activeRewards);}
+				if(that.debug){that.getLogger().info("getKeys:  " + that.getConfig().getConfigurationSection("Rewards").getKeys(false));}
 				double random;
-				List<Integer> rewardTrue = new ArrayList<Integer>();
+				List<String> rewardsToGive = new ArrayList<String>();
 				int element = -1;
 				for (double chance : rewardChances) {
 					element++;
-					random = Math.floor(Math.random() * 100);
+					random = Math.random() * 100;
 					if(that.debug){that.getLogger().info("Random number is " + random);}
 					if (random < chance) {
-						if(that.debug){that.getLogger().info(random + " < " + chance + ", so adding element " + element + " to rewardTrue.");}
-						rewardTrue.add(element);
+						if(that.debug){that.getLogger().info(random + " < " + chance + ", so adding reward " + activeRewards.get(element) + " to rewardTrue.");}
+						rewardsToGive.add(activeRewards.get(element));
 					} else {
-						if(that.debug){that.getLogger().info(random + " is NOT less than " + chance + ", so skipping element " + element + ".");}
+						if(that.debug){that.getLogger().info(random + " is NOT less than " + chance + ", so skipping reward " + activeRewards.get(element) + ".");}
 					}
 				}
-				if(that.debug){that.getLogger().info("rewardTrue is now " + rewardTrue);}
+				if (that.debug) {that.getLogger().info("rewardsToGive is now " + rewardsToGive);}
 				List<String> commands;
 				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-				for (int j : rewardTrue) {
-					commands = (that.getConfig().getStringList("Rewards." + (j + 1) + ".commands"));
+				for (String temp : rewardsToGive) {
+					commands = (that.getConfig().getStringList("Rewards." + temp + ".commands"));
 					for (String cmd : commands) {
 						String placeheld = cmd.replace("%player%", player.getName());
 						that.getLogger().info("Executing command:  " + placeheld);
 						Bukkit.getServer().dispatchCommand(console, placeheld);
 					}
 				}
+				if (that.debug) {that.getLogger().info("----------END OF REWARD CALCS----------");}
 			}
-		}
+		
 	}
 }

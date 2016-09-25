@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandMineRewards extends JavaPlugin {
@@ -26,14 +27,20 @@ public class CommandMineRewards extends JavaPlugin {
 		defBlocks.add("mossy_cobblestone");
 		this.getConfig().addDefault("Blocks", defBlocks);
 		this.getConfig().addDefault("multiplier", 1);
-		this.getConfig().addDefault("Rewards.1.chance", 5);
-		this.getConfig().addDefault("Rewards.1.commands", new String[]{"token give %player% 10","eco give %player% 2000","broadcast %player% received rewards"});
-		this.getConfig().addDefault("Rewards.2.chance", 20);
-		this.getConfig().addDefault("Rewards.2.commands", new String[]{"eco give %player% 500"});
+		this.getConfig().addDefault("Rewards.bigreward.chance", 5);
+		this.getConfig().addDefault("Rewards.bigreward.survivalOnly", true);
+		this.getConfig().addDefault("Rewards.bigreward.commands", new String[]{"token give %player% 10","eco give %player% 2000","broadcast %player% received rewards"});
+		this.getConfig().addDefault("Rewards.smallreward.chance", 20);
+		this.getConfig().addDefault("Rewards.smallreward.survivalOnly", true);
+		this.getConfig().addDefault("Rewards.smallreward.commands", new String[]{"eco give %player% 500"});
 		this.getConfig().addDefault("debug", false);
 		this.getConfig().options().copyDefaults(true);
 		saveConfig();
 		reload();
+		PluginManager pm = getServer().getPluginManager();
+		for (String temp : this.getConfig().getConfigurationSection("Rewards").getKeys(false)) {
+			pm.addPermission(new Permission("cmr.use." + temp));
+		}
 		if (debug) {getLogger().info("Blocks loading test:  " + blocks);}
 		new BlockListener(this);
 		
@@ -42,7 +49,7 @@ public class CommandMineRewards extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		getLogger().info("CommandMineRewards (by AlanZ) is being disabled!");
+		getLogger().info("CommandMineRewards (by AlanZ) has been disabled!");
 	}
 	
 	public void reload() {
@@ -61,7 +68,7 @@ public class CommandMineRewards extends JavaPlugin {
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission(reloadPermission)) {
 					reload();
-					sender.sendMessage(ChatColor.YELLOW + "Multiplier and list of blocks has been reloaded, list of rewards will be updated automatically.");
+					sender.sendMessage(ChatColor.YELLOW + "Multiplier, list of blocks, debug mode, and list of rewards has been reloaded.");
 					if (debug) {
 						sender.sendMessage(ChatColor.YELLOW + "Multiplier:  " + multiplier + ".  Blocks:  " + blocks + ".  Debug:  " + debug + ".");
 						sender.sendMessage(ChatColor.YELLOW + "Multiplier:  " + this.getConfig().getDouble("multiplier") + ".  Blocks:  " + this.getConfig().getStringList("blocks") + ".  Debug:  " + this.getConfig().getBoolean("debug") + ".");
@@ -95,6 +102,10 @@ public class CommandMineRewards extends JavaPlugin {
 				} else {
 					sender.sendMessage(ChatColor.RED + "You do not have permission to use the multiplier command!");
 				}
+			} else if (args[0].equalsIgnoreCase("debug")) {
+				
+			} else {
+				sender.sendMessage("&cPlease do /cmr help for available commands.");
 			}
 			return true;
 		}
