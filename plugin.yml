@@ -1,18 +1,60 @@
 name: CommandMineRewards
 main: me.AlanZ.CommandMineRewards
 author: AlanZ
-version: 1.2
+version: 3.0
 commands:
     cmr:
-      description: The command for utilizing CMR
-      usage: /<command> [reload|multiplier|help] [multiplierValue]
+        description: The command for utilizing CMR
+        usage: /<command> [reload|multiplier|help|addblock|addreward] [...]
 permissions:
-    cmr.use:
-      description: The permission required to receive rewards from CMR
-      default: OP
+    cmr.*:
+        default: OP
+        children:
+            cmr.use.*: true
+            cmr.debug: true
+            cmr.reload: true
+            cmr.multiplier: true
+            cmr.modifyblocks: true
+            cmr.modifyrewards: true
+            cmr.modifycommands: true
+            cmr.modifychance: true
+            cmr.viewblocks: true
+            cmr.viewrewards: true
+            cmr.viewcommands: true
+            cmr.viewchance: true
+    cmr.use.*:
+        description: Makes you eligible for all rewards in CommandMineRewards.
+        default: OP
     cmr.reload:
-      description: The permission required to reload the CMR config
-      default: OP
+        description: The permission required to reload the CMR config.
+        default: OP
     cmr.multiplier:
-      description: The permission required to adjust the reward chance multiplier
-      default: OP
+        description: The permission required to adjust the reward chance multiplier.
+        default: OP
+    cmr.modifyblocks:
+        description: The permission required to edit the list of blocks that trigger rewards.
+        default: OP
+    cmr.viewblocks:
+        description: The permission required to view the list of blocks which trigger rewards.
+        default: OP
+    cmr.modifyrewards:
+        description: The permission required to create or delete rewards.  Be careful who you give this to!
+        default: OP
+    cmr.viewrewards:
+        description: The permission required to see the list of rewards.
+        default: OP
+    cmr.modifycommands:
+        description: The permission required to add and remove commands from rewards.
+        default: OP
+    cmr.viewcommands:
+        description: The permission required to see all commands added to all rewards.
+        default: OP
+    cmr.modifychance:
+        description: The permission required to change the chance value in a reward.
+        default: OP
+    cmr.viewchance:
+        description: The permission required to view the chance value in a reward.
+        default: OP
+    cmr.debug:
+        description: The permission required to dump debugging information.
+        default: OP

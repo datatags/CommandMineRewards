@@ -1,31 +1,47 @@
-# Blocks: String list:  Name of block, not ID for now.
+# removeInvalidValues: boolean: If true, will delete invalid blocks in the lists of blocks.
 # multiplier: double (integer or floating point):  Number to multiply chance of getting reward by.
-# Rewards: section: put rewards in this format:
-# Rewards:
-#     (name):
-#         chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
-#         survivalOnly: boolean:  If the reward should only be enabled when the player is in survival mode.
-#         commands: String list:  Command(s) to run if reward is triggered.
+# survivalOnly: boolean:  If the reward should only be enabled when the player is in survival mode.
+# debug:  boolean (true or false):  Whether to enable debug mode or not.  Debug mode gives extensive details about the reward chance calculation process as it happens.
+# (rewardName): section: put rewards in this format:
+# (rewardName):
+#   (name):
+#       blocks: String list:  Name of block to trigger rewards.  You can use :s in name to indicate data values.  Note this will change in 1.13.
+#           rewards:
+#               (individualname):
+#                   chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
+#                   commands: String list:  Command(s) to run if reward is triggered.
+#               (individualname2):
+#                   chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
+#                   commands: String list:  Command(s) to run if reward is triggered.
+#               (etc.)
 # (end of reward #1)
 #     (add more rewards to your preference)
-# (end of reward section)
-# debug:  boolean (true or false):  Whether to enable debug mode or not.  Debug mode gives extensive details about the reward chance calculation process as it happens.
-Blocks:
-  - cobblestone
-  - stone
-  - mossy_cobblestone
+removeInvalidValues: false
 multiplier: 1
-Rewards:
-  bigreward:
-    chance: 5
-    survivalOnly: true
-    commands:
-      - token give %player% 10
-      - eco give %player% 2000
-      - broadcast %player% received rewards
-  smallreward:
-    chance: 20
-    survivalOnly: true
-    commands:
-      - eco give %player% 500
+survivalOnly: true
 debug: false
+genericRewards:
+    blocks:
+        - cobblestone
+        - stone
+        - mossy_cobblestone
+    rewards:
+        bigreward:
+            chance: 5
+            commands:
+                - eco give %player% 2000
+                - broadcast %player% received rewards
+        smallreward:
+            chance: 20
+            commands:
+                - eco give %player% 500
+cropRewards:
+    blocks:
+        - "crops:7"
+        - "beetroot_block:7"
+    rewards:
+        farming:
+            chance: 1
+            commands:
+                - eco give %player% 34095
+                - broadcast %player% likes to farm!
