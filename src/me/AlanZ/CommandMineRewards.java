@@ -52,6 +52,7 @@ public class CommandMineRewards extends JavaPlugin {
 		this.getConfig().addDefault("debug", false);
 		this.getConfig().options().copyDefaults(true);*/
 		saveDefaultConfig();
+		checkOldConfig();
 		reload();
 		new EventListener(this);
 		
@@ -62,7 +63,15 @@ public class CommandMineRewards extends JavaPlugin {
 	public void onDisable() {
 		getLogger().info("CommandMineRewards (by AlanZ) has been disabled!");
 	}
-	
+	private void checkOldConfig() {
+		if (this.getConfig().isList("Blocks")) {
+			getLogger().info("Found old config, attempting to convert...");
+			List<String> blocks = this.getConfig().getStringList("Blocks");
+			this.getConfig().set("Rewards.blocks", blocks);
+			this.getConfig().set("Blocks", null);
+			saveConfig();
+		}
+	}
 	public void reload() {
 		reloadConfig();
 		multiplier = this.getConfig().getDouble("multiplier");
