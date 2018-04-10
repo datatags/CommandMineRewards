@@ -64,12 +64,23 @@ public class CommandMineRewards extends JavaPlugin {
 		getLogger().info("CommandMineRewards (by AlanZ) has been disabled!");
 	}
 	private void checkOldConfig() {
-		if (this.getConfig().isList("Blocks")) {
+		if (this.getConfig().isConfigurationSection("Rewards") && this.getConfig().isList("Blocks")) {
 			getLogger().info("Found old config, attempting to convert...");
+			if (!this.getConfig().isConfigurationSection("Rewards.rewards")) {
+				this.getConfig().createSection("Rewards.rewards");
+			}
+			for (ConfigurationSection section : getConfigSections("Rewards")) {
+				if (section.getName().equals("rewards")) {
+					continue;
+				}
+				this.getConfig().createSection("Rewards.rewards." + section.getName(), section.getValues(false)); // move it. shouldn't need to go deep
+				this.getConfig().set(section.getCurrentPath(), null); // delete the old one
+			}
 			List<String> blocks = this.getConfig().getStringList("Blocks");
 			this.getConfig().set("Rewards.blocks", blocks);
 			this.getConfig().set("Blocks", null);
 			saveConfig();
+			getLogger().info("Successfully converted!");
 		}
 	}
 	public void reload() {
