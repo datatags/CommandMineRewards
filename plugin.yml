@@ -13,23 +13,27 @@ permissions:
             cmr.use.*: true
             cmr.debug: true
             cmr.reload: true
-            cmr.multiplier: true
             cmr.modifyblocks: true
             cmr.modifyrewards: true
             cmr.modifycommands: true
             cmr.modifychance: true
+            cmr.modifymultiplier: true
             cmr.viewblocks: true
             cmr.viewrewards: true
             cmr.viewcommands: true
             cmr.viewchance: true
+            cmr.viewmultiplier: true
     cmr.use.*:
         description: Makes you eligible for all rewards in CommandMineRewards.
         default: OP
     cmr.reload:
         description: The permission required to reload the CMR config.
         default: OP
-    cmr.multiplier:
+    cmr.modifymultiplier:
         description: The permission required to adjust the reward chance multiplier.
+        default: OP
+    cmr.viewmultiplier:
+        description: The permission required to view the reward chance multiplier.
         default: OP
     cmr.modifyblocks:
         description: The permission required to edit the list of blocks that trigger rewards.
