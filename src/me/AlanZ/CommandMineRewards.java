@@ -66,6 +66,7 @@ public class CommandMineRewards extends JavaPlugin {
 	private void checkOldConfig() {
 		if (this.getConfig().isConfigurationSection("Rewards") && this.getConfig().isList("Blocks")) {
 			getLogger().info("Found old config, attempting to convert...");
+			this.getConfig().set("removeInvalidValues", false);
 			if (!this.getConfig().isConfigurationSection("Rewards.rewards")) {
 				this.getConfig().createSection("Rewards.rewards");
 			}
