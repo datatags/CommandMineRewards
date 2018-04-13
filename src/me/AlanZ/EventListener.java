@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -44,18 +45,34 @@ public class EventListener implements Listener {
 				List<String> activeRewards = new ArrayList<String>();*/
 				Map<ConfigurationSection,Double> activeRewards = new HashMap<ConfigurationSection, Double>();
 				for (ConfigurationSection reward : that.getConfigSections(rewardSection.getName() + ".rewards")) {
-					if (!reward.isDouble("chance") && !reward.isInt("chance")) {
-						that.debug("Could not find chance property in reward " + reward.getName() + " in section " + rewardSection.getName());
-						continue;
-					}
-					if (player.hasPermission("cmr.use." + rewardSection.getName() + "." + reward.getName()) || player.hasPermission(that.allRewardsPermission)) { //This big mess means just checks to see if the player has appropriate permissions of any sort.
-						if ((that.survivalOnly && gm == GameMode.SURVIVAL) || !that.survivalOnly) {
-							activeRewards.put(reward, reward.getDouble("chance") * that.multiplier);
-						} else if (that.debug){
-							that.getLogger().info("Player " + player.getName() + " did not receive reward " + reward.getName() + " because they were in the wrong game mode!");
+					if (that.isWorldAllowed(rewardSection, player.getWorld().getName())) {
+						if (!reward.isDouble("chance") && !reward.isInt("chance")) {
+							that.debug("Could not find chance property in reward " + reward.getName() + " in section " + rewardSection.getName());
+							continue;
 						}
-					} else if (that.debug) {
-						that.getLogger().info("Player " + player.getName() + " did not receive reward " + reward.getName() + " for lack of permission!");
+						if (player.hasPermission("cmr.use." + rewardSection.getName() + "." + reward.getName()) || player.hasPermission(that.allRewardsPermission)) { //This big mess means just checks to see if the player has appropriate permissions of any sort.
+							if ((that.survivalOnly && gm == GameMode.SURVIVAL) || !that.survivalOnly) {
+								if (e.getPlayer().getInventory().getItemInMainHand() == null) {
+									if (that.isSilkTouchAllowed(rewardSection, reward, false)) {
+										activeRewards.put(reward, reward.getDouble("chance") * that.multiplier);
+									} else {
+										that.debug("Player was denied access to reward because of the presence or absence of silk touch");
+									}
+								} else {
+									if (that.isSilkTouchAllowed(rewardSection, reward, e.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0)) {
+										activeRewards.put(reward, reward.getDouble("chance") * that.multiplier);
+									} else {
+										that.debug("Player was denied access to reward because of the presence or absence of silk touch");
+									}
+								}
+							} else if (that.debug){
+								that.getLogger().info("Player " + player.getName() + " did not receive reward " + reward.getName() + " because they were in the wrong game mode!");
+							}
+						} else if (that.debug) {
+							that.getLogger().info("Player " + player.getName() + " did not receive reward " + reward.getName() + " for lack of permission!");
+						}
+					} else {
+						that.debug("Player was denied access to reward because that reward is not allowed in this world.");
 					}
 				}
 				if(that.debug){that.getLogger().info("rewardChances:  " + activeRewards.values());}

@@ -1,20 +1,26 @@
+# globalAllowedWorlds: string list: a list of worlds all rewards will operate in.  Is overrided by allowedWorlds in a reward section.  Defaults to "*", meaning all worlds allowed.
+# globalSilkTouch: string, can be REQUIRED, IGNORED, or DISALLOWED: The global setting on whether silk touch is required, disallowed, or ignored to receive rewards.  Is overrided by silkTouch in a reward section or reward.  Defaults to IGNORED.
 # removeInvalidValues: boolean: If true, will delete invalid blocks in the lists of blocks.
 # multiplier: double (integer or floating point):  Number to multiply chance of getting reward by.
 # survivalOnly: boolean:  If the reward should only be enabled when the player is in survival mode.
 # debug:  boolean (true or false):  Whether to enable debug mode or not.  Debug mode gives extensive details about the reward chance calculation process as it happens.
-# (rewardName): section: put rewards in this format:
-# (rewardName):
+# (rewardSectionName): section: put rewards in this format:
+# (rewardSectionName):
 #   (name):
 #       blocks: String list:  Name of block to trigger rewards.  You can use :s in name to indicate data values.  Note this will change in 1.13.
-#           rewards:
-#               (individualname):
-#                   chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
-#                   commands: String list:  Command(s) to run if reward is triggered.
-#               (individualname2):
-#                   chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
-#                   commands: String list:  Command(s) to run if reward is triggered.
-#               (etc.)
-# (end of reward #1)
+#       allowedWorlds: string list: a list of worlds this reward section will operate in.  Defaults to "*", meaning it will operate in any world.
+#       silkTouch: string, can be REQUIRED, IGNORED, or DISALLOWED:  Sets whether silk touch is required, ignored, or prevented from receiving a reward in this section.  Overrides globalSilkTouch, is overriden by silkTouch in a reward under this section.  Defaults to IGNORED.
+#       rewards:
+#           (individualname):
+#               chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
+#               commands: String list:  Command(s) to run if reward is triggered.
+#               silkTouch: string, can be REQUIRED, IGNORED, OR DISALLOWED:  Sets whether a silk touch pickaxe is required, ignored, or prevented from receiving this reward.  Overrides globalSilkTouch and silkTouch in parent reward section.  Defaults to IGNORED.
+#           (individualname2):
+#               chance: double (integer or floating point):  Chance out of 100 for the reward to be triggered.
+#               commands: String list:  Command(s) to run if reward is triggered.
+#               silkTouch: string, can be REQUIRED, IGNORED, OR DISALLOWED:  Sets whether a silk touch pickaxe is required, ignored, or prevented from receiving this reward.  Overrides globalSilkTouch and silkTouch in parent reward section.  Defaults to IGNORED.
+#           (etc.)
+#   (end of reward section #1)
 #     (add more rewards to your preference)
 removeInvalidValues: false
 multiplier: 1
@@ -25,6 +31,9 @@ genericRewards:
         - cobblestone
         - stone
         - mossy_cobblestone
+    allowedWorlds:
+        - "*"
+    silkTouch: DISALLOWED
     rewards:
         bigreward:
             chance: 5
@@ -39,6 +48,10 @@ cropRewards:
     blocks:
         - "crops:7"
         - "beetroot_block:7"
+    allowedWorlds: 
+        - farming1
+        - farming23
+        - world_the_end
     rewards:
         farming:
             chance: 1

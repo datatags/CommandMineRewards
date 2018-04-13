@@ -378,6 +378,75 @@ public class CommandMineRewards extends JavaPlugin {
 		}
 		return command;
 	}
+	private SilkTouchRequirement getSilkTouchStatus(ConfigurationSection rewardSection, ConfigurationSection reward) {
+		if (reward.isString("silkTouch")) {
+			String value = reward.getString("silkTouch");
+			if (SilkTouchRequirement.getByName(value) == null) {
+				getLogger().warning("Could not parse silkTouch value in reward section '" + rewardSection.getName() + "' and reward '" + reward.getName() + "'.");
+			} else {
+				return SilkTouchRequirement.getByName(value);
+			}
+		}
+		if (rewardSection.isString("silkTouch")) {
+			String value = rewardSection.getString("silkTouch");
+			if (SilkTouchRequirement.getByName(value) == null) {
+				getLogger().warning("Could not parse silkTouch value in reward section '" + rewardSection.getName() + "'.");
+			} else {
+				return SilkTouchRequirement.getByName(value);
+			}
+		}
+		if (this.getConfig().isString("silkTouch")) {
+			String value = this.getConfig().getString("silkTouch");
+			if (SilkTouchRequirement.getByName(value) == null) {
+				getLogger().warning("Could not parse global silkTouch value.");
+			} else {
+				return SilkTouchRequirement.getByName(value);
+			}
+		}
+		return null;
+	}
+	public boolean isSilkTouchAllowed(ConfigurationSection rewardSection, ConfigurationSection reward, boolean silkTouch) {
+		SilkTouchRequirement requirement = getSilkTouchStatus(rewardSection, reward);
+		if (requirement == null || requirement == SilkTouchRequirement.IGNORED) {
+			return true;
+		}
+		if (requirement == SilkTouchRequirement.REQUIRED && silkTouch) {
+			return true;
+		}
+		if (requirement == SilkTouchRequirement.DISALLOWED && !silkTouch) {
+			return true;
+		}
+		return false;
+	}
+	public boolean isWorldAllowed(ConfigurationSection rewardSection, String worldName) {
+		if (rewardSection.isList("allowedWorlds")) {
+			for (String allowed : rewardSection.getStringList("allowedWorlds")) {
+				if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
+					return true;
+				}
+			}
+		} else if (rewardSection.isString("allowedWorlds")) { 
+			String allowed = rewardSection.getString("allowedWorlds");
+			if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
+				return true;
+			}
+		} else if (this.getConfig().isList("allowedWorlds")) {
+			for (String allowed : this.getConfig().getStringList("allowedWorlds")) {
+				if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
+					return true;
+				}
+			}
+		} else if (this.getConfig().isString("allowedWorlds")) { 
+			String allowed = rewardSection.getString("allowedWorlds");
+			if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
+				return true;
+			}
+		} else {
+			debug("Couldn't find allowed worlds list globally or in reward section " + rewardSection.getName());
+			return true;
+		}
+		return false;
+	}
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
 		if (cmd.getName().equalsIgnoreCase("cmr")) {
