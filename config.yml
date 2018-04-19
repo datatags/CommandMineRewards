@@ -47,7 +47,6 @@ genericRewards:
 cropRewards:
     blocks:
         - "crops:7"
-        - "beetroot_block:7"
     allowedWorlds: 
         - farming1
         - farming23
