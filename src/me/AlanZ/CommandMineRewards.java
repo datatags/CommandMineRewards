@@ -124,15 +124,17 @@ public class CommandMineRewards extends JavaPlugin {
 	}
 	private boolean isMaterial(String mat) {
 		//if (Material.valueOf(mat.toUpperCase()).isBlock()) {
-		try {
-			if (Material.matchMaterial(mat.split(":", 2)[0]).isBlock()) {
-				debug("defBlocks.get(i).isBlock() = true");
-				return true;
-			}
-		} catch (IllegalArgumentException e) {
-			getLogger().info("Item " + mat + " of Blocks is not a valid block!  " + (removeInvalidValues ? "Removing." : "Ignoring."));
+		if (Material.matchMaterial(mat.split(":", 2)[0]) == null) {
+			debug("Item " + mat + " of Blocks is not a valid material!  " + (removeInvalidValues ? "Removing." : "Ignoring."));
+			return false;
 		}
-		return false;
+		if (Material.matchMaterial(mat.split(":", 2)[0]).isBlock()) {
+			debug("defBlocks.get(i).isBlock() = true");
+			return true;
+		} else {
+			getLogger().info("Item " + mat + " of Blocks is a material, but not a block!  " + (removeInvalidValues ? "Removing." : "Ignoring."));
+			return false;
+		}
 	}
 	public List<ConfigurationSection> blockHandled(Material mat, byte data) {
 		List<ConfigurationSection> list = new ArrayList<ConfigurationSection>();
