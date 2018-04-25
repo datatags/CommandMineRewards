@@ -52,14 +52,14 @@ public class EventListener implements Listener {
 						}
 						if (player.hasPermission("cmr.use." + rewardSection.getName() + "." + reward.getName()) || player.hasPermission(that.allRewardsPermission)) { //This big mess means just checks to see if the player has appropriate permissions of any sort.
 							if ((that.survivalOnly && gm == GameMode.SURVIVAL) || !that.survivalOnly) {
-								if (e.getPlayer().getInventory().getItemInMainHand() == null) {
+								if (that.getItemInHand(e.getPlayer()) == null) {
 									if (that.isSilkTouchAllowed(rewardSection, reward, false)) {
 										activeRewards.put(reward, reward.getDouble("chance") * that.multiplier);
 									} else {
 										that.debug("Player was denied access to reward because of the presence or absence of silk touch");
 									}
 								} else {
-									if (that.isSilkTouchAllowed(rewardSection, reward, e.getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0)) {
+									if (that.isSilkTouchAllowed(rewardSection, reward, that.getItemInHand(e.getPlayer()).getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0)) {
 										activeRewards.put(reward, reward.getDouble("chance") * that.multiplier);
 									} else {
 										that.debug("Player was denied access to reward because of the presence or absence of silk touch");

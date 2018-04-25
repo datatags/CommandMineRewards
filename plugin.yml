@@ -1,7 +1,7 @@
 name: CommandMineRewards
 main: me.AlanZ.CommandMineRewards
 author: AlanZ
-version: 3.1
+version: 3.3
 commands:
     cmr:
         description: The command for utilizing CMR

@@ -2,15 +2,22 @@ package me.AlanZ;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import me.AlanZ.ItemInHand.ItemInHand;
+import me.AlanZ.ItemInHand.ItemInHand_1_8;
+import me.AlanZ.ItemInHand.ItemInHand_1_9;
 
 public class CommandMineRewards extends JavaPlugin {
 	
@@ -40,6 +47,7 @@ public class CommandMineRewards extends JavaPlugin {
 	List<String> rewardsWaitingName = new ArrayList<String>();
 	List<Double> rewardsWaitingChance = new ArrayList<Double>();*/
 	boolean removeInvalidValues = false;
+	ItemInHand iih = null;
 	
 	@Override
 	public void onEnable() {
@@ -55,10 +63,28 @@ public class CommandMineRewards extends JavaPlugin {
 		checkOldConfig();
 		reload();
 		new EventListener(this);
-		
+		if (!initItemInHand()) {
+			getLogger().severe("Could not determine server version, plugin will not work properly!");
+		}
 		getLogger().info("CommandMineRewards (by AlanZ) is enabled!");
 	}
-	
+	private boolean initItemInHand() {
+		String version;
+		try {
+            version = Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
+        } catch (ArrayIndexOutOfBoundsException whatVersionAreYouUsingException) {
+            return false;
+        }
+		debug(version);
+		if (version.matches("v1_[78]_R.")) {
+			getLogger().info("You seem to be running < 1.9");
+			iih = new ItemInHand_1_8();
+		} else {
+			getLogger().info("You seem to be running >= 1.9");
+			iih = new ItemInHand_1_9();
+		}
+		return true;
+	}
 	@Override
 	public void onDisable() {
 		getLogger().info("CommandMineRewards (by AlanZ) has been disabled!");
@@ -448,6 +474,9 @@ public class CommandMineRewards extends JavaPlugin {
 			return true;
 		}
 		return false;
+	}
+	public ItemStack getItemInHand(Player player) {
+		return iih.getItemInHand(player);
 	}
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
