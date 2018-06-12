@@ -1,4 +1,4 @@
-package me.AlanZ;
+package me.AlanZ.CommandMineRewards;
 
 import org.bukkit.ChatColor;
 

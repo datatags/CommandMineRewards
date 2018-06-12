@@ -1,28 +1,32 @@
 name: CommandMineRewards
-main: me.AlanZ.CommandMineRewards
+main: me.AlanZ.CommandMineRewards.CommandMineRewards
 author: AlanZ
-version: 3.3
+version: 4.0
+softdepend: [WorldGuard]
 commands:
     cmr:
         description: The command for utilizing CMR
-        usage: /<command> [reload|multiplier|help|addblock|addreward] [...]
+        usage: /<command> [args...]
 permissions:
     cmr.*:
         default: OP
         children:
             cmr.use.*: true
-            cmr.debug: true
             cmr.reload: true
             cmr.modifyblocks: true
             cmr.modifyrewards: true
             cmr.modifycommands: true
             cmr.modifychance: true
             cmr.modifymultiplier: true
+            cmr.modifyallowedworlds: true
+            cmr.modifyallowedregions: true
             cmr.viewblocks: true
             cmr.viewrewards: true
             cmr.viewcommands: true
             cmr.viewchance: true
             cmr.viewmultiplier: true
+            cmr.viewallowedworlds: true
+            cmr.viewallowedregions: true
     cmr.use.*:
         description: Makes you eligible for all rewards in CommandMineRewards.
         default: OP
@@ -59,6 +63,15 @@ permissions:
     cmr.viewchance:
         description: The permission required to view the chance value in a reward.
         default: OP
-    cmr.debug:
-        description: The permission required to dump debugging information.
+    cmr.modifyallowedworlds:
+        description: The permission required to add and remove worlds from the global and per-reward-section allowed worlds lists.
+        default: OP
+    cmr.viewallowedworlds:
+        description: The permission required to see the global and per-reward-section allowed worlds lists.
+        default: OP
+    cmr.modifyallowedregions:
+        description: The permission required to add and remove regions from the global and per-reward-section allowed regions lists.
+        default: OP
+    cmr.viewallowedregions:
+        description: The permission required to see the global and per-reward-section allowed regions lists.
         default: OP

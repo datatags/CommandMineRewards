@@ -25,6 +25,7 @@
 removeInvalidValues: false
 multiplier: 1
 survivalOnly: true
+validateWorldsAndRegions: true
 debug: false
 genericRewards:
     blocks:
