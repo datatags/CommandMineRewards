@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRegionException;
@@ -25,6 +27,14 @@ public class GlobalConfigManager {
 	public static boolean containsIgnoreCase(List<String> list, String search) {
 		for (String item : list) {
 			if (item.equalsIgnoreCase(search)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean containsMatch(List<String> list, String match) {
+		for (String item : list) {
+			if (item.matches(match)) {
 				return true;
 			}
 		}
@@ -176,7 +186,10 @@ public class GlobalConfigManager {
 		cmr.saveConfig();
 	}
 	public static boolean getDebug() {
-		return getConfig().getBoolean("debug");
+		return getConfig().getInt("verbosity", 1) > 1;
+	}
+	public static int getVerbosity() {
+		return getConfig().getInt("verbosity", 1);
 	}
 	public static boolean getSurvivalOnly() {
 		return getConfig().getBoolean("survivalOnly");
@@ -245,22 +258,37 @@ public class GlobalConfigManager {
 		}
 		return null;
 	}
-	public static List<RewardSection> getBlockHandlers(Material mat, byte data) {
+	public static List<RewardSection> getBlockHandlers(Block block) {
 		List<RewardSection> rv = new ArrayList<RewardSection>();
 		for (RewardSection rs : getRewardSections()) {
-			for (String block : rs.getBlocks()) {
-				String[] segments = block.split(":", 2);
+			for (String blockName : rs.getBlocks()) {
+				String[] segments = blockName.split(":", 2);
 				if (segments.length == 1) {
-					if (mat == Material.matchMaterial(segments[0])) {
+					if (block.getType() == Material.matchMaterial(segments[0])) {
 						rv.add(rs);
 					} else {
-						//debug(mat.toString() + " != " + Material.matchMaterial(segments[0]).toString());
+						cmr.debug(block.getType().toString() + " != " + Material.matchMaterial(segments[0]).toString());
 					}
 				} else { // must have two elements
-					if (mat == Material.matchMaterial(segments[0]) && data == Byte.parseByte(segments[1])) {
-						rv.add(rs);
+					if (block.getBlockData() instanceof Ageable) {
+						Ageable data = (Ageable) block.getBlockData();
+						if (segments[1].equalsIgnoreCase("true") && data.getAge() == data.getMaximumAge()) {
+							if (block.getType() == Material.matchMaterial(segments[0])) {
+								rv.add(rs);
+							} else {
+								cmr.debug(block.getType().toString() + " != " + Material.matchMaterial(segments[0]).toString() + " and/or " + data.getAge() + " != " + data.getMaximumAge());
+							}
+						} else if (segments[1].equalsIgnoreCase("false") && data.getAge() < data.getMaximumAge()) {
+							if (block.getType() == Material.matchMaterial(segments[0])) {
+								rv.add(rs);
+							} else {
+								cmr.debug(block.getType().toString() + " != " + Material.matchMaterial(segments[0]).toString() + " and/or " + data.getAge() + " != " + data.getMaximumAge());
+							}
+						} else {
+							cmr.getLogger().severe("Invalid growth identifier for material " + block.getType().toString() + ".");
+						}
 					} else {
-						//debug(mat.toString() + " != " + Material.matchMaterial(segments[0]).toString() + " and/or " + data + " != " + Byte.parseByte(segments[1]));
+						cmr.getLogger().severe("Type " + block.getType().toString() + " does not grow!");
 					}
 				}
 			}

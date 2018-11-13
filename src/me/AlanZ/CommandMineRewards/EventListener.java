@@ -33,10 +33,9 @@ public class EventListener implements Listener {
 	private void debug(String message) {
 		cmr.debug(message);
 	}
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent e) {
-		List<RewardSection> handlers = GlobalConfigManager.getBlockHandlers(e.getBlock().getType(), e.getBlock().getData());
+		List<RewardSection> handlers = GlobalConfigManager.getBlockHandlers(e.getBlock());
 		if (handlers.size() > 0) {
 			debug("---------START OF REWARD CALCS---------");
 			Player player = e.getPlayer();
@@ -105,7 +104,9 @@ public class EventListener implements Listener {
 					List<String> commands = (reward.getCommands());
 					for (String cmd : commands) {
 						String placeheld = cmd.replace("%player%", player.getName());
-						cmr.getLogger().info("Executing command:  " + placeheld);
+						if (GlobalConfigManager.getVerbosity() > 0) { // 0 = all logging disabled so don't log it if that's the case.
+							cmr.getLogger().info("Executing command:  " + placeheld);
+						}
 						Bukkit.getServer().dispatchCommand(console, placeheld);
 					}
 				}

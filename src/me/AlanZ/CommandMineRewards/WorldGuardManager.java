@@ -6,7 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -14,14 +15,14 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class WorldGuardManager {
 	public static boolean isAllowedInRegions(RewardSection rewardSection, Player player) {
 		List<String> allowedRegions;
-		if (rewardSection.getAllowedWorlds().size() > 0) {
+		if (rewardSection.getAllowedRegions().size() > 0) {
 			allowedRegions = rewardSection.getAllowedRegions();
 		} else if (GlobalConfigManager.getGlobalAllowedRegions().size() > 0) {
 			allowedRegions = GlobalConfigManager.getGlobalAllowedRegions();
 		} else {
 			return true;
 		}
-		ApplicableRegionSet set = getRegionManager(player.getWorld()).getApplicableRegions(player.getLocation());
+		ApplicableRegionSet set = getRegionManager(player.getWorld()).getApplicableRegions(BukkitAdapter.asVector(player.getLocation()));
 		for (ProtectedRegion rg : set) {
 			if (GlobalConfigManager.containsIgnoreCase(allowedRegions, rg.getId())) {
 				return true;
@@ -43,7 +44,6 @@ public class WorldGuardManager {
 		return false;
 	}
 	private static RegionManager getRegionManager(World world) {
-		WorldGuardPlugin worldGuard = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-		return worldGuard.getRegionManager(world);
+		return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
 	}
 }

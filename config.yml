@@ -3,7 +3,8 @@
 # removeInvalidValues: boolean: If true, will delete invalid blocks in the lists of blocks.
 # multiplier: double (integer or floating point):  Number to multiply chance of getting reward by.
 # survivalOnly: boolean:  If the reward should only be enabled when the player is in survival mode.
-# debug:  boolean (true or false):  Whether to enable debug mode or not.  Debug mode gives extensive details about the reward chance calculation process as it happens.
+# verbosity:  number (0, 1, or 2) (default 1):  How verbose console messages should be.  0 for none except errors, 1 for errors and executed commands, 2 for a metric ton of logging detail. (probably don't use 2 in production.)
+# Please note that even with verbosity: 0 you will still receive command output in console.  ex. if you have in a reward /give %player% diamond, you will still receive the message "Gave 1 [Diamond] to %player%" every time it runs. If you find a way to prevent the command output, message me on Spigot.
 # (rewardSectionName): section: put rewards in this format:
 # (rewardSectionName):
 #   (name):
@@ -26,7 +27,7 @@ removeInvalidValues: false
 multiplier: 1
 survivalOnly: true
 validateWorldsAndRegions: true
-debug: false
+verbosity: 1
 genericRewards:
     blocks:
         - cobblestone
@@ -47,7 +48,7 @@ genericRewards:
                 - eco give %player% 500
 cropRewards:
     blocks:
-        - "crops:7"
+        - "wheat:true"
     allowedWorlds: 
         - farming1
         - farming23

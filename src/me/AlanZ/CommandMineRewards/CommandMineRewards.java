@@ -73,7 +73,7 @@ public class CommandMineRewards extends JavaPlugin {
 	/*List<String> waitingForConf = new ArrayList<String>();
 	List<String> rewardsWaitingName = new ArrayList<String>();
 	List<Double> rewardsWaitingChance = new ArrayList<Double>();*/
-	private boolean removeInvalidValues = false;
+	boolean removeInvalidValues = false;
 	private ItemInHand iih = null;
 	private boolean worldGuardLoaded = false;
 	private Map<String,Permission> commandPermissions = new HashMap<String,Permission>();
@@ -201,6 +201,7 @@ public class CommandMineRewards extends JavaPlugin {
 		Reward.cmr = this;
 		initCommands();
 		saveDefaultConfig();
+		RewardSection.fillCache();
 		checkOldConfig();
 		reload();
 		if (isWorldGuardLoaded()) {
@@ -310,7 +311,8 @@ public class CommandMineRewards extends JavaPlugin {
 		aliasHelper(args);
 		String command = args[0];
 		if (!commandDescription.containsKey(command.toLowerCase())) {
-			getLogger().warning("Command " + command + " was passed to plugin but has no handler!");
+			debug("Command " + command + " was passed to plugin but has no handler!");
+			sender.sendMessage(ChatColor.RED + "Unknown CMR command.  Type /cmr help for help.");
 			return false;
 		}
 		if (!sender.hasPermission(commandPermissions.get(command.toLowerCase()))) {
@@ -780,11 +782,7 @@ public class CommandMineRewards extends JavaPlugin {
 						Material item = player.getInventory().getItemInMainHand().getType();
 						if (item.isBlock() && item != Material.AIR) {
 							try {
-								if (player.getInventory().getItemInMainHand().getDurability() > 0) {
-									new RewardSection(args[1]).addBlock(item, (byte) player.getInventory().getItemInMainHand().getDurability());
-								} else {
-									new RewardSection(args[1]).addBlock(item);
-								}
+								new RewardSection(args[1]).addBlock(item);
 							} catch (InvalidRewardSectionException | BlockAlreadyInListException | InvalidMaterialException e) {
 								sender.sendMessage(ChatColor.RED + e.getMessage());
 								return true;
@@ -801,18 +799,7 @@ public class CommandMineRewards extends JavaPlugin {
 						if (args.length == 3) {
 							new RewardSection(args[1]).addBlock(args[2].toLowerCase());
 						} else if (args.length == 4) {
-							byte data;
-							if (args[3].equals("*")) {
-								data = Byte.MAX_VALUE;
-							} else {
-								try {
-									data = Byte.parseByte(args[3]);
-								} catch (NumberFormatException e) {
-									sender.sendMessage(ChatColor.RED + "Invalid data value!");
-									return true;
-								}
-							}
-							new RewardSection(args[1]).addBlock(args[2].toLowerCase(), data);
+							new RewardSection(args[1]).addBlock(args[2].toLowerCase(), args[3].toLowerCase());
 						}
 					} catch (InvalidRewardSectionException | BlockAlreadyInListException | InvalidMaterialException e) {
 						sender.sendMessage(ChatColor.RED + e.getMessage());
@@ -868,19 +855,29 @@ public class CommandMineRewards extends JavaPlugin {
 				}
 			} else if (args[0].equalsIgnoreCase("listblocks")) {
 				try {
-					List<Entry<String,Byte>> blocks = new RewardSection(args[1]).getBlocksWithData();
+					Map<String,Boolean> blocks = new RewardSection(args[1]).getBlocksWithData();
 					if (blocks.size() < 1) {
 						sender.sendMessage(ChatColor.RED + "There are no blocks in that section.");
 					} else {
 						sender.sendMessage(ChatColor.GREEN + "The blocks that trigger rewards are:  ");
-						for (Entry<String,Byte> entry : blocks) {
-							if (entry.getValue() == (byte) 0) {
-								sender.sendMessage(ChatColor.GREEN + entry.getKey().toLowerCase());
-							} else if (entry.getValue() == Byte.MAX_VALUE) {
-								sender.sendMessage(ChatColor.GREEN + entry.getKey().toLowerCase() + " with any data value.");
+						boolean duplicates = false;
+						for (Entry<String,Boolean> entry : blocks.entrySet()) {
+							if (entry.getKey().contains("$")) duplicates = true;
+							String block = entry.getKey().toLowerCase().replace("$", "");
+							//block = block.replaceAll("$", ""); // strip prefixes generated to avoid duplicates
+							if (entry.getValue() == null) {
+								sender.sendMessage(ChatColor.GREEN + block);
+							} else if (entry.getValue() == true) {
+								sender.sendMessage(ChatColor.GREEN + block + ", fully grown.");
 							} else {
-								sender.sendMessage(ChatColor.GREEN + entry.getKey().toLowerCase() + " with a data value of " + entry.getValue());
+								sender.sendMessage(ChatColor.GREEN + block + ", not fully grown");
 							}
+						}
+						if (duplicates) {
+							sender.sendMessage("There seems to be at least one duplicate item in the list.");
+							sender.sendMessage("Fixing the duplicate item will help this plugin to run better.");
+							sender.sendMessage("Note: This duplicate may take the form of *:true and *:false");
+							sender.sendMessage("Instead, try just the block and it will cover both.");
 						}
 					}
 				} catch (InvalidRewardSectionException e) {

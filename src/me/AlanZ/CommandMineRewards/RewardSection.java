@@ -1,11 +1,11 @@
 package me.AlanZ.CommandMineRewards;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-
+import java.util.Map;
 import org.bukkit.Material;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 
 import me.AlanZ.CommandMineRewards.Exceptions.BlockAlreadyInListException;
@@ -20,6 +20,8 @@ import me.AlanZ.CommandMineRewards.Exceptions.WorldNotInListException;
 public class RewardSection {
 	private ConfigurationSection section;
 	static CommandMineRewards cmr = null;
+	// purpose of blocksCache is to not pass bad block values (i.e. invalid material, invalid growth state identifier, etc.)
+	private static Map<String,List<String>> blocksCache = new HashMap<String,List<String>>();
 	public RewardSection(String path, boolean createIfNotFound) {
 		if (cmr == null) {
 			throw new IllegalStateException("CMR instance has not been set!");
@@ -48,8 +50,49 @@ public class RewardSection {
 	public RewardSection(ConfigurationSection section) {
 		this.section = section;
 	}
+	static void fillCache() {
+		for (RewardSection work : GlobalConfigManager.getRewardSections()) {
+			if (!blocksCache.containsKey(work.getName())) { // if not cached
+				blocksCache.put(work.getName(), work.validateBlocks(true)); // validate it and cache the result.
+			}
+		}
+		// Probably don't need the following line because this method checks to see if it's already cached first before re-caching it. Plus it doesn't even check if it's already initialized :P
+		//cmr.getLogger().severe("Received an attempt to initialize cache when it has already been initialized!"); // we didn't cache it, 
+	}
+	static void clearCache() {
+		blocksCache = new HashMap<String,List<String>>();
+	}
 	public List<String> getRawBlocks() {
-		return this.section.getStringList("blocks");
+		if (!blocksCache.containsKey(this.getName())) { // if not cached
+			cmr.getLogger().warning("Reward section " + this.getName() + "'s block list was not cached.  Was it just created?");
+			blocksCache.put(this.getName(), validateBlocks(false)); // validate it and cache the result.
+		}
+		return blocksCache.get(this.getName());
+	}
+	private List<String> validateBlocks(boolean log) { // don't log it except on the initial run
+		List<String> blocks = new ArrayList<String>();
+		for (String block : this.section.getStringList("blocks")) {
+			String[] sections = block.split(":", 2); // item [0] = block; item [1] = data, if applicable
+			if (Material.matchMaterial(sections[0]) == null || !Material.matchMaterial(sections[0]).isBlock()) {
+				if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (cmr.removeInvalidValues ? "Removing." : "Ignoring."));
+				continue;
+			}
+			if (block.contains(":")) {
+				if (!(Material.matchMaterial(sections[0]).createBlockData() instanceof Ageable)) {
+					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (cmr.removeInvalidValues ? "Removing." : "Ignoring."));
+					continue;
+				}
+				if (!sections[1].equalsIgnoreCase("true") && !sections[1].equalsIgnoreCase("false")) {
+					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (cmr.removeInvalidValues ? "Removing." : "Ignoring."));
+					continue;
+				}
+			}
+			blocks.add(block);
+		}
+		if (cmr.removeInvalidValues) {
+			this.section.set("blocks", blocks);
+		}
+		return blocks;
 	}
 	public List<String> getBlocks() {
 		List<String> rv = new ArrayList<String>();
@@ -58,81 +101,103 @@ public class RewardSection {
 		}
 		return rv;
 	}
-	public List<Entry<String,Byte>> getBlocksWithData() { // yeah, couldn't really think of a better way of doing it other than returning an Entry<List<String>,List<Byte>>
-		List<Entry<String,Byte>> list = new ArrayList<Entry<String,Byte>>();
+	public Map<String,Boolean> getBlocksWithData() {
+		Map<String,Boolean> blocks = new HashMap<String,Boolean>();
 		for (String block : getRawBlocks()) {
-			try {
-				if (block.split(":").length == 1) {
-					list.add(new AbstractMap.SimpleEntry<String,Byte>(block, (byte) 0));
-				} else {
-					if (block.split(":")[1].equals("*")) {
-						list.add(new AbstractMap.SimpleEntry<String,Byte>(block.split(":")[0], Byte.MAX_VALUE));
-					} else {
-						list.add(new AbstractMap.SimpleEntry<String,Byte>(block.split(":")[0], Byte.parseByte(block.split(":")[1])));
+			if (!block.contains(":")) { // one element
+				if (blocks.containsKey(block)) {
+					cmr.getLogger().warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + ".");
+					String prefix = "";
+					while (blocks.containsKey(prefix + block)) {
+						prefix += "$";
 					}
-					
+					blocks.put(prefix + block, null);
+				} else {
+					blocks.put(block, null);
 				}
-			} catch (NumberFormatException e) {
-				cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid data value under the block " + block.split(":")[0] + ".");
-				continue;
+			} else { // two elements
+				if (!(Material.matchMaterial(block.split(":")[0]).createBlockData() instanceof Ageable)) {
+					cmr.getLogger().severe("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
+					continue;
+				}
+				String blockStripped = block.split(":")[0];
+				boolean data;
+				if (block.split(":")[1].equalsIgnoreCase("true")) {
+					data = true;
+				} else if (block.split(":")[1].equalsIgnoreCase("false")) {
+					data = false;
+				} else {
+					cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
+					continue;
+				}
+				if (blocks.containsKey(blockStripped)) {
+					cmr.getLogger().warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
+					String prefix = "";
+					while (blocks.containsKey(prefix + blockStripped)) {
+						prefix += "$";
+					}
+					blocks.put(prefix + blockStripped, data);
+				} else {
+					blocks.put(blockStripped, data);
+				}
 			}
+			
 		}
-		return list;
+		return blocks;
 	}
 	public void setBlocks(List<String> newBlocks) {
 		this.section.set("blocks", newBlocks);
 		cmr.saveConfig();
 	}
 	private void validateBlock(String block) throws InvalidMaterialException {
-		if (Material.matchMaterial(block) == null) {
-			throw new InvalidMaterialException(block + " is not a valid block, it's not even a valid item.");
+		String strippedBlock = block.split(":")[0];
+		if (Material.matchMaterial(strippedBlock) == null) {
+			throw new InvalidMaterialException(strippedBlock + " is not a valid block, it's not even a valid item.");
 		}
-		if (!Material.matchMaterial(block).isBlock()) {
-			throw new InvalidMaterialException(block + " is not a block!");
+		if (!Material.matchMaterial(strippedBlock).isBlock()) {
+			throw new InvalidMaterialException(strippedBlock + " is not a block!");
 		}
-		if (Material.matchMaterial(block) == Material.AIR) {
+		if (Material.matchMaterial(strippedBlock) == Material.AIR) {
 			throw new InvalidMaterialException("You can't add air as a reward-triggering block!");
+		}
+		if (block.contains(":")) {
+			String data = block.split(":")[1];
+			if (!(Material.matchMaterial(strippedBlock).createBlockData() instanceof Ageable)) {
+				throw new InvalidMaterialException("You can't add growth data to a non-growable block!");
+			}
+			if (!data.equalsIgnoreCase("true") && !data.equalsIgnoreCase("false")) {
+				throw new InvalidMaterialException("Data value can only be either true or false!");
+			}
 		}
 	}
 	public void addBlock(String block) throws BlockAlreadyInListException, InvalidMaterialException {
-		byte data = 0;
-		if (block.contains(":")) {
-			if (block.split(":")[1].equals("*")) {
-				data = Byte.MAX_VALUE;
-			} else {
-				try {
-					data = Byte.parseByte(block.split(":")[1]);
-				} catch (NumberFormatException e) {
-					throw new InvalidMaterialException("Could not parse data value " + block.split(":")[1]);
-				}
-			}
-			block = block.split(":")[0];
-		}
-		addBlock(block, data);
-	}
-	public void addBlock(Material block) throws BlockAlreadyInListException, InvalidMaterialException {
-		addBlock(block.toString(), (byte)0);
-	}
-	public void addBlock(Material block, byte data) throws BlockAlreadyInListException, InvalidMaterialException {
-		addBlock(block.toString(), data);
-	}
-	public void addBlock(String block, byte data) throws BlockAlreadyInListException, InvalidMaterialException {
 		validateBlock(block);
-		if (GlobalConfigManager.containsIgnoreCase(this.getRawBlocks(), block + ":" + data)) {
-			throw new BlockAlreadyInListException("The block " + block + ":" + data + " is already handled by the reward section " + this.getName() + "!");
+		if (block.contains(":")) {
+			String data = block.split(":")[1];
+			block = block.split(":")[0];
+			addBlock(block, data);
+			return;
 		}
 		List<String> blocks = this.getRawBlocks();
-		cmr.debug(block);
-		if (data == (byte) 0) {
-			blocks.add(block);
-		} else {
-			if (data == Byte.MAX_VALUE) {
-				blocks.add(block + ":*");
-			} else {
-				blocks.add(block + ":" + data);
-			}
-			
+		if (GlobalConfigManager.containsMatch(blocks, block + "(?::.+)?")) {
+			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
 		}
+		blocks.add(block);
+		this.setBlocks(blocks);
+	}
+	public void addBlock(Material block) throws BlockAlreadyInListException, InvalidMaterialException {
+		addBlock(block.toString());
+	}
+	public void addBlock(Material block, String data) throws BlockAlreadyInListException, InvalidMaterialException {
+		addBlock(block.toString(), data);
+	}
+	public void addBlock(String block, String data) throws BlockAlreadyInListException, InvalidMaterialException {
+		// validated at start of addBlock(String), don't need to validate again
+		List<String> blocks = this.getRawBlocks();
+		if (GlobalConfigManager.containsMatch(blocks, block + "(?::.+)?")) {
+			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
+		}
+		blocks.add(block + ":" + data);
 		this.setBlocks(blocks);
 	}
 	public void removeBlock(String block) throws BlockNotInListException {
@@ -161,7 +226,7 @@ public class RewardSection {
 		if (GlobalConfigManager.containsIgnoreCase(this.getAllowedWorlds(), world)) {
 			throw new WorldAlreadyInListException("The world " + world + " is already handled by the reward section " + this.getName() + "!");
 		}
-		if (GlobalConfigManager.isValidWorld(world)) {
+		if (!GlobalConfigManager.isValidWorld(world)) {
 			throw new InvalidWorldException("The world " + world + " does not exist!");
 		}
 		List<String> worlds = this.getAllowedWorlds();
