@@ -116,7 +116,7 @@ public class CommandMineRewards extends JavaPlugin {
 		commandUsage.put("removeblock", "<rewardSection> [block]");
 		commandUsage.put("listblocks", "<rewardSection>");
 		commandUsage.put("addreward", "<rewardSection> [reward]");
-		commandUsage.put("removereward", "<rewardSection> <reward>");
+		commandUsage.put("removereward", "<rewardSection> [reward]");
 		commandUsage.put("listrewards", "[rewardSection]");
 		commandUsage.put("addcommand", "<rewardSection> <reward> <command>");
 		commandUsage.put("insertcommand", "<rewardSection> <reward> <insert index> <command>");
@@ -196,6 +196,7 @@ public class CommandMineRewards extends JavaPlugin {
 		this.getConfig().addDefault("survivalOnly", true);
 		this.getConfig().addDefault("debug", false);
 		this.getConfig().options().copyDefaults(true);*/
+		this.getCommand("cmr").setTabCompleter(new CMRTabComplete(this));
 		GlobalConfigManager.cmr = this;
 		RewardSection.cmr = this;
 		Reward.cmr = this;
@@ -289,7 +290,7 @@ public class CommandMineRewards extends JavaPlugin {
 			}
 			for (Reward reward : section.getChildren()) {
 				if (!rewardsWithPermissions.contains(section.getName() + "." + reward.getName())) {
-					getLogger().info("Adding permission cmr.use." + section.getName() + "." + reward.getName());
+					debug("Adding permission cmr.use." + section.getName() + "." + reward.getName());
 					pm.addPermission(new Permission("cmr.use." + section.getName() + "." + reward.getName()));
 					rewardsWithPermissions.add(section.getName() + "." + reward.getName());
 				}

@@ -197,6 +197,16 @@ public class GlobalConfigManager {
 	public static boolean isValidatingWorldsAndRegions() {
 		return getConfig().getBoolean("validateWorldsAndRegions");
 	}
+	public static List<String> getRewardSectionNames() {
+		List<String> names = new ArrayList<String>();
+		for (String key : cmr.getConfig().getKeys(false)) {
+			if (!cmr.getConfig().isConfigurationSection(key)) { 
+				continue;
+			}
+			names.add(key);
+		}
+		return names;
+	}
 	public static List<RewardSection> getRewardSections() {
 		List<RewardSection> rv = new ArrayList<RewardSection>();
 		for (String key : cmr.getConfig().getKeys(false)) {

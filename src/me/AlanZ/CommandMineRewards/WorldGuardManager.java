@@ -1,5 +1,6 @@
 package me.AlanZ.CommandMineRewards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -34,16 +35,23 @@ public class WorldGuardManager {
 		if (!GlobalConfigManager.isValidatingWorldsAndRegions()) {
 			return true;
 		}
-		for (World world : Bukkit.getServer().getWorlds()) {
-			for (ProtectedRegion pr : getRegionManager(world).getRegions().values()) {
-				if (pr.getId().equalsIgnoreCase(region)) {
-					return true;
-				}
+		for (String regionName : getAllRegions()) {
+			if (regionName.equalsIgnoreCase(region)) {
+				return true;
 			}
 		}
 		return false;
 	}
 	private static RegionManager getRegionManager(World world) {
 		return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+	}
+	public static List<String> getAllRegions() {
+		List<String> ids = new ArrayList<String>();
+		for (World world : Bukkit.getServer().getWorlds()) {
+			for (ProtectedRegion pr : getRegionManager(world).getRegions().values()) {
+				ids.add(pr.getId());
+			}
+		}
+		return ids;
 	}
 }

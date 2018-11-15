@@ -1,0 +1,15 @@
+package me.AlanZ.CommandMineRewards;
+
+public enum ArgType {
+	REWARD_SECTION,
+	REWARD,
+	SILKTOUCH,
+	BLOCK,
+	WORLD,
+	REGION,
+	WORLD_OR_SECTION,
+	REGION_OR_SECTION,
+	SILKTOUCH_OR_REWARD,
+	SILKTOUCH_OR_SECTION,
+	NONE;
+}

@@ -17,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 public class EventListener implements Listener {
-	
 	CommandMineRewards cmr;
 	public EventListener(CommandMineRewards plugin) {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);	

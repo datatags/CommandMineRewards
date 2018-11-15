@@ -288,6 +288,19 @@ public class RewardSection {
 	public String getPath() {
 		return this.section.getCurrentPath();
 	}
+	public List<String> getChildrenNames() {
+		if (!this.section.isConfigurationSection("rewards")) {
+			return new ArrayList<String>();
+		}
+		List<String> rv = new ArrayList<String>();
+		for (String child : this.section.getConfigurationSection("rewards").getKeys(false)) {
+			if (!this.section.isConfigurationSection("rewards." + child)) {
+				continue;
+			}
+			rv.add(child);
+		}
+		return rv;
+	}
 	public List<Reward> getChildren() {
 		if (!this.section.isConfigurationSection("rewards")) {
 			return new ArrayList<Reward>();
