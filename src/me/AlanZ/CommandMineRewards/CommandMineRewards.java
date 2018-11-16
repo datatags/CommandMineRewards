@@ -44,22 +44,22 @@ public class CommandMineRewards extends JavaPlugin {
 	
 	public Permission allRewardsPermission = new Permission("cmr.use.*");
 	private Permission reloadPermission = new Permission("cmr.reload");
-	private Permission viewMultiplierPermission = new Permission("cmr.viewmultplier");
-	private Permission modifyMultiplierPermission = new Permission("cmr.modifymultiplier");
-	private Permission viewBlocksPermission = new Permission("cmr.viewblocks");
-	private Permission modifyBlocksPermission = new Permission("cmr.modifyblocks");
-	private Permission viewRewardsPermission = new Permission("cmr.viewrewards");
-	private Permission modifyRewardsPermission = new Permission("cmr.modifyrewards");
-	private Permission viewRewardCommands = new Permission("cmr.viewcommands");
-	private Permission modifyRewardCommands = new Permission("cmr.modifycommands");
-	private Permission viewChancePermission = new Permission("cmr.viewchance");
-	private Permission modifyChancePermission = new Permission("cmr.modifychance");
-	private Permission viewAllowedWorldsPermission = new Permission("cmr.viewallowedworlds");
-	private Permission modifyAllowedWorldsPermission = new Permission("cmr.modifyallowedworlds");
-	private Permission viewAllowedRegionsPermission = new Permission("cmr.viewallowedregions");
-	private Permission modifyAllowedRegionsPermission = new Permission("cmr.modifyallowedregions");
-	private Permission viewSilkTouchPolicyPermission = new Permission("cmr.viewsilktouchpolicy");
-	private Permission modifySilkTouchPolicyPermission = new Permission("cmr.modifysilktouchpolicy");
+	private Permission viewMultiplierPermission = new Permission("cmr.multplier.view");
+	private Permission modifyMultiplierPermission = new Permission("cmr.multiplier.modify");
+	private Permission viewBlocksPermission = new Permission("cmr.blocks.view");
+	private Permission modifyBlocksPermission = new Permission("cmr.blocks.modify");
+	private Permission viewRewardsPermission = new Permission("cmr.rewards.view");
+	private Permission modifyRewardsPermission = new Permission("cmr.rewards.modify");
+	private Permission viewRewardCommands = new Permission("cmr.commands.view");
+	private Permission modifyRewardCommands = new Permission("cmr.commands.modify");
+	private Permission viewChancePermission = new Permission("cmr.chance.view");
+	private Permission modifyChancePermission = new Permission("cmr.chance.modify");
+	private Permission viewAllowedWorldsPermission = new Permission("cmr.worlds.view");
+	private Permission modifyAllowedWorldsPermission = new Permission("cmr.worlds.modify");
+	private Permission viewAllowedRegionsPermission = new Permission("cmr.regions.view");
+	private Permission modifyAllowedRegionsPermission = new Permission("cmr.regions.modify");
+	private Permission viewSilkTouchPolicyPermission = new Permission("cmr.silktouchpolicy.view");
+	private Permission modifySilkTouchPolicyPermission = new Permission("cmr.silktouchpolicy.modify");
 	private String noPermissionMessage = ChatColor.RED + "You do not have permission to use this command!";
 	private String internalErrorMessage = ChatColor.RED + "An internal error has occurred.  Please ask an admin to check the log.";
 	
@@ -196,7 +196,7 @@ public class CommandMineRewards extends JavaPlugin {
 		this.getConfig().addDefault("survivalOnly", true);
 		this.getConfig().addDefault("debug", false);
 		this.getConfig().options().copyDefaults(true);*/
-		this.getCommand("cmr").setTabCompleter(new CMRTabComplete(this));
+		this.getCommand("cmr").setTabCompleter(new CMRTabComplete(this, commandPermissions));
 		GlobalConfigManager.cmr = this;
 		RewardSection.cmr = this;
 		Reward.cmr = this;

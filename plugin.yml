@@ -1,7 +1,7 @@
 name: CommandMineRewards
 main: me.AlanZ.CommandMineRewards.CommandMineRewards
 author: AlanZ
-version: 5.1
+version: 5.3
 api-version: 1.13
 softdepend: [WorldGuard]
 commands:
@@ -14,65 +14,82 @@ permissions:
         children:
             cmr.use.*: true
             cmr.reload: true
-            cmr.modifyblocks: true
-            cmr.modifyrewards: true
-            cmr.modifycommands: true
-            cmr.modifychance: true
-            cmr.modifymultiplier: true
-            cmr.modifyallowedworlds: true
-            cmr.modifyallowedregions: true
-            cmr.viewblocks: true
-            cmr.viewrewards: true
-            cmr.viewcommands: true
-            cmr.viewchance: true
-            cmr.viewmultiplier: true
-            cmr.viewallowedworlds: true
-            cmr.viewallowedregions: true
+            cmr.blocks.modify: true
+            cmr.rewards.modify: true
+            cmr.commands.modify: true
+            cmr.chance.modify: true
+            cmr.multiplier.modify: true
+            cmr.worlds.modify: true
+            cmr.regions.modify: true
+            cmr.blocks.view: true
+            cmr.rewards.view: true
+            cmr.commands.view: true
+            cmr.chance.view: true
+            cmr.multiplier.view: true
+            cmr.worlds.view: true
+            cmr.regions.view: true
+    cmr.seeall:
+        description: Allows you the permission to see everything related to CMR but not change it.
+        default: OP
+        children:
+            cmr.blocks.view: true
+            cmr.rewards.view: true
+            cmr.commands.view: true
+            cmr.chance.view: true
+            cmr.multiplier.view: true
+            cmr.worlds.view: true
+            cmr.regions.view: true
     cmr.use.*:
         description: Makes you eligible for all rewards in CommandMineRewards.
         default: OP
     cmr.reload:
         description: The permission required to reload the CMR config.
         default: OP
-    cmr.modifymultiplier:
+    cmr.multiplier.modify:
         description: The permission required to adjust the reward chance multiplier.
         default: OP
-    cmr.viewmultiplier:
+    cmr.multiplier.view:
         description: The permission required to view the reward chance multiplier.
         default: OP
-    cmr.modifyblocks:
+    cmr.blocks.modify:
         description: The permission required to edit the list of blocks that trigger rewards.
         default: OP
-    cmr.viewblocks:
+    cmr.blocks.view:
         description: The permission required to view the list of blocks which trigger rewards.
         default: OP
-    cmr.modifyrewards:
+    cmr.rewards.modify:
         description: The permission required to create or delete rewards.  Be careful who you give this to!
         default: OP
-    cmr.viewrewards:
+    cmr.rewards.view:
         description: The permission required to see the list of rewards.
         default: OP
-    cmr.modifycommands:
+    cmr.commands.modify:
         description: The permission required to add and remove commands from rewards.
         default: OP
-    cmr.viewcommands:
+    cmr.commands.view:
         description: The permission required to see all commands added to all rewards.
         default: OP
-    cmr.modifychance:
+    cmr.chance.modify:
         description: The permission required to change the chance value in a reward.
         default: OP
-    cmr.viewchance:
+    cmr.chance.view:
         description: The permission required to view the chance value in a reward.
         default: OP
-    cmr.modifyallowedworlds:
+    cmr.worlds.modify:
         description: The permission required to add and remove worlds from the global and per-reward-section allowed worlds lists.
         default: OP
-    cmr.viewallowedworlds:
+    cmr.worlds.view:
         description: The permission required to see the global and per-reward-section allowed worlds lists.
         default: OP
-    cmr.modifyallowedregions:
+    cmr.regions.modify:
         description: The permission required to add and remove regions from the global and per-reward-section allowed regions lists.
         default: OP
-    cmr.viewallowedregions:
+    cmr.regions.view:
         description: The permission required to see the global and per-reward-section allowed regions lists.
+        default: OP
+    cmr.silktouchpolicy.view:
+        description: The permission required to see the silk touch requirement of a reward or globally.
+        default: OP
+    cmr.silktouchpolicy.modify:
+        description: The permission required to change the silk touch requirement of a reward or globally.
         default: OP

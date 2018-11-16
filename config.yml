@@ -1,4 +1,5 @@
-# globalAllowedWorlds: string list: a list of worlds all rewards will operate in.  Is overrided by allowedWorlds in a reward section.  Defaults to "*", meaning all worlds allowed.
+# globalAllowedWorlds: string list: a list of worlds all rewards will operate in.  Is overridden by allowedWorlds in a reward section.  Defaults to "*", meaning all worlds allowed.
+# globalAllowedRegions: string list: same as globalAllowedWorlds except with WorldGuard regions instead of worlds.
 # globalSilkTouch: string, can be REQUIRED, IGNORED, or DISALLOWED: The global setting on whether silk touch is required, disallowed, or ignored to receive rewards.  Is overrided by silkTouch in a reward section or reward.  Defaults to IGNORED.
 # removeInvalidValues: boolean: If true, will delete invalid blocks in the lists of blocks.
 # multiplier: double (integer or floating point):  Number to multiply chance of getting reward by.

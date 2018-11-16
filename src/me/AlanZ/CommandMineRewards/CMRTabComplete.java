@@ -5,19 +5,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.permissions.Permission;
 import org.bukkit.util.StringUtil;
 
 public class CMRTabComplete implements TabCompleter {
 	private Map<String,List<ArgType>> commandArgs = new HashMap<String,List<ArgType>>();
+	private Map<String,Permission> commandPermissions;
 	CommandMineRewards cmr;
-	CMRTabComplete(CommandMineRewards cmr) {
+	CMRTabComplete(CommandMineRewards cmr, Map<String,Permission> cmdPermissions) {
 		this.cmr = cmr;
+		this.commandPermissions = cmdPermissions;
 		// command argument info
 		addCommand("reload", ArgType.NONE);
 		addCommand("multiplier", ArgType.NONE);
@@ -54,7 +58,12 @@ public class CMRTabComplete implements TabCompleter {
 		if (args.length < 1) {
 			return options; // what
 		} else if (args.length == 1) {
-			options.addAll(commandArgs.keySet());
+			//options.addAll(commandArgs.keySet());
+			for (Entry<String,Permission> entry : commandPermissions.entrySet()) {
+				if (sender.hasPermission(entry.getValue())) {
+					options.add(entry.getKey());
+				}
+			}
 		} else {
 			if (!commandArgs.containsKey(args[0])) { // UPDATE: I was lied to.  It does not contain the label. Original: should theoretically be args[1] for subcommand because it says it includes the command label
 				// debug message cmr.getLogger().warning("Could not find CMR sub-command named " + args[0]); // if we guessed wrong, say so
