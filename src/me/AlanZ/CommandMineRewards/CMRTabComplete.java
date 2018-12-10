@@ -60,7 +60,7 @@ public class CMRTabComplete implements TabCompleter {
 		} else if (args.length == 1) {
 			//options.addAll(commandArgs.keySet());
 			for (Entry<String,Permission> entry : commandPermissions.entrySet()) {
-				if (sender.hasPermission(entry.getValue())) {
+				if (entry.getValue() == null || sender.hasPermission(entry.getValue())) { // if value is null, there is no permission for that command
 					options.add(entry.getKey());
 				}
 			}
@@ -72,6 +72,14 @@ public class CMRTabComplete implements TabCompleter {
 			List<ArgType> chosenArgs = commandArgs.get(args[0]);
 			if (args.length - 1 > chosenArgs.size()) {
 				return options; // no more args we know of
+			}
+			if (args[0].equalsIgnoreCase("help")) {
+				for (Entry<String,Permission> entry : commandPermissions.entrySet()) {
+					options.add(entry.getKey());
+				}
+				List<String> matches = new ArrayList<String>();
+				StringUtil.copyPartialMatches(args[args.length - 1], options, matches);
+				return matches;
 			}
 			ArgType currentArg = chosenArgs.get(args.length - 2); // last arg should be x - 1 because we don't want to count the sub-command
 			if (currentArg == ArgType.NONE) {

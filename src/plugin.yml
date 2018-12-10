@@ -1,7 +1,7 @@
 name: CommandMineRewards
 main: me.AlanZ.CommandMineRewards.CommandMineRewards
 author: AlanZ
-version: 5.3
+version: 5.4
 api-version: 1.13
 softdepend: [WorldGuard]
 commands:
@@ -13,6 +13,7 @@ permissions:
         default: OP
         children:
             cmr.use.*: true
+            cmr.help: true
             cmr.reload: true
             cmr.blocks.modify: true
             cmr.rewards.modify: true
@@ -32,6 +33,7 @@ permissions:
         description: Allows you the permission to see everything related to CMR but not change it.
         default: OP
         children:
+            cmr.help: true
             cmr.blocks.view: true
             cmr.rewards.view: true
             cmr.commands.view: true
@@ -42,6 +44,9 @@ permissions:
     cmr.use.*:
         description: Makes you eligible for all rewards in CommandMineRewards.
         default: OP
+    cmr.help:
+        description: Allows you to see the help for all commands.
+        default: true
     cmr.reload:
         description: The permission required to reload the CMR config.
         default: OP

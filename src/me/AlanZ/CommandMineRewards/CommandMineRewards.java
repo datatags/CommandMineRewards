@@ -42,7 +42,8 @@ import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand_1_9;
 
 public class CommandMineRewards extends JavaPlugin {
 	
-	public Permission allRewardsPermission = new Permission("cmr.use.*");
+	Permission allRewardsPermission = new Permission("cmr.use.*");
+	private Permission helpPermission = new Permission("cmr.help");
 	private Permission reloadPermission = new Permission("cmr.reload");
 	private Permission viewMultiplierPermission = new Permission("cmr.multplier.view");
 	private Permission modifyMultiplierPermission = new Permission("cmr.multiplier.modify");
@@ -63,28 +64,30 @@ public class CommandMineRewards extends JavaPlugin {
 	private String noPermissionMessage = ChatColor.RED + "You do not have permission to use this command!";
 	private String internalErrorMessage = ChatColor.RED + "An internal error has occurred.  Please ask an admin to check the log.";
 	
-	PluginManager pm = getServer().getPluginManager();
+	private PluginManager pm = getServer().getPluginManager();
 	
 	//double multiplier;
 	//private boolean debug;
 	//boolean survivalOnly;
-	List<String> defBlocks = new ArrayList<String>();
-	List<String> rewardsWithPermissions = new ArrayList<String>();
+	//List<String> defBlocks = new ArrayList<String>();
+	private List<String> rewardsWithPermissions = new ArrayList<>();
 	/*List<String> waitingForConf = new ArrayList<String>();
 	List<String> rewardsWaitingName = new ArrayList<String>();
 	List<Double> rewardsWaitingChance = new ArrayList<Double>();*/
 	boolean removeInvalidValues = false;
 	private ItemInHand iih = null;
 	private boolean worldGuardLoaded = false;
-	private Map<String,Permission> commandPermissions = new HashMap<String,Permission>();
-	private Map<String,String> commandDescription = new LinkedHashMap<String,String>();
-	private Map<String,String> commandUsage = new LinkedHashMap<String,String>();
-	private Map<String,Integer> commandMinArgs = new HashMap<String,Integer>();
-	private Map<String,Integer> commandMaxArgs = new HashMap<String,Integer>();
+	private List<String> commandList = new ArrayList<>();
+	private Map<String,Permission> commandPermissions = new HashMap<>();
+	private Map<String,String> commandBasicDescription = new LinkedHashMap<>();
+	private Map<String,String> commandExtensiveDescription = new LinkedHashMap<>();
+	private Map<String,String> commandUsage = new LinkedHashMap<>();
+	private Map<String,Integer> commandMinArgs = new HashMap<>();
+	private Map<String,Integer> commandMaxArgs = new HashMap<>();
 	private final int helpPages = 7; // number of pages in help command
 	
 	private void initCommands() {
-		commandDescription.put("reload", "Reload the config");
+		/*commandDescription.put("reload", "Reload the config");
 		commandDescription.put("multiplier", "Change the reward chance multiplier");
 		commandDescription.put("help", "Display this message");
 		commandDescription.put("addblock", "Add a reward-triggering block");
@@ -107,7 +110,79 @@ public class CommandMineRewards extends JavaPlugin {
 		commandDescription.put("listregions", "Shows the list of allowed regions of a reward section, or globally.");
 		commandDescription.put("setsilktouchpolicy", "Changes the silk touch requirement or forbidden-ment globally, per-reward-section, or per-reward.");
 		commandDescription.put("viewsilktouchpolicy", "Observes the silk touch policy of a reward, reward section, or globally.");
-		commandDescription.put("chance", "Change the chance that the given reward has of being triggered");
+		commandDescription.put("chance", "Change the chance that the given reward has of being triggered");*/
+
+		commandList.add("help");
+		commandList.add("reload");
+		commandList.add("multiplier");
+		commandList.add("addblock");
+		commandList.add("removeblock");
+		commandList.add("listblocks");
+		commandList.add("addreward");
+		commandList.add("removereward");
+		commandList.add("listrewards");
+		commandList.add("addcommand");
+		commandList.add("insertcommand");
+		commandList.add("removecommand");
+		commandList.add("listcommands");
+		commandList.add("addworld");
+		commandList.add("removeworld");
+		commandList.add("listworlds");
+		commandList.add("addregion");
+		commandList.add("removeregion");
+		commandList.add("listregions");
+		commandList.add("setsilktouchpolicy");
+		commandList.add("viewsilktouchpolicy");
+		
+		commandBasicDescription.put("reload", "Reload the config");
+		commandBasicDescription.put("multiplier", "Change the reward chance multiplier");
+		commandBasicDescription.put("help", "See command list and descriptions");
+		commandBasicDescription.put("addblock", "Add a reward-triggering block");
+		commandBasicDescription.put("removeblock", "Remove a reward-triggering block");
+		commandBasicDescription.put("listblocks", "List the blocks that trigger rewards");
+		commandBasicDescription.put("addreward", "Add a reward");
+		commandBasicDescription.put("removereward", "Delete a reward");
+		commandBasicDescription.put("listrewards", "List all defined rewards");
+		commandBasicDescription.put("addcommand", "Add a command to the specified reward");
+		commandBasicDescription.put("insertcommand", "Add a command to the middle of a list");
+		commandBasicDescription.put("removecommand", "Remove a command by index");
+		commandBasicDescription.put("listcommands", "Show commands that a reward runs");
+		commandBasicDescription.put("addworld", "Add an allowed world");
+		commandBasicDescription.put("addcurrentworld", "Make the world you're in allowed for rewards");
+		commandBasicDescription.put("removeworld", "Remove an allowed world");
+		commandBasicDescription.put("removecurrentworld", "Remove the world you're in from triggering rewards.");
+		commandBasicDescription.put("listworlds", "Show allowed worlds");
+		commandBasicDescription.put("addregion", "Add an allowed region");
+		commandBasicDescription.put("removeregion", "Remove an allowed region");
+		commandBasicDescription.put("listregions", "Show allowed regions");
+		commandBasicDescription.put("setsilktouchpolicy", "Changes the policy on silk touch");
+		commandBasicDescription.put("viewsilktouchpolicy", "Views the policy on silk touch");
+		commandBasicDescription.put("chance", "See or change the chance of being rewarded.");
+		
+		commandExtensiveDescription.put("reload", "Simply reloads the CMR config.  All options, rewards, and sections will be reloaded.  All block lists will be re-checked for invalid blocks.");
+		commandExtensiveDescription.put("multiplier", "If a chance argument is specified, update the chance of the specified reward. Otherwise, read the chance of the specified reward.");
+		commandExtensiveDescription.put("help", "Get help with commands. If no argument is specified, it will read page 1 of help. If a number argument is specified, it will read that page of the help. If a CMR command is specified, it will read the detailed help for that command (as you see now.)");
+		commandExtensiveDescription.put("addblock", "Add a block as reward-triggering to the specified reward section.");
+		commandExtensiveDescription.put("removeblock", "Remove a reward-triggering block from the block list of the specified section.");
+		commandExtensiveDescription.put("listblocks", "Lists all blocks that trigger rewards in the specified section.");
+		commandExtensiveDescription.put("addreward", "If two arguments are specified, add a new reward under the (existing) specified reward section.  If one argument is specified, it creates a reward section with the specified name.");
+		commandExtensiveDescription.put("removereward", "If two arguments are specified, delete a reward under the specified reward section.  If one argument is specified, deletes the ENTIRE reward section, even if the reward section has rewards in it.  Be careful!");
+		commandExtensiveDescription.put("listrewards", "If no arguments are specified, lists all reward sections.  If a reward section is specified, lists all rewards under that section.");
+		commandExtensiveDescription.put("addcommand", "Add a command to the specified reward. It will go onto the end of the list. If you want it to go in a different position in the list, see insertcommand.");
+		commandExtensiveDescription.put("insertcommand", "Inserts a command into a reward's command list at the specified ID, meaning the command will now hold the specified ID, shifting others down.  You can insert a command at the beginning of the list by specifying an ID of 0. You can see command IDs, or indexes, with listcommands");
+		commandExtensiveDescription.put("removecommand", "Removes the command that holds the ID or index specified in the specified reward.  You can get this ID from listcommands");
+		commandExtensiveDescription.put("listcommands", "Shows all commands that the specified reward runs when it is triggered, and their respective ID or index numbers that can be used for inserting or deleting commands.  Note that the first index is 0.");
+		commandExtensiveDescription.put("addworld", "If a reward section is specified, adds the specified world to the list of allowed worlds.  If a reward section is not specified, adds the specified world to the globally allowed worlds list.");
+		commandExtensiveDescription.put("addcurrentworld", "Adds the world you are currently in to the list of allowed worlds of a reward section, or globally if a reward section is not specified..");
+		commandExtensiveDescription.put("removeworld", "Removes a world from the list of allowed worlds of a reward section, or from the global list globally.");
+		commandExtensiveDescription.put("removecurrentworld", "Removes the world you are currently in from the list of allowed worlds of a reward section, or globally.");
+		commandExtensiveDescription.put("listworlds", "Shows the list of allowed worlds of a reward section, or globally.");
+		commandExtensiveDescription.put("addregion", "Adds a region to the list of allowed regions of a reward section, or the global list if no reward section is specified.");
+		commandExtensiveDescription.put("removeregion", "Removes a region from the list of allowed regions of a reward section, or the global list if no reward section is specified.");
+		commandExtensiveDescription.put("listregions", "Shows the list of allowed regions of a reward section, or globally if no reward section specified.");
+		commandExtensiveDescription.put("setsilktouchpolicy", "Changes the silk touch policy on a reward, or reward section if no reward specified, or globally if no reward or reward section specified.");
+		commandExtensiveDescription.put("viewsilktouchpolicy", "Observes the silk touch policy of a reward, or reward section if no reward specified, or globally if no reward or reward section specified.");
+		commandExtensiveDescription.put("chance", "If chance argument is given, change the chance of a reward triggering. Otherwise, read the chance of it triggering.  This number should be a percentage chance between 0 and 100, decimals allowed.");
 		
 		commandUsage.put("reload", "");
 		commandUsage.put("multiplier", "[multiplier]");
@@ -135,6 +210,7 @@ public class CommandMineRewards extends JavaPlugin {
 		commandUsage.put("chance", "<rewardSection> <reward> [chance]");
 		
 		cmdMinMax("reload", 1, 1);
+		cmdMinMax("help", 1, 2);
 		cmdMinMax("multiplier", 1, 2);
 		cmdMinMax("addblock", 2, 4);
 		cmdMinMax("removeblock", 2, 4);
@@ -159,6 +235,7 @@ public class CommandMineRewards extends JavaPlugin {
 		cmdMinMax("chance", 3, 4);
 		
 		commandPermissions.put("reload", reloadPermission);
+		commandPermissions.put("help", helpPermission);
 		commandPermissions.put("multiplier", viewMultiplierPermission);
 		commandPermissions.put("listblocks", viewBlocksPermission);
 		commandPermissions.put("listrewards", viewRewardsPermission);
@@ -220,12 +297,9 @@ public class CommandMineRewards extends JavaPlugin {
 	}
 	private boolean isWorldGuardLoaded() { // internal
 	    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-	        return false;
-	    }
-	    return true;
+		return plugin instanceof WorldGuardPlugin;
 	}
-	public boolean usingWorldGuard() { // public
+	boolean usingWorldGuard() { // public
 		return worldGuardLoaded;
 	}
 	private boolean initItemInHand() {
@@ -270,7 +344,7 @@ public class CommandMineRewards extends JavaPlugin {
 			getLogger().info("Successfully converted!");
 		}
 	}
-	public void reload() {
+	private void reload() {
 		reloadConfig();
 		//multiplier = this.getConfig().getDouble("multiplier");
 		//debug = this.getConfig().getBoolean("debug");
@@ -280,7 +354,7 @@ public class CommandMineRewards extends JavaPlugin {
 		for (ConfigurationSection work : getConfigSections("")) {
 			debug("work = " + work.getName());
 			RewardSection section = new RewardSection(work.getName());
-			List<String> newBlocks = new ArrayList<String>();
+			List<String> newBlocks = new ArrayList<>();
 			for (String block : section.getBlocks()) {
 				if (isMaterial(block)) {
 					if (removeInvalidValues) {
@@ -303,7 +377,7 @@ public class CommandMineRewards extends JavaPlugin {
 			saveConfig();
 		}
 	}
-	public void debug(String msg) {
+	void debug(String msg) {
 		if (GlobalConfigManager.getDebug()) {
 			getLogger().info(msg);
 		}
@@ -311,7 +385,7 @@ public class CommandMineRewards extends JavaPlugin {
 	private boolean validateCommand(String[] args, CommandSender sender) {
 		aliasHelper(args);
 		String command = args[0];
-		if (!commandDescription.containsKey(command.toLowerCase())) {
+		if (!commandBasicDescription.containsKey(command.toLowerCase())) {
 			debug("Command " + command + " was passed to plugin but has no handler!");
 			sender.sendMessage(ChatColor.RED + "Unknown CMR command.  Type /cmr help for help.");
 			return false;
@@ -340,11 +414,11 @@ public class CommandMineRewards extends JavaPlugin {
 			return false;
 		}
 	}
-	public List<ConfigurationSection> getConfigSections(String origin) {
+	private List<ConfigurationSection> getConfigSections(String origin) {
 		return getConfigSections(this.getConfig().getConfigurationSection(origin));
 	}
-	public List<ConfigurationSection> getConfigSections(ConfigurationSection origin) {
-		List<ConfigurationSection> sections = new ArrayList<ConfigurationSection>();
+	private List<ConfigurationSection> getConfigSections(ConfigurationSection origin) {
+		List<ConfigurationSection> sections = new ArrayList<>();
 		for (String key : origin.getKeys(false)) {
 			if (origin.isConfigurationSection(key)) {
 				sections.add(origin.getConfigurationSection(key));
@@ -352,315 +426,19 @@ public class CommandMineRewards extends JavaPlugin {
 		}
 		return sections;
 	}
-	/*public List<ConfigurationSection> blockHandled(Material mat, byte data) {
-		List<ConfigurationSection> list = new ArrayList<ConfigurationSection>();
-		for (ConfigurationSection section : getConfigSections("")) {
-			if (!section.isList("blocks")) {
-				debug("No blocks list in " + section.getName());
-				continue;
-			}
-			for (String block : section.getStringList("blocks")) {
-				String[] segments = block.split(":", 2);
-				if (segments.length == 1) {
-					if (mat == Material.matchMaterial(segments[0])) {
-						list.add(section);
-					} else {
-						//debug(mat.toString() + " != " + Material.matchMaterial(segments[0]).toString());
-					}
-				} else { // must have two elements
-					if (mat == Material.matchMaterial(segments[0]) && data == Byte.parseByte(segments[1])) {
-						list.add(section);
-					} else {
-						//debug(mat.toString() + " != " + Material.matchMaterial(segments[0]).toString() + " and/or " + data + " != " + Byte.parseByte(segments[1]));
-					}
-				}
-			}
-		}
-		return list;
-	}
-	public List<RewardSection> getRewardSections() {
-		List<RewardSection> rv = new ArrayList<RewardSection>();
-		for (ConfigurationSection section : getConfigSections("")) {
-			rv.add(new RewardSection(section.getName(), false));
-		}
-		return rv;
-	}
-	public int addBlock(String rewardSection, String block) {
-		if (!this.getConfig().isConfigurationSection(rewardSection)) {
-			return 1;
-		}
-		List<String> blocks = this.getConfig().getConfigurationSection(rewardSection).getStringList("blocks");
-		if (blocks.contains(block)) {
-			return 2;
-		}
-		blocks.add(block);
-		this.getConfig().set(rewardSection + ".blocks", blocks);
-		saveConfig();
-		return 0;
-	}
-	public int removeBlock(String rewardSection, String block) {
-		if (!this.getConfig().isConfigurationSection(rewardSection)) {
-			return 1;
-		}
-		List<String> blocks = this.getConfig().getConfigurationSection(rewardSection).getStringList("blocks");
-		if (!blocks.remove(block)) {
-			return 2;
-		}
-		this.getConfig().set(rewardSection + ".blocks", blocks);
-		saveConfig();
-		return 0;
-	}
-	private int addBlock(String rewardSection, Material block) {
-		return addBlock(rewardSection, block.toString().toLowerCase());
-	}
-	private int removeBlock(String rewardSection, Material block) {
-		return removeBlock(rewardSection, block.toString().toLowerCase());
-	}
-	public boolean addReward(String sectionName, String name, double chance) {
-		if (!addReward(sectionName, name)) {
-			return false;
-		}
-		ConfigurationSection section = this.getConfig().getConfigurationSection(sectionName);
-		section.getConfigurationSection("rewards." + name).set("chance", chance);
-		this.getConfig().set(sectionName, section);
-		saveConfig();
-		//this.getConfig().set("Rewards." + name + ".commands", commands);
-		return true;
-	}
-	public boolean addReward(String sectionName, String name) {
-		if (!this.getConfig().isConfigurationSection(sectionName)) {
-			this.getConfig().createSection(sectionName);
-		}
-		ConfigurationSection section = this.getConfig().getConfigurationSection(sectionName);
-		if (section.isConfigurationSection(name)) {
-			return false;
-		}
-		if (!section.isConfigurationSection("rewards")) {
-			section.createSection("rewards");
-		}
-		section.createSection("rewards." + name);
-		return true;
-	}
-	public boolean removeReward(String sectionName, String name) {
-		if (!this.getConfig().isConfigurationSection(sectionName)) {
-			return false;
-		}
-		if (name == null) {
-			this.getConfig().set(sectionName, null);
-		} else {
-			if (!this.getConfig().getConfigurationSection(sectionName).getConfigurationSection("rewards").isConfigurationSection(name)) {
-				return false;
-			}
-			this.getConfig().getConfigurationSection(sectionName).set("rewards." + name, null);
-		}
-		saveConfig();
-		return true;
-	}
-	public boolean addCommand(String rewardSection, String reward, String command) {
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").isConfigurationSection(reward)) {
-			return false;
-		}
-		ConfigurationSection section = this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").getConfigurationSection(reward);
-		List<String> cmds = section.getStringList("commands");
-		cmds.add(command);
-		section.set("commands", cmds);
-		this.getConfig().set(rewardSection + ".rewards." + reward, section);
-		saveConfig();
-		return true;
-	}
-	public int insertCommand(String rewardSection, String reward, int index, String command ) {
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").isConfigurationSection(reward)) {
-			return 1;
-		}
-		ConfigurationSection work = this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").getConfigurationSection(reward);
-		List<String> commands = work.getStringList("commands");
-		if (index > commands.size()) {
-			return 2;
-		}
-		//command = command.substring(0, command.length() - 1); // strip trailing space off command. done automatically now
-		commands.add(index, command);
-		work.set("commands", commands);
-		this.getConfig().set(rewardSection + ".rewards." + reward, work);
-		saveConfig();
-		return 0;
-	}
-	public int removeCommand(String rewardSection, String reward, String command) {
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").isConfigurationSection(reward)) {
-			return 1;
-		}
-		ConfigurationSection section = this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").getConfigurationSection(reward);
-		List<String> cmds = section.getStringList("commands");
-		for (String cmd : cmds) {
-			if (cmd.equalsIgnoreCase(command)) {
-				cmds.remove(cmd);
-				section.set("commands", cmds);
-				this.getConfig().set(rewardSection + ".rewards." + reward, section);
-				saveConfig();
-				return 0;
-			}
-		}
-		return 2;
-	}
-	public int removeCommand(String rewardSection, String reward, int index) {
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").isConfigurationSection(reward)) {
-			return 1;
-		}
-		ConfigurationSection section = this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").getConfigurationSection(reward);
-		List<String> cmds = section.getStringList("commands");
-		if (cmds.size() > index) {
-			cmds.remove(index);
-			section.set("commands", cmds);
-			this.getConfig().set(rewardSection + ".rewards." + reward, section);
-			saveConfig();
-			return 0;
-		} else {
-			return 2;
-		}
-	}
-	public String listBlocks(String rewardSection) {
-		if (!this.getConfig().isConfigurationSection(rewardSection)) {
-			return null;
-		}
-		List<String> blocks = this.getConfig().getConfigurationSection(rewardSection).getStringList("blocks");
-		if (blocks == null || blocks.size() == 0) {
-			return "";
-		}
-		return listToEnglish(blocks);
-	}
-	public String listRewards(String rewardSection) {
-		List<String> rewards = new ArrayList<String>();
-		for (ConfigurationSection section : getConfigSections((rewardSection == "" ? "" : rewardSection + ".rewards"))) {
-			rewards.add(section.getName());
-		}
-		return listToEnglish(rewards);
-	}
-	private List<String> listCommands(String rewardSection, String reward) {
-		List<String> list = new ArrayList<String>();
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().isConfigurationSection(rewardSection + ".rewards." + reward)) {
-			list.add(ChatColor.RED + "No commands.");
-			return list;
-		}
-		List<String> commands = this.getConfig().getStringList(rewardSection + ".rewards." + reward + ".commands");
-		for (int i = 0; i < commands.size(); i++) {
-			list.add(ChatColor.GREEN.toString() + i + ":  /" + commands.get(i));
-		}
-		return list;
-	}
-	private double getChance(String rewardSection, String reward) {
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").isConfigurationSection(reward)) {
-			return -1;
-		}
-		if (!this.getConfig().isDouble(rewardSection + ".rewards." + reward + ".chance")) {
-			return -2;
-		}
-		return this.getConfig().getDouble(rewardSection + ".rewards." + reward + ".chance");
-	}
-	private boolean setChance(String rewardSection, String reward, double chance) {
-		if (!this.getConfig().isConfigurationSection(rewardSection) || !this.getConfig().getConfigurationSection(rewardSection).getConfigurationSection("rewards").isConfigurationSection(reward)) {
-			return false;
-		}
-		this.getConfig().set(rewardSection + ".rewards." + reward + ".chance", chance);
-		saveConfig();
-		return true;
-	}
-	private String listToEnglish(List<String> list) {
-		String assembledList = "";
-		for (String item : list) {
-			if (item.equals(list.get(list.size() - 1))) { // if item is the last item in the list...
-				if (list.size() > 1) {
-					assembledList += "and " + item + ".";
-				} else {
-					assembledList += item + ".";
-				}
-				break;
-			} else {
-				assembledList += item + ", ";
-			}
-		}
-		return assembledList;
-	}
-	private SilkTouchRequirement getSilkTouchStatus(ConfigurationSection rewardSection, ConfigurationSection reward) {
-		if (reward.isString("silkTouch")) {
-			String value = reward.getString("silkTouch");
-			if (SilkTouchRequirement.getByName(value) == null) {
-				getLogger().warning("Could not parse silkTouch value in reward section '" + rewardSection.getName() + "' and reward '" + reward.getName() + "'.");
-			} else {
-				return SilkTouchRequirement.getByName(value);
-			}
-		}
-		if (rewardSection.isString("silkTouch")) {
-			String value = rewardSection.getString("silkTouch");
-			if (SilkTouchRequirement.getByName(value) == null) {
-				getLogger().warning("Could not parse silkTouch value in reward section '" + rewardSection.getName() + "'.");
-			} else {
-				return SilkTouchRequirement.getByName(value);
-			}
-		}
-		if (this.getConfig().isString("silkTouch")) {
-			String value = this.getConfig().getString("silkTouch");
-			if (SilkTouchRequirement.getByName(value) == null) {
-				getLogger().warning("Could not parse global silkTouch value.");
-			} else {
-				return SilkTouchRequirement.getByName(value);
-			}
-		}
-		return null;
-	}
-	public boolean isSilkTouchAllowed(ConfigurationSection rewardSection, ConfigurationSection reward, boolean silkTouch) {
-		SilkTouchRequirement requirement = getSilkTouchStatus(rewardSection, reward);
-		if (requirement == null || requirement == SilkTouchRequirement.IGNORED) {
-			return true;
-		}
-		if (requirement == SilkTouchRequirement.REQUIRED && silkTouch) {
-			return true;
-		}
-		if (requirement == SilkTouchRequirement.DISALLOWED && !silkTouch) {
-			return true;
-		}
-		return false;
-	}
-	public boolean isWorldAllowed(ConfigurationSection rewardSection, String worldName) {
-		if (rewardSection.isList("allowedWorlds")) {
-			for (String allowed : rewardSection.getStringList("allowedWorlds")) {
-				if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
-					return true;
-				}
-			}
-		} else if (rewardSection.isString("allowedWorlds")) { 
-			String allowed = rewardSection.getString("allowedWorlds");
-			if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
-				return true;
-			}
-		} else if (this.getConfig().isList("allowedWorlds")) {
-			for (String allowed : this.getConfig().getStringList("allowedWorlds")) {
-				if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
-					return true;
-				}
-			}
-		} else if (this.getConfig().isString("allowedWorlds")) { 
-			String allowed = rewardSection.getString("allowedWorlds");
-			if (allowed.equalsIgnoreCase(worldName) || allowed.equals("*")) {
-				return true;
-			}
-		} else {
-			debug("Couldn't find allowed worlds list globally or in reward section " + rewardSection.getName());
-			return true;
-		}
-		return false;
-	}*/
 	private String parseCommand(int startIndex, String[] args) {
-		String command = "";
+		StringBuilder command = new StringBuilder();
 		for (int i = startIndex; i < args.length; i++) {
-			command += args[i] + " ";
+			command.append(args[i]).append(" ");
 		}
-		if (command.startsWith("/")) {
-			command = command.substring(1, command.length() - 1); // remove slash and trailing space
+		if (command.toString().startsWith("/")) {
+			command = new StringBuilder(command.substring(1, command.length() - 1)); // remove slash and trailing space
 		} else {
-			command = command.substring(0, command.length() - 1); // remove trailing space
+			command = new StringBuilder(command.substring(0, command.length() - 1)); // remove trailing space
 		}
-		return command;
+		return command.toString();
 	}
-	public ItemStack getItemInHand(Player player) {
+	ItemStack getItemInHand(Player player) {
 		return iih.getItemInHand(player);
 	}
 	private void aliasHelper(String[] args) { // set any aliases / shorthands to the full command name to make stuff easier.
@@ -676,7 +454,7 @@ public class CommandMineRewards extends JavaPlugin {
 			sender.sendMessage(internalErrorMessage);
 			return;
 		}
-		sender.sendMessage(ChatColor.GOLD + "/cmr " + command + (commandUsage.get(command).equals("") ? "" : (" " + commandUsage.get(command))) + ": " + ChatColor.GREEN + commandDescription.get(command));
+		sender.sendMessage(ChatColor.GOLD + "/cmr " + command + ": " + ChatColor.GREEN + commandBasicDescription.get(command));
 	}
 	private void printHelpHeader(int page, CommandSender sender) {
 		sender.sendMessage(ChatColor.GREEN + "----------" + ChatColor.GOLD + "CommandMineRewards" + (page == 1 ? "" : " - Page " + page) + ChatColor.GREEN + "----------");
@@ -740,8 +518,13 @@ public class CommandMineRewards extends JavaPlugin {
 					printHelpHeader(7, sender);
 					printCommand("chance", sender);
 					printHelpFooter(7, sender);
+				} else if (commandExtensiveDescription.containsKey(args[1].toLowerCase())) {
+					sender.sendMessage(ChatColor.GREEN + "----------" + ChatColor.GOLD + "CommandMineRewards Help" + ChatColor.GREEN + "----------");
+					sender.sendMessage(ChatColor.GOLD + "Usage:  " + ChatColor.GREEN + "/cmr " + args[1].toLowerCase() + " " + commandUsage.get(args[1].toLowerCase()));
+					sender.sendMessage(ChatColor.GOLD + "Description:  " + ChatColor.GREEN + commandExtensiveDescription.get(args[1]));
+					sender.sendMessage(ChatColor.GREEN + "----------" + ChatColor.GOLD + "CommandMineRewards Help" + ChatColor.GREEN + "----------");
 				} else {
-					sender.sendMessage(ChatColor.RED + "Please enter a valid page number from 1 to " + helpPages + ".");
+					sender.sendMessage(ChatColor.RED + "Please enter a valid page number from 1 to " + helpPages + ", or a CMR command.");
 				}
 				return true;
 			}
@@ -799,7 +582,7 @@ public class CommandMineRewards extends JavaPlugin {
 					try {
 						if (args.length == 3) {
 							new RewardSection(args[1]).addBlock(args[2].toLowerCase());
-						} else if (args.length == 4) {
+						} else {
 							new RewardSection(args[1]).addBlock(args[2].toLowerCase(), args[3].toLowerCase());
 						}
 					} catch (InvalidRewardSectionException | BlockAlreadyInListException | InvalidMaterialException e) {
@@ -868,7 +651,7 @@ public class CommandMineRewards extends JavaPlugin {
 							//block = block.replaceAll("$", ""); // strip prefixes generated to avoid duplicates
 							if (entry.getValue() == null) {
 								sender.sendMessage(ChatColor.GREEN + block);
-							} else if (entry.getValue() == true) {
+							} else if (entry.getValue()) {
 								sender.sendMessage(ChatColor.GREEN + block + ", fully grown.");
 							} else {
 								sender.sendMessage(ChatColor.GREEN + block + ", not fully grown");
