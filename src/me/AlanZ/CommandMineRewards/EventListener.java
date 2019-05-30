@@ -13,11 +13,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-
-import static org.bukkit.event.EventPriority.*;
 
 public class EventListener implements Listener {
 	CommandMineRewards cmr;
@@ -35,12 +32,8 @@ public class EventListener implements Listener {
 	private void debug(String message) {
 		cmr.debug(message);
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent e) {
-		if (e.isCancelled()) { // we do the check manually because that way we can provide the user (and me) with feedback on why it didn't work
-			debug("Block break was cancelled by another plugin, possibly WorldGuard or another world protection plugin.");
-			return;
-		}
 		List<RewardSection> handlers = GlobalConfigManager.getBlockHandlers(e.getBlock());
 		if (handlers.size() > 0) {
 			debug("---------START OF REWARD CALCS---------");
