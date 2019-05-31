@@ -14,7 +14,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class RegionChecker {
 	public static boolean isInRegion(List<String> regions, World world, Player player) {
 		RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
-		ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asVector(player.getLocation()));
+		ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
 		for (ProtectedRegion region : set) {
 			if (GlobalConfigManager.containsIgnoreCase(regions, region.getId())) {
 				return true;

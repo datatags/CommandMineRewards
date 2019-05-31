@@ -1,12 +1,17 @@
 package me.AlanZ.CommandMineRewards;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -83,6 +88,7 @@ public class CommandMineRewards extends JavaPlugin {
 	private Map<String,String> commandUsage = new LinkedHashMap<String,String>();
 	private Map<String,Integer> commandMinArgs = new HashMap<String,Integer>();
 	private Map<String,Integer> commandMaxArgs = new HashMap<String,Integer>();
+	private File debugLog = null;
 	private final int helpPages = 7; // number of pages in help command
 	
 	private void initCommands() {
@@ -252,6 +258,22 @@ public class CommandMineRewards extends JavaPlugin {
 		this.getConfig().options().copyDefaults(true);*/
 		this.getCommand("cmr").setTabCompleter(new CMRTabComplete(this, commandPermissions));
 		GlobalConfigManager.cmr = this;
+		if (GlobalConfigManager.isDebugLog()) {
+			try {
+				File log = new File(this.getDataFolder().getAbsolutePath() + File.separator + "debug.log");
+				if (log.createNewFile()) { // will check if file exists before creating in a single operation. using an if would be a redundant check anyway.
+					getLogger().info("CMR debug log was successfully created!");
+				}
+				debugLog = log;
+				SimpleDateFormat asdf = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a");
+				debug("CMR has started up at " + asdf.format(new Date()));
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				getLogger().warning("Failed to create CMR debug log. Do we have write permissions?");
+				//e.printStackTrace();
+			}
+		}
 		RewardSection.cmr = this;
 		Reward.cmr = this;
 		initCommands();
@@ -291,16 +313,18 @@ public class CommandMineRewards extends JavaPlugin {
         }
 		debug(version);
 		if (version.matches("v1_[78]_R.")) {
-			getLogger().info("You seem to be running < 1.9");
+			getLogger().info("You seem to be running a pre-1.9 version.");
 			iih = new ItemInHand_1_8();
 		} else {
-			getLogger().info("You seem to be running >= 1.9");
+			getLogger().info("You seem to be running 1.9 or later.");
 			iih = new ItemInHand_1_9();
 		}
 		return true;
 	}
 	@Override
 	public void onDisable() {
+		SimpleDateFormat asdf = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a");
+		debug("CMR has been shut down at " + asdf.format(new Date()) + "\n\n\n\n", false);
 		getLogger().info("CommandMineRewards (by AlanZ) has been disabled!");
 	}
 	private void checkOldConfig() {
@@ -353,13 +377,31 @@ public class CommandMineRewards extends JavaPlugin {
 				section.setBlocks(newBlocks);
 			}
 		}
-		if (removeInvalidValues) {
-			saveConfig();
+		if (this.getConfig().contains("debug")) {
+			this.getConfig().set("verbosity", this.getConfig().getBoolean("debug") ? 2 : 1);
+			this.getConfig().set("debug", null);
 		}
+		if (this.getConfig().contains("debuglog")) {
+			this.getConfig().set("debuglog", false);
+		}
+		saveConfig();
 	}
 	public void debug(String msg) {
+		debug(msg, true);
+	}
+	public void debug(String msg, boolean logToConsole) {
 		if (GlobalConfigManager.getDebug()) {
-			getLogger().info(msg);
+			if (logToConsole) getLogger().info(msg);
+			if (GlobalConfigManager.isDebugLog()) {
+				try {
+					BufferedWriter bf = new BufferedWriter(new FileWriter(debugLog, true));
+					bf.append(msg + "\n");
+					bf.close();
+				} catch (IOException e) {
+					getLogger().severe("Failed to write to CMR debug log! Do we have write permission?");
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	private boolean validateCommand(String[] args, CommandSender sender) {

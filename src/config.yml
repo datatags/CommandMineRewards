@@ -5,6 +5,7 @@
 # multiplier: double (integer or floating point):  Number to multiply chance of getting reward by.
 # survivalOnly: boolean:  If the reward should only be enabled when the player is in survival mode.
 # verbosity:  number (0, 1, or 2) (default 1):  How verbose console messages should be.  0 for none except errors, 1 for errors and executed commands, 2 for a metric ton of logging detail. (probably don't use 2 in production.)
+# debugLog: boolean (true or false): If true, will create a separate debug log in the CMR folder for easy bug reporting.  This setting is ignored unless verbosity is 2.
 # Please note that even with verbosity: 0 you will still receive command output in console.  ex. if you have in a reward /give %player% diamond, you will still receive the message "Gave 1 [Diamond] to %player%" every time it runs. If you find a way to prevent the command output, message me on Spigot.
 # (rewardSectionName): section: put rewards in this format:
 # (rewardSectionName):
@@ -29,6 +30,7 @@ multiplier: 1
 survivalOnly: true
 validateWorldsAndRegions: true
 verbosity: 1
+debugLog: false
 genericRewards:
     blocks:
         - cobblestone
