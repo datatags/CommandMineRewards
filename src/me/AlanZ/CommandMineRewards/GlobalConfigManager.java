@@ -188,6 +188,9 @@ public class GlobalConfigManager {
 	public static boolean getDebug() {
 		return getConfig().getInt("verbosity", 1) > 1;
 	}
+	public static boolean isDebugLog() {
+		return getConfig().getBoolean("debugLog");
+	}
 	public static int getVerbosity() {
 		return getConfig().getInt("verbosity", 1);
 	}

@@ -23,7 +23,7 @@ public class WorldGuardManager {
 		} else {
 			return true;
 		}
-		ApplicableRegionSet set = getRegionManager(player.getWorld()).getApplicableRegions(BukkitAdapter.asVector(player.getLocation()));
+		ApplicableRegionSet set = getRegionManager(player.getWorld()).getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
 		for (ProtectedRegion rg : set) {
 			if (GlobalConfigManager.containsIgnoreCase(allowedRegions, rg.getId())) {
 				return true;
