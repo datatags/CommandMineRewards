@@ -12,6 +12,6 @@ assignees: ''
 <!-- Put an X in the brackets to confirm you have done it. -->
 [ ] Updated to the latest version of CMR. https://www.spigotmc.org/resources/commandminerewards.27316/
 [ ] Put CMR into debug mode and read the log for clues (see bottom of resource page for step-by-step)
-[ ] Included config.yml and debug.log in the issue.
+[ ] Included config.yml and debug.log in the issue in a .zip file. (Hint: drag and drop the .zip from File Explorer into this box.)
 
 # Description of issue
