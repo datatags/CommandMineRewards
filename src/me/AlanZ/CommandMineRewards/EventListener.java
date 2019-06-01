@@ -13,6 +13,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -32,7 +33,7 @@ public class EventListener implements Listener {
 	private void debug(String message) {
 		cmr.debug(message);
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreakEvent(BlockBreakEvent e) {
 		List<RewardSection> handlers = GlobalConfigManager.getBlockHandlers(e.getBlock());
 		if (handlers.size() > 0) {
