@@ -33,7 +33,7 @@ public class EventListener implements Listener {
 	private void debug(String message) {
 		cmr.debug(message);
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBreakEvent(BlockBreakEvent e) {
 		List<RewardSection> handlers = GlobalConfigManager.getBlockHandlers(e.getBlock());
 		if (handlers.size() > 0) {
