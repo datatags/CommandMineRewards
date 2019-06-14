@@ -33,11 +33,15 @@ public class EventListener implements Listener {
 	private void debug(String message) {
 		cmr.debug(message);
 	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreakEvent(BlockBreakEvent e) {
 		List<RewardSection> handlers = GlobalConfigManager.getBlockHandlers(e.getBlock());
 		if (handlers.size() > 0) {
 			debug("---------START OF REWARD CALCS---------");
+			if (e.isCancelled()) {
+				debug("Player was denied access to reward because the block break was cancelled by another plugin.");
+				return;
+			}
 			Player player = e.getPlayer();
 			GameMode gm = player.getGameMode();
 			for (RewardSection rewardSection : handlers) {
