@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import me.AlanZ.CommandMineRewards.Exceptions.BlockAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.BlockNotInListException;
@@ -150,19 +152,19 @@ public class RewardSection {
 		cmr.saveConfig();
 	}
 	private void validateBlock(String block) throws InvalidMaterialException {
-		String strippedBlock = block.split(":")[0];
-		if (Material.matchMaterial(strippedBlock) == null) {
-			throw new InvalidMaterialException(strippedBlock + " is not a valid block, it's not even a valid item.");
+		Material strippedBlock = Material.matchMaterial(block.split(":")[0]);
+		if (strippedBlock == null) {
+			throw new InvalidMaterialException(block.split(":")[0] + " is not a valid block, it's not even a valid item.");
 		}
-		if (!Material.matchMaterial(strippedBlock).isBlock()) {
+		if (!strippedBlock.isBlock()) {
 			throw new InvalidMaterialException(strippedBlock + " is not a block!");
 		}
-		if (Material.matchMaterial(strippedBlock) == Material.AIR) {
+		if (strippedBlock == Material.AIR) {
 			throw new InvalidMaterialException("You can't add air as a reward-triggering block!");
 		}
 		if (block.contains(":")) {
 			String data = block.split(":")[1];
-			if (!(Material.matchMaterial(strippedBlock).createBlockData() instanceof Ageable)) {
+			if (!(strippedBlock.createBlockData() instanceof Ageable)) {
 				throw new InvalidMaterialException("You can't add growth data to a non-growable block!");
 			}
 			if (!data.equalsIgnoreCase("true") && !data.equalsIgnoreCase("false")) {
@@ -183,6 +185,7 @@ public class RewardSection {
 			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
 		}
 		blocks.add(block);
+		CMRBlockManager.addHandler(this, Material.matchMaterial(block));
 		this.setBlocks(blocks);
 	}
 	public void addBlock(Material block) throws BlockAlreadyInListException, InvalidMaterialException {
@@ -194,26 +197,32 @@ public class RewardSection {
 	public void addBlock(String block, String data) throws BlockAlreadyInListException, InvalidMaterialException {
 		// validated at start of addBlock(String), don't need to validate again
 		List<String> blocks = this.getRawBlocks();
-		if (GlobalConfigManager.containsMatch(blocks, block + "(?::.+)?")) {
+		if (GlobalConfigManager.containsMatch(blocks, block + "(?::.+)?")) { // "(?:" means just a group, don't save result
 			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
 		}
 		blocks.add(block + ":" + data);
+		CMRBlockManager.addCropHandler(this, Material.matchMaterial(block), Boolean.parseBoolean(data));
 		this.setBlocks(blocks);
 	}
-	public void removeBlock(String block) throws BlockNotInListException {
+	public void removeBlock(String block, boolean hasData) throws BlockNotInListException {
 		List<String> blocks = this.getRawBlocks();
 		if (GlobalConfigManager.removeIgnoreCase(blocks, block)) {
 			blocks.remove(block);
+			if (hasData) {
+				CMRBlockManager.removeCropHandler(this, Material.matchMaterial(block.split(":")[0]), Boolean.parseBoolean(block.split(":")[1]));
+			} else {
+				CMRBlockManager.removeHandler(this, Material.matchMaterial(block));
+			}
 			this.setBlocks(blocks);
 		} else {
 			throw new BlockNotInListException("The block " + block + " is not handled by the reward section " + this.getName() + "!");
 		}
 	}
 	public void removeBlock(String block, byte data) throws BlockNotInListException {
-		removeBlock(block + ":" + data);
+		removeBlock(block + ":" + data, true);
 	}
 	public void removeBlock(Material block) throws BlockNotInListException {
-		removeBlock(block.toString());
+		removeBlock(block.toString(), false);
 	}
 	public List<String> getAllowedWorlds() {
 		return this.section.getStringList("allowedWorlds");
@@ -332,5 +341,29 @@ public class RewardSection {
 			return null;
 		}
 		return new Reward(this.getName(), child);
+	}
+	private void debug(String msg) {
+		cmr.debug(msg);
+	}
+	public boolean isApplicable(Block block, Player player) {
+		// block type is checked by CMRBlockHandler
+		if (!GlobalConfigManager.isWorldAllowed(this, player.getWorld().getName())) {
+			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this world.");
+			return false;
+		}
+		if (cmr.usingWorldGuard() && !WorldGuardManager.isAllowedInRegions(this, block)) {
+			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this region.");
+			return false;
+		}
+		return true;
+	}
+	public void execute(Block block, Player player) {
+		debug("Processing section " + this.getName());
+		if (!isApplicable(block, player)) return;
+		for (Reward reward : getChildren()) {
+			if (reward.isApplicable(block, player)) {
+				reward.execute(player);
+			}
+		}
 	}
 }

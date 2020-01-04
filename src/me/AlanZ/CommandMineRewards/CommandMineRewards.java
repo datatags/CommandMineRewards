@@ -73,7 +73,7 @@ public class CommandMineRewards extends JavaPlugin {
 	PluginManager pm = getServer().getPluginManager();
 	
 	List<String> defBlocks = new ArrayList<String>();
-	List<String> rewardsWithPermissions = new ArrayList<String>();
+	//List<String> rewardsWithPermissions = new ArrayList<String>();
 	boolean removeInvalidValues = false;
 	private ItemInHand iih = null;
 	private boolean worldGuardLoaded = false;
@@ -249,11 +249,14 @@ public class CommandMineRewards extends JavaPlugin {
 		initDebugLog();
 		RewardSection.cmr = this;
 		Reward.cmr = this;
+		RewardSection.fillCache();
 		initCommands();
 		saveDefaultConfig();
-		RewardSection.fillCache();
 		checkOldConfig();
 		reload();
+		RewardSection.clearCache(); // reset cache in case something was fixed in above methods
+		RewardSection.fillCache();
+		CMRBlockManager.initializeHandlers(this);
 		if (isWorldGuardLoaded()) {
 			getLogger().info("Found WorldGuard.  Using to check regions.");
 			worldGuardLoaded = true;
@@ -338,10 +341,12 @@ public class CommandMineRewards extends JavaPlugin {
 				}
 			}
 			for (Reward reward : section.getChildren()) {
-				if (!rewardsWithPermissions.contains(section.getName() + "." + reward.getName())) {
-					debug("Adding permission cmr.use." + section.getName() + "." + reward.getName());
-					pm.addPermission(new Permission("cmr.use." + section.getName() + "." + reward.getName()));
-					rewardsWithPermissions.add(section.getName() + "." + reward.getName());
+				String permission = "cmr.use." + section.getName() + "." + reward.getName();
+				if (pm.getPermission(permission) == null) {
+					debug("Adding permission " + permission);
+					pm.addPermission(new Permission(permission));
+				} else {
+					getLogger().warning("Permission " + permission + " already exists! Was the server reloaded with /reload?");
 				}
 			}
 			if (removeInvalidValues && newBlocks.size() != section.getBlocks().size()) {
@@ -610,7 +615,7 @@ public class CommandMineRewards extends JavaPlugin {
 					return true;
 				} else if (args.length == 3) {
 					try {
-						new RewardSection(args[1]).removeBlock(args[2]);
+						new RewardSection(args[1]).removeBlock(args[2], args[2].contains(":") ? true : false);
 					} catch (InvalidRewardSectionException | BlockNotInListException e) {
 						sender.sendMessage(ChatColor.RED + e.getMessage());
 						return true;

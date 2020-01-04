@@ -1,7 +1,7 @@
 name: CommandMineRewards
 main: me.AlanZ.CommandMineRewards.CommandMineRewards
 author: AlanZ
-version: 5.5
+version: 5.6
 api-version: 1.13
 softdepend: [WorldGuard]
 commands:

@@ -2,14 +2,11 @@ package me.AlanZ.CommandMineRewards;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
-
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRegionException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
@@ -33,8 +30,9 @@ public class GlobalConfigManager {
 		return false;
 	}
 	public static boolean containsMatch(List<String> list, String match) {
+		Pattern pattern = Pattern.compile(match);
 		for (String item : list) {
-			if (item.matches(match)) {
+			if (pattern.matcher(item).matches()) {
 				return true;
 			}
 		}
@@ -270,42 +268,5 @@ public class GlobalConfigManager {
 			}
 		}
 		return null;
-	}
-	public static List<RewardSection> getBlockHandlers(Block block) {
-		List<RewardSection> rv = new ArrayList<RewardSection>();
-		for (RewardSection rs : getRewardSections()) {
-			for (String blockName : rs.getBlocks()) {
-				String[] segments = blockName.split(":", 2);
-				if (segments.length == 1) {
-					if (block.getType() == Material.matchMaterial(segments[0])) {
-						rv.add(rs);
-					} else {
-						cmr.debug(block.getType().toString() + " != " + Material.matchMaterial(segments[0]).toString());
-					}
-				} else { // must have two elements
-					if (block.getBlockData() instanceof Ageable) {
-						Ageable data = (Ageable) block.getBlockData();
-						if (segments[1].equalsIgnoreCase("true") && data.getAge() == data.getMaximumAge()) {
-							if (block.getType() == Material.matchMaterial(segments[0])) {
-								rv.add(rs);
-							} else {
-								cmr.debug(block.getType().toString() + " != " + Material.matchMaterial(segments[0]).toString() + " and/or " + data.getAge() + " != " + data.getMaximumAge());
-							}
-						} else if (segments[1].equalsIgnoreCase("false") && data.getAge() < data.getMaximumAge()) {
-							if (block.getType() == Material.matchMaterial(segments[0])) {
-								rv.add(rs);
-							} else {
-								cmr.debug(block.getType().toString() + " != " + Material.matchMaterial(segments[0]).toString() + " and/or " + data.getAge() + " != " + data.getMaximumAge());
-							}
-						} else {
-							cmr.getLogger().severe("Invalid growth identifier for material " + block.getType().toString() + ".");
-						}
-					} else {
-						cmr.getLogger().severe("Type " + block.getType().toString() + " does not grow!");
-					}
-				}
-			}
-		}
-		return rv;
 	}
 }

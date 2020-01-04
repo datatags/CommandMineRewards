@@ -5,8 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
-
+import org.bukkit.block.Block;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -14,7 +13,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class WorldGuardManager {
-	public static boolean isAllowedInRegions(RewardSection rewardSection, Player player) {
+	public static boolean isAllowedInRegions(RewardSection rewardSection, Block block) {
 		List<String> allowedRegions;
 		if (rewardSection.getAllowedRegions().size() > 0) {
 			allowedRegions = rewardSection.getAllowedRegions();
@@ -23,7 +22,7 @@ public class WorldGuardManager {
 		} else {
 			return true;
 		}
-		ApplicableRegionSet set = getRegionManager(player.getWorld()).getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
+		ApplicableRegionSet set = getRegionManager(block.getWorld()).getApplicableRegions(BukkitAdapter.asBlockVector(block.getLocation()));
 		for (ProtectedRegion rg : set) {
 			if (GlobalConfigManager.containsIgnoreCase(allowedRegions, rg.getId())) {
 				return true;

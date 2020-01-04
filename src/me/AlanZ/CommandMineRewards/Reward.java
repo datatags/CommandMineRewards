@@ -1,8 +1,13 @@
 package me.AlanZ.CommandMineRewards;
 
 import java.util.List;
+import java.util.Random;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
@@ -18,12 +23,13 @@ public class Reward {
 	private Permission perm; // the permission required for this reward specifically.  Looks like cmr.use.rewardsection.reward
 	private Permission parentPerm; // the permission required for the parent reward section of this reward.  Looks like cmr.use.rewardsection.*
 	private static final Permission allPerm = new Permission("cmr.use.*"); // the permission required to use any reward under any reward section.  Always the same.
+	private String parent;
 	public Reward(String parent, String reward, boolean createIfNotFound) throws RewardAlreadyExistsException {
 		if (cmr == null) {
 			throw new IllegalStateException("CMR instance has not been set!");
 		}
 		if (parent.contains(".") || reward.contains(".")) {
-			throw new InvalidRewardSectionException("You cannot use periods in reward section names!");
+			throw new InvalidRewardSectionException("You cannot use periods in reward or section names!");
 		}
 		if (!cmr.getConfig().isConfigurationSection(parent) && !createIfNotFound) { // if we couldn't find it easily and we're not supposed to create it,
 			if (GlobalConfigManager.searchIgnoreCase(parent, "") == null) { // search for it
@@ -48,6 +54,7 @@ public class Reward {
 		this.section = cmr.getConfig().getConfigurationSection(parent + ".rewards." + reward);
 		parentPerm = new Permission("cmr.use." + parent + ".*");
 		perm = new Permission("cmr.use." + parent + "." + reward);
+		this.parent = parent;
 	}
 	public Reward(RewardSection parent, String reward, boolean createIfNotFound) throws RewardAlreadyExistsException {
 		this(parent.getName(), reward, createIfNotFound);
@@ -61,8 +68,11 @@ public class Reward {
 	public Reward(ConfigurationSection reward) {
 		this.section = reward;
 	}
-	public double getChance() {
+	public double getRawChance() {
 		return this.section.getDouble("chance", 0); // return 0 if no value set
+	}
+	public double getChance() {
+		return getRawChance() * GlobalConfigManager.getMultiplier();
 	}
 	public void setChance(double newChance) {
 		if (newChance > 100) {
@@ -138,5 +148,52 @@ public class Reward {
 	}
 	public Permission getPerm() {
 		return this.perm;
+	}
+	public RewardSection getParent() {
+		return new RewardSection(parent);
+	}
+	private void debug(String msg) {
+		cmr.debug(msg);
+	}
+	public boolean isApplicable(Block block, Player player) {
+		// does not check things that should be checked by RewardSection
+		if (this.getChance() == 0) {
+			debug("Warning! Chance property was 0, invalid, or non-existant in reward " + this.getName() + " in section " + getParent().getName());
+			return false;
+		}
+		if (!hasPermission(player)) {
+			debug("Player " + player.getName() + " did not receive reward " + this.getName() + " for lack of permission!");
+			return false;
+		}
+		// not if (SO and gamemode are correct) or we don't care
+		if (!((GlobalConfigManager.getSurvivalOnly() && player.getGameMode() == GameMode.SURVIVAL) || !GlobalConfigManager.getSurvivalOnly())) {
+			debug("Player " + player.getName() + " did not receive reward " + this.getName() + " because they were in the wrong game mode!");
+			return false;
+		}
+		if (cmr.getItemInHand(player) == null) {
+			if (!GlobalConfigManager.silkStatusAllowed(getParent(), this, false)) {
+				debug("Player was denied access to reward because of the presence or absence of silk touch");
+				return false;
+			}
+		} else {
+			if (!GlobalConfigManager.silkStatusAllowed(getParent(), this, cmr.getItemInHand(player).getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0)) {
+				debug("Player was denied access to reward because of the presence or absence of silk touch");
+				return false;
+			}
+		}
+		return true;
+	}
+	public void execute(Player player) {
+		debug("Processing reward " + this.getName());
+		int random = new Random().nextInt(100);
+		debug("Random: " + random);
+		if (random < getChance()) {
+			debug(random + " < " + getChance() + ", executing reward");
+			for (String command : getCommands()) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+			}
+		} else {
+			debug(random + " !< " + getChance() + ", doing nothing");
+		}
 	}
 }
