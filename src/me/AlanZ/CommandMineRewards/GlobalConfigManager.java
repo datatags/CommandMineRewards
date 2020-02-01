@@ -10,16 +10,32 @@ import org.bukkit.configuration.ConfigurationSection;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRegionException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.AlanZ.CommandMineRewards.Exceptions.InvalidWorldException;
 import me.AlanZ.CommandMineRewards.Exceptions.RegionAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.RegionNotInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.WorldAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.WorldNotInListException;
+import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
+import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class GlobalConfigManager {
-	public static CommandMineRewards cmr;
-	
+	protected static CommandMineRewards cmr;
 	private static ConfigurationSection getConfig() {
 		return cmr.getConfig();
+	}
+	public static void load() {
+		cmr.saveDefaultConfig();
+		cmr.reloadConfig();
+		checkOldConfig();
+		cmr.saveConfig();
+	}
+	private static void checkOldConfig() {
+		// we don't clear the debug log setting because if the plugin is spamming the log
+		// the plugin is in verbosity: 2 which no one in their right mind would use except for troubleshooting
+		if (getConfig().contains("debug")) {
+			getConfig().set("verbosity", getConfig().getBoolean("debug") ? 2 : 1);
+			getConfig().set("debug", null);
+		}
 	}
 	public static boolean containsIgnoreCase(List<String> list, String search) {
 		for (String item : list) {
@@ -30,7 +46,7 @@ public class GlobalConfigManager {
 		return false;
 	}
 	public static boolean containsMatch(List<String> list, String match) {
-		Pattern pattern = Pattern.compile(match);
+		Pattern pattern = Pattern.compile(match, Pattern.CASE_INSENSITIVE);
 		for (String item : list) {
 			if (pattern.matcher(item).matches()) {
 				return true;
@@ -197,6 +213,9 @@ public class GlobalConfigManager {
 	}
 	public static boolean isValidatingWorldsAndRegions() {
 		return getConfig().getBoolean("validateWorldsAndRegions");
+	}
+	public static boolean removeInvalidValues() {
+		return getConfig().getBoolean("removeInvalidValues");
 	}
 	public static List<String> getRewardSectionNames() {
 		List<String> names = new ArrayList<String>();

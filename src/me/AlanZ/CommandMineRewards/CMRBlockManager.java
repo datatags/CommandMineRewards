@@ -62,10 +62,10 @@ public class CMRBlockManager {
 			cmr.getLogger().warning("Attempted to remove an non-existant handler for " + type + ", " + growth + " in " + rs.getName());
 			return;
 		}
-		if (handler.getSections().size() < 2) {
-			handlers.remove(handler);
-		} else {
+		if (handler.getSections().size() > 1) {
 			handler.removeSection(rs);
+		} else {
+			handlers.remove(handler);
 		}
 	}
 	private static void debug(String msg) {
@@ -73,6 +73,7 @@ public class CMRBlockManager {
 	}
 	public static void executeAllSections(Block block, Player player) {
 		debug("----------START REWARD CALCS----------");
+		debug("If nothing is listed here, no handlers were found.");
 		for (CMRBlockHandler handler : handlers) {
 			if (handler.matches(block)) {
 				handler.execute(block, player);

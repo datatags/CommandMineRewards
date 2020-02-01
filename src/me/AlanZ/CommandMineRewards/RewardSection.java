@@ -4,20 +4,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 
 import me.AlanZ.CommandMineRewards.Exceptions.BlockAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.BlockNotInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidMaterialException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.AlanZ.CommandMineRewards.Exceptions.InvalidWorldException;
 import me.AlanZ.CommandMineRewards.Exceptions.RegionAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.RegionNotInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.WorldAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.WorldNotInListException;
+import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
+import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class RewardSection {
 	private ConfigurationSection section;
@@ -52,7 +59,11 @@ public class RewardSection {
 	public RewardSection(ConfigurationSection section) {
 		this.section = section;
 	}
-	static void fillCache() {
+	protected static void init() {
+		fillCache();
+		registerPermissions();
+	}
+	protected static void fillCache() {
 		for (RewardSection work : GlobalConfigManager.getRewardSections()) {
 			if (!blocksCache.containsKey(work.getName())) { // if not cached
 				blocksCache.put(work.getName(), work.validateBlocks(true)); // validate it and cache the result.
@@ -61,8 +72,22 @@ public class RewardSection {
 		// Probably don't need the following line because this method checks to see if it's already cached first before re-caching it. Plus it doesn't even check if it's already initialized :P
 		//cmr.getLogger().severe("Received an attempt to initialize cache when it has already been initialized!"); // we didn't cache it, 
 	}
-	static void clearCache() {
+	protected static void clearCache() {
 		blocksCache = new HashMap<String,List<String>>();
+	}
+	private static void registerPermissions() {
+		for (RewardSection section : GlobalConfigManager.getRewardSections()) {
+			for (Reward reward : section.getChildren()) {
+				String permission = "cmr.use." + section.getName() + "." + reward.getName();
+				if (Bukkit.getPluginManager().getPermission(permission) == null) {
+					debug("Adding permission " + permission);
+					Bukkit.getPluginManager().addPermission(new Permission(permission));
+				} else {
+					cmr.getLogger().warning("Permission " + permission + " already exists! Was the server reloaded with /reload?");
+				}
+			}
+		}
+		
 	}
 	public List<String> getRawBlocks() {
 		if (!blocksCache.containsKey(this.getName())) { // if not cached
@@ -74,24 +99,25 @@ public class RewardSection {
 	private List<String> validateBlocks(boolean log) { // don't log it except on the initial run
 		List<String> blocks = new ArrayList<String>();
 		for (String block : this.section.getStringList("blocks")) {
+			debug("work = " + this.getName());
 			String[] sections = block.split(":", 2); // item [0] = block; item [1] = data, if applicable
 			if (Material.matchMaterial(sections[0]) == null || !Material.matchMaterial(sections[0]).isBlock()) {
-				if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (cmr.removeInvalidValues ? "Removing." : "Ignoring."));
+				if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
 				continue;
 			}
 			if (block.contains(":")) {
 				if (!(Material.matchMaterial(sections[0]).createBlockData() instanceof Ageable)) {
-					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (cmr.removeInvalidValues ? "Removing." : "Ignoring."));
+					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 				if (!sections[1].equalsIgnoreCase("true") && !sections[1].equalsIgnoreCase("false")) {
-					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (cmr.removeInvalidValues ? "Removing." : "Ignoring."));
+					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 			}
 			blocks.add(block);
 		}
-		if (cmr.removeInvalidValues) {
+		if (GlobalConfigManager.removeInvalidValues()) {
 			this.section.set("blocks", blocks);
 		}
 		return blocks;
@@ -195,7 +221,7 @@ public class RewardSection {
 		addBlock(block.toString(), data);
 	}
 	public void addBlock(String block, String data) throws BlockAlreadyInListException, InvalidMaterialException {
-		// validated at start of addBlock(String), don't need to validate again
+		validateBlock(block + ":" + data); // in case it came from addBlock(Material, String) or a direct call. Plus it's just a command, doesn't hurt to validate twice.
 		List<String> blocks = this.getRawBlocks();
 		if (GlobalConfigManager.containsMatch(blocks, block + "(?::.+)?")) { // "(?:" means just a group, don't save result
 			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
@@ -288,6 +314,9 @@ public class RewardSection {
 		cmr.saveConfig();
 	}
 	public void delete() {
+		for (Entry<String,Boolean> entry : getBlocksWithData().entrySet()) {
+			CMRBlockManager.removeCropHandler(this, Material.matchMaterial(entry.getKey().replace("$", "")), entry.getValue());
+		}
 		cmr.getConfig().set(this.getPath(), null);
 		cmr.saveConfig();
 	}
@@ -342,7 +371,7 @@ public class RewardSection {
 		}
 		return new Reward(this.getName(), child);
 	}
-	private void debug(String msg) {
+	private static void debug(String msg) {
 		cmr.debug(msg);
 	}
 	public boolean isApplicable(Block block, Player player) {

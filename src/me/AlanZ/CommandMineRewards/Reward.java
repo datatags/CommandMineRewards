@@ -1,5 +1,6 @@
 package me.AlanZ.CommandMineRewards;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -16,9 +17,13 @@ import me.AlanZ.CommandMineRewards.Exceptions.CommandNotInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.AlanZ.CommandMineRewards.Exceptions.RewardAlreadyExistsException;
+import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
+import me.AlanZ.CommandMineRewards.commands.special.MessageCommand;
+import me.AlanZ.CommandMineRewards.commands.special.TitleCommand;
 
 public class Reward {
 	public static CommandMineRewards cmr = null;
+	private static Random random = new Random();
 	private ConfigurationSection section;
 	private Permission perm; // the permission required for this reward specifically.  Looks like cmr.use.rewardsection.reward
 	private Permission parentPerm; // the permission required for the parent reward section of this reward.  Looks like cmr.use.rewardsection.*
@@ -185,15 +190,34 @@ public class Reward {
 	}
 	public void execute(Player player) {
 		debug("Processing reward " + this.getName());
-		int random = new Random().nextInt(100);
-		debug("Random: " + random);
-		if (random < getChance()) {
-			debug(random + " < " + getChance() + ", executing reward");
+		double randomNumber = random.nextInt(100000) / 1000d; // give three digits of precision to chances because I doubt most people will need more than two 
+		debug("Random: " + randomNumber);
+		if (randomNumber < getChance()) {
+			debug(randomNumber + " < " + getChance() + ", executing reward");
 			for (String command : getCommands()) {
+				SPECIALCOMMAND: {
+					if (command.startsWith("!")) {
+						String[] split = command.split(" ");
+						String[] args = Arrays.copyOfRange(split, 1, split.length);
+						String error = null;
+						if (command.startsWith("!msg")) {
+							error = MessageCommand.onCommand(player, args);
+						} else if (command.startsWith("!title")) {
+							error = TitleCommand.onCommand(player, args);
+						} else {
+							cmr.getLogger().warning("Invalid special command: '" + split[0] + "', trying to execute as regular command");
+							break SPECIALCOMMAND;
+						}
+						if (error != null) {
+							cmr.getLogger().warning("Error executing special command '" + split[0] + "': " + error);
+						}
+						continue;
+					}
+				}
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
 			}
 		} else {
-			debug(random + " !< " + getChance() + ", doing nothing");
+			debug(randomNumber + " !< " + getChance() + ", doing nothing");
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package me.AlanZ.CommandMineRewards;
+package me.AlanZ.CommandMineRewards.commands.silktouch;
 
 import org.bukkit.ChatColor;
 

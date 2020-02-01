@@ -23,6 +23,11 @@ public class CMRBlockState {
 		}
 	}
 	public boolean equals(CMRBlockState b) {
-		return this.type == b.type && ((this.growth == null && b.growth == null) || this.growth.equals(b.growth));
+		if (this.type != b.type) return false;
+		if (this.growth == null) {
+			if (b.growth == null) return true;
+			return false; // we can't do null.equals() so we have to do this bit of gymnastics to make this work
+		}
+		return this.growth.equals(b.growth);
 	}
 }

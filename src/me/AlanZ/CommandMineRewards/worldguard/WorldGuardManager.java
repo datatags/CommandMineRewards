@@ -1,4 +1,4 @@
-package me.AlanZ.CommandMineRewards;
+package me.AlanZ.CommandMineRewards.worldguard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,9 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import me.AlanZ.CommandMineRewards.GlobalConfigManager;
+import me.AlanZ.CommandMineRewards.RewardSection;
 
 public class WorldGuardManager {
 	public static boolean isAllowedInRegions(RewardSection rewardSection, Block block) {

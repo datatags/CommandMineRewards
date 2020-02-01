@@ -1,4 +1,4 @@
-package me.AlanZ.CommandMineRewards;
+package me.AlanZ.CommandMineRewards.Exceptions;
 
 public class InvalidWorldException extends Exception {
 	

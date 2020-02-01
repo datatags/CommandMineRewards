@@ -1,4 +1,4 @@
-package me.AlanZ.CommandMineRewards;
+package me.AlanZ.CommandMineRewards.worldguard;
 
 import java.util.List;
 
@@ -10,6 +10,8 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import me.AlanZ.CommandMineRewards.GlobalConfigManager;
 
 public class RegionChecker {
 	public static boolean isInRegion(List<String> regions, World world, Player player) {
