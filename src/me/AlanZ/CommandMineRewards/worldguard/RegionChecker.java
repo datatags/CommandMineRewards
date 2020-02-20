@@ -2,26 +2,11 @@ package me.AlanZ.CommandMineRewards.worldguard;
 
 import java.util.List;
 
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.block.Block;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import me.AlanZ.CommandMineRewards.GlobalConfigManager;
-
-public class RegionChecker {
-	public static boolean isInRegion(List<String> regions, World world, Player player) {
-		RegionManager rm = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
-		ApplicableRegionSet set = rm.getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()));
-		for (ProtectedRegion region : set) {
-			if (GlobalConfigManager.containsIgnoreCase(regions, region.getId())) {
-				return true;
-			}
-		}
-		return false;
-	}
+public interface RegionChecker {
+	public boolean isInRegion(List<String> regions, Block block);
+	public List<String> getAllRegions();
+	public boolean isWorldGuardLoaded();
+	public int getNative();
 }

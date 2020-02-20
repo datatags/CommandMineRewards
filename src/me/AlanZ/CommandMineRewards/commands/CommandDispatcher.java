@@ -17,6 +17,7 @@ import me.AlanZ.CommandMineRewards.commands.cmd.CmdCommand;
 import me.AlanZ.CommandMineRewards.commands.region.RegionCommand;
 import me.AlanZ.CommandMineRewards.commands.reward.RewardCommand;
 import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchPolicyCommand;
+import me.AlanZ.CommandMineRewards.commands.special.*;
 import me.AlanZ.CommandMineRewards.commands.world.WorldCommand;
 
 public class CommandDispatcher implements CommandExecutor {
@@ -34,6 +35,9 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new RewardCommand());
 		registerCommand(new SilkTouchPolicyCommand());
 		registerCommand(new WorldCommand());
+		registerCommand(new MessageCommand());
+		registerCommand(new SoundCommand());
+		registerCommand(new TitleCommand());
 	}
 	protected static void registerCommand(CMRCommand command) {
 		command.init();
@@ -102,6 +106,14 @@ public class CommandDispatcher implements CommandExecutor {
 					if (name.equalsIgnoreCase(alias)) return cmd;
 				}
 			}
+		}
+		return null;
+	}
+	public static SpecialCommand getSpecialCommand(String name) {
+		CMRCommand cmd = getCommand(name);
+		if (cmd == null) return null;
+		if (cmd instanceof SpecialCommand) {
+			return (SpecialCommand) cmd;
 		}
 		return null;
 	}

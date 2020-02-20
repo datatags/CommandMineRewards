@@ -9,22 +9,19 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand;
 import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand_1_8;
 import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand_1_9;
 import me.AlanZ.CommandMineRewards.commands.CMRTabComplete;
 import me.AlanZ.CommandMineRewards.commands.CommandDispatcher;
+import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CommandMineRewards extends JavaPlugin {
 	
 	private static File debugLog = null;
 	private ItemInHand iih = null;
-	private boolean worldGuardLoaded = false;
 	// asdf: A Simple Date Format not a random keyboard mash
 	private SimpleDateFormat asdf = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a");
 	
@@ -39,11 +36,7 @@ public class CommandMineRewards extends JavaPlugin {
 		Reward.cmr = this; // probably also needs to run before RS calls for various reasons
 		RewardSection.fillCache(); // is sorta optional but should run before other RS block access
 		CMRBlockManager.initializeHandlers(this); // should run after cache is loaded but really just anytime before someone joins the server
-		if (worldGuardLoaded = isWorldGuardLoaded()) {
-			getLogger().info("Found WorldGuard.  Using to check regions.");
-		} else {
-			getLogger().info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
-		}
+		WorldGuardManager.init(this);
 		new EventListener(this);
 		if (!initItemInHand()) {
 			getLogger().severe("Could not determine server version, plugin will not work properly!");
@@ -67,20 +60,10 @@ public class CommandMineRewards extends JavaPlugin {
 			}
 		}
 	}
-	private boolean isWorldGuardLoaded() { // internal
-	    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-	        return false;
-	    }
-	    return true;
-	}
-	public boolean usingWorldGuard() { // public
-		return worldGuardLoaded;
-	}
 	private boolean initItemInHand() {
 		String version;
 		try {
-            version = Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
+            version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         } catch (ArrayIndexOutOfBoundsException whatVersionAreYouUsingException) {
             return false;
         }

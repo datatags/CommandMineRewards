@@ -380,7 +380,7 @@ public class RewardSection {
 			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this world.");
 			return false;
 		}
-		if (cmr.usingWorldGuard() && !WorldGuardManager.isAllowedInRegions(this, block)) {
+		if (WorldGuardManager.usingWorldGuard() && !WorldGuardManager.isAllowedInRegions(this, block)) {
 			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this region.");
 			return false;
 		}

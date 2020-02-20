@@ -17,9 +17,9 @@ import me.AlanZ.CommandMineRewards.Exceptions.CommandNotInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.AlanZ.CommandMineRewards.Exceptions.RewardAlreadyExistsException;
+import me.AlanZ.CommandMineRewards.commands.CommandDispatcher;
 import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
-import me.AlanZ.CommandMineRewards.commands.special.MessageCommand;
-import me.AlanZ.CommandMineRewards.commands.special.TitleCommand;
+import me.AlanZ.CommandMineRewards.commands.special.SpecialCommand;
 
 public class Reward {
 	public static CommandMineRewards cmr = null;
@@ -195,26 +195,18 @@ public class Reward {
 		if (randomNumber < getChance()) {
 			debug(randomNumber + " < " + getChance() + ", executing reward");
 			for (String command : getCommands()) {
-				SPECIALCOMMAND: {
-					if (command.startsWith("!")) {
-						String[] split = command.split(" ");
-						String[] args = Arrays.copyOfRange(split, 1, split.length);
-						String error = null;
-						if (command.startsWith("!msg")) {
-							error = MessageCommand.onCommand(player, args);
-						} else if (command.startsWith("!title")) {
-							error = TitleCommand.onCommand(player, args);
-						} else {
-							cmr.getLogger().warning("Invalid special command: '" + split[0] + "', trying to execute as regular command");
-							break SPECIALCOMMAND;
-						}
-						if (error != null) {
-							cmr.getLogger().warning("Error executing special command '" + split[0] + "': " + error);
-						}
+				if (command.startsWith("!")) {
+					SpecialCommand scmd = CommandDispatcher.getSpecialCommand(command.substring(1)); 
+					if (scmd == null) {
+						cmr.getLogger().warning("Invalid special command: " + command);
 						continue;
 					}
+					String[] split = command.split(" ");
+					String[] args = Arrays.copyOfRange(split, 1, split.length);
+					scmd.onCommand(player, args);
+				} else {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
 				}
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
 			}
 		} else {
 			debug(randomNumber + " !< " + getChance() + ", doing nothing");

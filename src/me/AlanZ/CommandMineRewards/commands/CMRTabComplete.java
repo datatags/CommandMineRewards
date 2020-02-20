@@ -18,9 +18,7 @@ import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
 import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CMRTabComplete implements TabCompleter {
-	private CommandMineRewards cmr;
 	public CMRTabComplete(CommandMineRewards cmr) {
-		this.cmr = cmr;
 		cmr.getCommand("cmr").setTabCompleter(this);
 	}
 	@Override
@@ -103,7 +101,7 @@ public class CMRTabComplete implements TabCompleter {
 				}
 			}
 			if (currentArg == ArgType.REGION) {
-				if (cmr.usingWorldGuard()) {
+				if (WorldGuardManager.usingWorldGuard()) {
 					options.addAll(WorldGuardManager.getAllRegions());
 				}
 			}

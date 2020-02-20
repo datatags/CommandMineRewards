@@ -1,6 +1,7 @@
 package me.AlanZ.CommandMineRewards.commands.region;
 
 import me.AlanZ.CommandMineRewards.commands.CompoundCommand;
+import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class RegionCommand extends CompoundCommand {
 
@@ -14,7 +15,7 @@ public class RegionCommand extends CompoundCommand {
 		return "Adds, lists, or removes regions in which rewards are allowed to occur.";
 	}
 	protected boolean isUsingWorldGuard() {
-		return getPlugin().usingWorldGuard();
+		return WorldGuardManager.usingWorldGuard();
 	}
 
 	@Override

@@ -1,21 +1,26 @@
 package me.AlanZ.CommandMineRewards.worldguard;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
+import me.AlanZ.CommandMineRewards.CommandMineRewards;
 import me.AlanZ.CommandMineRewards.GlobalConfigManager;
 import me.AlanZ.CommandMineRewards.RewardSection;
 
 public class WorldGuardManager {
+	private static RegionChecker checker;
+	private static boolean worldGuardLoaded = false;
+	private static CommandMineRewards cmr;
+	public static void init(CommandMineRewards cmr) {
+		WorldGuardManager.cmr = cmr;
+		checker = new RegionCheckerWG7x();
+		if (worldGuardLoaded = checker.isWorldGuardLoaded()) {
+			cmr.getLogger().info("Found WorldGuard.  Using to check regions.");
+		} else {
+			cmr.getLogger().info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
+		}
+	}
 	public static boolean isAllowedInRegions(RewardSection rewardSection, Block block) {
 		List<String> allowedRegions;
 		if (rewardSection.getAllowedRegions().size() > 0) {
@@ -25,13 +30,7 @@ public class WorldGuardManager {
 		} else {
 			return true;
 		}
-		ApplicableRegionSet set = getRegionManager(block.getWorld()).getApplicableRegions(BukkitAdapter.asBlockVector(block.getLocation()));
-		for (ProtectedRegion rg : set) {
-			if (GlobalConfigManager.containsIgnoreCase(allowedRegions, rg.getId())) {
-				return true;
-			}
-		}
-		return false;
+		return checker.isInRegion(allowedRegions, block);
 	}
 	public static boolean isValidRegion(String region) {
 		if (!GlobalConfigManager.isValidatingWorldsAndRegions()) {
@@ -44,16 +43,17 @@ public class WorldGuardManager {
 		}
 		return false;
 	}
-	private static RegionManager getRegionManager(World world) {
-		return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
-	}
 	public static List<String> getAllRegions() {
-		List<String> ids = new ArrayList<String>();
-		for (World world : Bukkit.getServer().getWorlds()) {
-			for (ProtectedRegion pr : getRegionManager(world).getRegions().values()) {
-				ids.add(pr.getId());
-			}
-		}
-		return ids;
+		return checker.getAllRegions();
+	}
+	public static boolean usingWorldGuard() { // public
+		return worldGuardLoaded;
+	}
+	public static void registerRegionChecker(RegionChecker rc) {
+		cmr.getLogger().info("Received registration for RegionChecker native version v" + rc.getNative());
+		checker = rc;
+	}
+	public static int getWGMajorVersion() {
+		return Integer.parseInt(Bukkit.getPluginManager().getPlugin("WorldGuard").getDescription().getVersion().split("\\.")[0]);
 	}
 }
