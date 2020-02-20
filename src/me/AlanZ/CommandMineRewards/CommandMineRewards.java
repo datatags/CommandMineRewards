@@ -39,12 +39,10 @@ public class CommandMineRewards extends JavaPlugin {
 		Reward.cmr = this; // probably also needs to run before RS calls for various reasons
 		RewardSection.fillCache(); // is sorta optional but should run before other RS block access
 		CMRBlockManager.initializeHandlers(this); // should run after cache is loaded but really just anytime before someone joins the server
-		if (isWorldGuardLoaded()) {
+		if (worldGuardLoaded = isWorldGuardLoaded()) {
 			getLogger().info("Found WorldGuard.  Using to check regions.");
-			worldGuardLoaded = true;
 		} else {
 			getLogger().info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
-			worldGuardLoaded = false;
 		}
 		new EventListener(this);
 		if (!initItemInHand()) {
