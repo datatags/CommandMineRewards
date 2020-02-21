@@ -42,14 +42,6 @@ public class RegionCheckerWG7x implements RegionChecker {
 		return ids;
 	}
 	@Override
-	public boolean isWorldGuardLoaded() { // internal
-	    Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldGuard");
-	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-	        return false;
-	    }
-	    return true;
-	}
-	@Override
 	public int getNative() {
 		return 7;
 	}
