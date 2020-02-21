@@ -30,6 +30,11 @@ public class RewardListCommand extends RewardCommand {
 	}
 	
 	@Override
+	public String[] getExamples() {
+		return new String[] {"", "genericRewards"};
+	}
+	
+	@Override
 	public int getMaxArgs() {
 		return 1;
 	}

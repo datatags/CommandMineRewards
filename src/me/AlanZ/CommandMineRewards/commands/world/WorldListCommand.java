@@ -27,6 +27,11 @@ public class WorldListCommand extends WorldCommand {
 	public String getUsage() {
 		return "[rewardSection]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards"};
+	}
 
 	@Override
 	public int getMinArgs() {

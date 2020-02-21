@@ -29,6 +29,11 @@ public class RegionAddCommand extends RegionCommand {
 	public String getUsage() {
 		return "<region> [rewardSection]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"superMine genericRewards"};
+	}
 
 	@Override
 	public int getMinArgs() {

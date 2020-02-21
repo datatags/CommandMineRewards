@@ -28,6 +28,11 @@ public class BlockRemoveCommand extends BlockCommand {
 	public String getUsage() {
 		return "<rewardSection> [block] [growth]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards diamond_block", "cropRewards wheat:true"};
+	}
 
 	@Override
 	public int getMinArgs() {

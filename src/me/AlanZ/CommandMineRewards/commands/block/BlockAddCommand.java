@@ -31,6 +31,11 @@ public class BlockAddCommand extends BlockCommand {
 	}
 	
 	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards cobblestone", "cropRewards wheat:true"};
+	}
+	
+	@Override
 	public boolean isModifier() {
 		return true;
 	}

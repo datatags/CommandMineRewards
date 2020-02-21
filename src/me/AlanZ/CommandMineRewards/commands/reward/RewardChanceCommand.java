@@ -51,6 +51,11 @@ public class RewardChanceCommand extends RewardCommand {
 	public String getUsage() {
 		return "<rewardSection> <reward> [chance]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards smallReward 15"};
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {

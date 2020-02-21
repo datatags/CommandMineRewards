@@ -28,6 +28,11 @@ public class CmdInsertCommand extends CmdCommand {
 	public String getUsage() {
 		return "<rewardSection> <reward> <index> <command>";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards bigReward 1 give %player% diamond_helmet"};
+	}
 
 	@Override
 	public int getMinArgs() {

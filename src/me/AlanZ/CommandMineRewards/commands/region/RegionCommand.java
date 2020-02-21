@@ -23,4 +23,9 @@ public class RegionCommand extends CompoundCommand {
 		registerChildren(new RegionAddCommand(), new RegionListCommand(), new RegionRemoveCommand());
 	}
 
+	@Override
+	public String[] getExamples() {
+		return new String[] {};
+	}
+
 }

@@ -20,5 +20,9 @@ public class SilkTouchPolicyCommand extends CompoundCommand {
 	public void init() {
 		registerChildren(new SilkTouchPolicyGetCommand(), new SilkTouchPolicySetCommand());
 	}
+	@Override
+	public String[] getExamples() {
+		return new String[] {};
+	}
 
 }

@@ -28,6 +28,11 @@ public class CmdAddCommand extends CmdCommand {
 	public String getUsage() {
 		return "<rewardSection> <reward> <command>";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards bigReward eco take %player% 15"};
+	}
 
 	@Override
 	public int getMinArgs() {

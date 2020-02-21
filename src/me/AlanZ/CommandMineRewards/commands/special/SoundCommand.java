@@ -28,6 +28,11 @@ public class SoundCommand extends SpecialCommand {
 	}
 	
 	@Override
+	public String[] getExamples() {
+		return new String[] {"BLOCK_ANVIL_LAND", "ENTITY_VILLAGER_YES"};
+	}
+	
+	@Override
 	public boolean isModifier() {
 		return false;
 	}

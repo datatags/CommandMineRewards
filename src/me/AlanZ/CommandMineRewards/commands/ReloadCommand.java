@@ -20,6 +20,11 @@ public class ReloadCommand extends CMRCommand {
 	}
 	
 	@Override
+	public String[] getExamples() {
+		return null;
+	}
+	
+	@Override
 	public boolean isModifier() {
 		return false;
 	}

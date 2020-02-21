@@ -32,6 +32,11 @@ public class BlockListCommand extends BlockCommand {
 	}
 	
 	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards"};
+	}
+	
+	@Override
 	public int getMinArgs() {
 		return 1;
 	}

@@ -27,6 +27,11 @@ public class HelpCommand extends CMRCommand {
 	public String getUsage() {
 		return "[page|command] [subcommand]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"block add"};
+	}
 
 	@Override
 	public int getMaxArgs() {
@@ -108,6 +113,9 @@ public class HelpCommand extends CMRCommand {
 	private void printCommandHelp(CMRCommand cmd, String usagePrefix, CommandSender sender) {
 		sender.sendMessage(ChatColor.GOLD + "Description:  " + ChatColor.GREEN + cmd.getExtensiveDescription());
 		sender.sendMessage(ChatColor.GOLD + "Usage: " + ChatColor.GREEN + "/cmr " + usagePrefix + cmd.getName() + " " + cmd.getUsage());
+		for (String example : cmd.getExamples()) {
+			sender.sendMessage(ChatColor.GOLD + "Example: " + ChatColor.GREEN + "/cmr " + usagePrefix + cmd.getName() + " " + example);
+		}
 		sender.sendMessage(GENERIC_HELP);
 	}
 	private void printConsoleHelp(CommandSender sender) {

@@ -29,6 +29,11 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 	public String getUsage() {
 		return "[rewardSection] [reward]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"", "genericRewards bigReward"};
+	}
 
 	@Override
 	public int getMinArgs() {

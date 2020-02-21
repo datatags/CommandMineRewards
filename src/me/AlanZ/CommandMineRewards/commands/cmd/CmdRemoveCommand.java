@@ -28,6 +28,11 @@ public class CmdRemoveCommand extends CmdCommand {
 	public String getUsage() {
 		return "<rewardSection> <reward> <index|command>";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards bigReward 2", "cropRewards smallReward eco give %player% 100"};
+	}
 
 	@Override
 	public int getMinArgs() {

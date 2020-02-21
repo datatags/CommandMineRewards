@@ -29,6 +29,11 @@ public class WorldRemoveCommand extends WorldCommand {
 	public String getUsage() {
 		return "[world] [rewardSection]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"", "survival cropRewards"};
+	}
 
 	@Override
 	public int getMinArgs() {

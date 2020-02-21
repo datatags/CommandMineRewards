@@ -28,6 +28,12 @@ public class RewardRemoveCommand extends RewardCommand {
 	public String getUsage() {
 		return "<rewardSection> [reward]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"cropRewards", "genericRewards smallReward"};
+	}
+	
 	@Override
 	public boolean isModifier() {
 		return true;

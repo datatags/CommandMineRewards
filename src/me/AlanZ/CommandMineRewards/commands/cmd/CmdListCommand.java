@@ -27,6 +27,11 @@ public class CmdListCommand extends CmdCommand {
 	public String getUsage() {
 		return "<rewardSection> <reward>";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards smallReward"};
+	}
 
 	@Override
 	public int getMinArgs() {

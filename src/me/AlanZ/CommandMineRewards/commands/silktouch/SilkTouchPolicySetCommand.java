@@ -29,6 +29,11 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 	public String getUsage() {
 		return "<REQUIRED|IGNORED|DISALLOWED> [rewardSection] [reward]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"DISALLOWED", "IGNORED genericRewards bigReward"};
+	}
 
 	@Override
 	public int getMinArgs() {

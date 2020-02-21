@@ -30,6 +30,11 @@ public class RewardAddCommand extends RewardCommand {
 	public String getUsage() {
 		return "<rewardSection> [reward]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"miningRewards", "genericRewards superMegaReward"};
+	}
 	@Override
 	public boolean isModifier() {
 		return true;

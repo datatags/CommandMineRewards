@@ -27,6 +27,11 @@ public class RegionListCommand extends RegionCommand {
 	public String getUsage() {
 		return "[rewardSection]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"genericRewards"};
+	}
 
 	@Override
 	public int getMinArgs() {

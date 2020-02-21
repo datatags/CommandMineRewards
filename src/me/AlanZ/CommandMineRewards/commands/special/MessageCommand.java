@@ -26,6 +26,11 @@ public class MessageCommand extends SpecialCommand {
 	public String getUsage() {
 		return "<message>";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"&aYou found a &8rock!"};
+	}
 
 	@Override
 	public boolean isModifier() {

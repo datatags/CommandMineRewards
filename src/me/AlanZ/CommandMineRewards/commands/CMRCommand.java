@@ -20,6 +20,7 @@ public abstract class CMRCommand {
 	public String getUsage() {
 		return "";
 	}
+	public abstract String[] getExamples();
 	public abstract boolean isModifier(); // should return true for any command that requires the cmr.<command>.modify permission to use
 	public int getMinArgs() {
 		return 0;

@@ -17,12 +17,17 @@ public class TitleCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Sends a title. The title is sent to the command sender if used in-game or to the reward recipient when used in rewards.";
+		return "Sends a title. The title is sent to the command sender if used in-game or to the reward recipient when used in rewards. Use underscores instead of spaces. This command is not supported in 1.8 or below and setting fadeIn/stay/fadeOut isn't supported in 1.10 or below";
 	}
 	
 	@Override
 	public String getUsage() {
 		return "<title> <subtitle> [<fadeIn> <stay> <fadeOut>]";
+	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"&aGood_job! &bYou_win! 20 60 20", "none &cEh,_whatever"};
 	}
 	
 	@Override

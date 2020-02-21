@@ -18,5 +18,10 @@ public class WorldCommand extends CompoundCommand {
 	public void init() {
 		registerChildren(new WorldAddCommand(), new WorldListCommand(), new WorldRemoveCommand());
 	}
+
+	@Override
+	public String[] getExamples() {
+		return new String[] {};
+	}
 	
 }

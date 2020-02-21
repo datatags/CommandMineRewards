@@ -26,6 +26,11 @@ public class MultiplierCommand extends CMRCommand {
 	public String getUsage() {
 		return "[multiplier]";
 	}
+	
+	@Override
+	public String[] getExamples() {
+		return new String[] {"3.0", "0.01"};
+	}
 
 	@Override
 	public int getMaxArgs() {
