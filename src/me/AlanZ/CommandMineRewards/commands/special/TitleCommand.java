@@ -29,7 +29,18 @@ public class TitleCommand extends SpecialCommand {
 	public boolean isModifier() {
 		return false;
 	}
+	
+	@Override
+	public int getMinArgs() {
+		return 2;
+	}
+	
+	@Override
+	public int getMaxArgs() {
+		return 5;
+	}
 
+	@SuppressWarnings("deprecation") // because sendTitle without fadeIn/stay/fadeOut is "subject to change" but we need it sometimes
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -38,7 +49,15 @@ public class TitleCommand extends SpecialCommand {
 		}
 		Player target = (Player) sender;
 		if (args.length != 5 && args.length != 2) {
-			getPlugin().getLogger().warning("Incorrect number of args: title " + args);
+			getPlugin().getLogger().warning("Incorrect number of args: " + args.length);
+			return true;
+		}
+		if (getPlugin().getMinecraftVersion() < 9) {
+			getPlugin().getLogger().warning("This version of minecraft does not support the !title command.");
+			return true;
+		}
+		if (getPlugin().getMinecraftVersion() < 11 && args.length == 5) {
+			getPlugin().getLogger().warning("This version of minecraft does not support setting the fadeIn/stay/fadeOut for titles, but you can still use it without those.");
 			return true;
 		}
 		String title = args[0];
@@ -66,7 +85,12 @@ public class TitleCommand extends SpecialCommand {
 		if (subtitle.equals("none")) {
 			subtitle = "";
 		}
-		target.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+		if (getPlugin().getMinecraftVersion() < 11) {
+			// if we don't have the featureful method, use the old one
+			target.sendTitle(title, subtitle);
+		} else {
+			target.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+		}
 		return true;
 	}
 }

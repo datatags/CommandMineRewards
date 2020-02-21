@@ -33,6 +33,16 @@ public class MessageCommand extends SpecialCommand {
 	}
 	
 	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+	
+	@Override
+	public int getMaxArgs() {
+		return -1;
+	}
+	
+	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		if (args.length == 0) {
 			this.getPlugin().getLogger().warning(ChatColor.RED + "Command error: Not enough args in /cmr " + getName() + " " + args);

@@ -4,19 +4,22 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.plugin.Plugin;
+
 import me.AlanZ.CommandMineRewards.CommandMineRewards;
 import me.AlanZ.CommandMineRewards.GlobalConfigManager;
 import me.AlanZ.CommandMineRewards.RewardSection;
 
 public class WorldGuardManager {
 	private static RegionChecker checker;
-	private static boolean worldGuardLoaded = false;
+	private static boolean useWorldGuard = false;
 	private static CommandMineRewards cmr;
 	public static void init(CommandMineRewards cmr) {
 		WorldGuardManager.cmr = cmr;
-		checker = new RegionCheckerWG7x();
-		if (worldGuardLoaded = checker.isWorldGuardLoaded()) {
-			cmr.getLogger().info("Found WorldGuard.  Using to check regions.");
+		if (useWorldGuard = (getWorldGuard() != null)) {
+			cmr.getLogger().info("Found WorldGuard.");
+			RegionChecker rc = new RegionCheckerWG7x();
+			if (checkWGVersion(rc)) checker = rc;
 		} else {
 			cmr.getLogger().info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
 		}
@@ -47,13 +50,30 @@ public class WorldGuardManager {
 		return checker.getAllRegions();
 	}
 	public static boolean usingWorldGuard() { // public
-		return worldGuardLoaded;
+		return useWorldGuard;
 	}
 	public static void registerRegionChecker(RegionChecker rc) {
-		cmr.getLogger().info("Received registration for RegionChecker native version v" + rc.getNative());
-		checker = rc;
+		if (checkWGVersion(rc)) {
+			checker = rc;
+		}
 	}
 	public static int getWGMajorVersion() {
-		return Integer.parseInt(Bukkit.getPluginManager().getPlugin("WorldGuard").getDescription().getVersion().split("\\.")[0]);
+		return Integer.parseInt(getWorldGuard().getDescription().getVersion().split("\\.")[0]);
+	}
+	private static Plugin getWorldGuard() {
+		return Bukkit.getPluginManager().getPlugin("WorldGuard");
+	}
+	private static boolean checkWGVersion(RegionChecker checker) {
+		if (checker == null) {
+			cmr.getLogger().info("Something is wrong, please report this error: Something attempted to inject a null RegionChecker");
+			return false;
+		}
+		int wgVersion = getWGMajorVersion();
+		if (wgVersion != checker.getNative()) {
+			cmr.getLogger().info("A plugin has registered a RegionChecker for WorldGuard v" + checker.getNative() + " which is not installed.");
+			return false;
+		}
+		cmr.getLogger().info("WorldGuard support for v" + wgVersion + " has been registered.");
+		return true;
 	}
 }

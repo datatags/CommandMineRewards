@@ -1,5 +1,8 @@
 package me.AlanZ.CommandMineRewards.commands.block;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import me.AlanZ.CommandMineRewards.commands.CompoundCommand;
 
 public class BlockCommand extends CompoundCommand {
@@ -13,5 +16,8 @@ public class BlockCommand extends CompoundCommand {
 	}
 	public void init() {
 		registerChildren(new BlockAddCommand(), new BlockRemoveCommand(), new BlockListCommand());
+	}
+	protected ItemStack getItemInHand(Player player) {
+		return getPlugin().getItemInHand(player);
 	}
 }

@@ -19,7 +19,7 @@ public class SoundCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Plays the sound to the target. If you want to use a custom sound, prefix it with ! to bypass validity check. If used in-game, the target is the command sender. If used in a reward, the target is the reward recipient.";
+		return "Plays the sound to the target. Available sounds in latest: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html, legacy sounds at https://helpch.at/docs/" + getPlugin().getFullMinecraftVersion() + "/org/bukkit/Sound.html If you want to use a custom sound, prefix it with ! to bypass validity check. If used in-game, the target is the command sender. If used in a reward, the target is the reward recipient.";
 	}
 	
 	@Override
@@ -30,6 +30,16 @@ public class SoundCommand extends SpecialCommand {
 	@Override
 	public boolean isModifier() {
 		return false;
+	}
+	
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+	
+	@Override
+	public int getMaxArgs() {
+		return 1;
 	}
 
 	@Override
@@ -44,12 +54,16 @@ public class SoundCommand extends SpecialCommand {
 			return true;
 		}
 		Sound sound = null;
-		if (args[0].startsWith("!")) {
-			try {
-				sound = Sound.valueOf(args[0]);
-			} catch (IllegalArgumentException e) {
-				getPlugin().getLogger().warning("Couldn't find sound " + args[0] + ", if you are sure the sound works please prefix it with ! to disable this message.");
-			}
+		String soundString = args[0];
+		boolean warn = true;
+		if (soundString.startsWith("!")) {
+			warn = false;
+			soundString = soundString.substring(1);
+		}
+		try {
+			sound = Sound.valueOf(soundString);
+		} catch (IllegalArgumentException e) {
+			if (warn) getPlugin().getLogger().warning("Couldn't find sound " + soundString + ", if you are sure the sound works please prefix it with ! to disable this message.");
 		}
 		if (sound == null) {
 			target.playSound(target.getLocation(), args[0], 100, 0);

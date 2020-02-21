@@ -55,7 +55,7 @@ public class BlockRemoveCommand extends BlockCommand {
 				return true;
 			}
 			Player player = (Player) sender;
-			Material item = player.getInventory().getItemInMainHand().getType();
+			Material item = getItemInHand(player).getType();
 			if (item == null || !item.isBlock()) {
 				player.sendMessage(ChatColor.RED + "You are not holding a block!  Please either hold a block or manually specify a block to remove.");
 				return true;

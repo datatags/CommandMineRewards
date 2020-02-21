@@ -190,18 +190,18 @@ public class Reward {
 	}
 	public void execute(Player player) {
 		debug("Processing reward " + this.getName());
-		double randomNumber = random.nextInt(100000) / 1000d; // give three digits of precision to chances because I doubt most people will need more than two 
+		double randomNumber = random.nextDouble() * 100; 
 		debug("Random: " + randomNumber);
 		if (randomNumber < getChance()) {
 			debug(randomNumber + " < " + getChance() + ", executing reward");
 			for (String command : getCommands()) {
 				if (command.startsWith("!")) {
-					SpecialCommand scmd = CommandDispatcher.getSpecialCommand(command.substring(1)); 
+					String[] split = command.split(" ");
+					SpecialCommand scmd = CommandDispatcher.getSpecialCommand(split[0].substring(1)); 
 					if (scmd == null) {
 						cmr.getLogger().warning("Invalid special command: " + command);
 						continue;
 					}
-					String[] split = command.split(" ");
 					String[] args = Arrays.copyOfRange(split, 1, split.length);
 					scmd.onCommand(player, args);
 				} else {

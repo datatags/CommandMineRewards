@@ -11,17 +11,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand;
-import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand_1_8;
-import me.AlanZ.CommandMineRewards.ItemInHand.ItemInHand_1_9;
 import me.AlanZ.CommandMineRewards.commands.CMRTabComplete;
 import me.AlanZ.CommandMineRewards.commands.CommandDispatcher;
 import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CommandMineRewards extends JavaPlugin {
-	
-	private static File debugLog = null;
-	private ItemInHand iih = null;
+	private int minecraftVersion = -1;
+	private File debugLog = null;
+	private BufferedWriter debugWriter = null;
 	// asdf: A Simple Date Format not a random keyboard mash
 	private SimpleDateFormat asdf = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a");
 	
@@ -29,6 +26,8 @@ public class CommandMineRewards extends JavaPlugin {
 	public void onEnable() {
 		GlobalConfigManager.cmr = this; // this needs to run before any other GCM calls or it won't have config access
 		initDebugLog(); // this should run before any debug() calls
+		initVersion(); // this needs to be called before anything uses getMinecraftVersion()
+		WorldGuardManager.init(this); // this needs to run early so other plugins can use the RC API
 		new CommandDispatcher(this);
 		new CMRTabComplete(this); // this can run anytime really
 		GlobalConfigManager.load(); // this needs to run before RewardSections start loading
@@ -36,11 +35,7 @@ public class CommandMineRewards extends JavaPlugin {
 		Reward.cmr = this; // probably also needs to run before RS calls for various reasons
 		RewardSection.fillCache(); // is sorta optional but should run before other RS block access
 		CMRBlockManager.initializeHandlers(this); // should run after cache is loaded but really just anytime before someone joins the server
-		WorldGuardManager.init(this);
 		new EventListener(this);
-		if (!initItemInHand()) {
-			getLogger().severe("Could not determine server version, plugin will not work properly!");
-		}
 		getLogger().info("CommandMineRewards (by AlanZ) is enabled!");
 	}
 	private void initDebugLog() {
@@ -51,7 +46,8 @@ public class CommandMineRewards extends JavaPlugin {
 					this.getLogger().info("CMR debug log was successfully created!");
 				}
 				debugLog = log;
-				debug("CMR has started up at " + asdf.format(new Date()));
+				debugWriter = new BufferedWriter(new FileWriter(debugLog, true));
+				debug("CMR has started up at " + asdf.format(new Date()), false);
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -60,26 +56,27 @@ public class CommandMineRewards extends JavaPlugin {
 			}
 		}
 	}
-	private boolean initItemInHand() {
-		String version;
-		try {
-            version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        } catch (ArrayIndexOutOfBoundsException whatVersionAreYouUsingException) {
-            return false;
-        }
-		debug(version);
-		if (version.matches("v1_[78]_R.")) {
-			getLogger().info("You seem to be running a pre-1.9 version.");
-			iih = new ItemInHand_1_8();
-		} else {
-			getLogger().info("You seem to be running 1.9 or later.");
-			iih = new ItemInHand_1_9();
-		}
-		return true;
+	private void initVersion() {
+		String ver = getFullMinecraftVersion();
+		minecraftVersion = Integer.parseInt(ver.substring(2, ver.lastIndexOf('.'))); // group 0 is whole thing, group 1 is first group
+		debug("1." + minecraftVersion);
+	}
+	public int getMinecraftVersion() {
+		return minecraftVersion;
+	}
+	public String getFullMinecraftVersion() {
+		String ver = Bukkit.getBukkitVersion();
+		return ver.substring(0, ver.indexOf('-'));
 	}
 	@Override
 	public void onDisable() {
 		debug("CMR has been shut down at " + asdf.format(new Date()) + "\n\n\n\n", false);
+		try {
+			debugWriter.close();
+		} catch (IOException e) {
+			getLogger().warning("Failed to close debug log handle:");
+			e.printStackTrace();
+		}
 		getLogger().info("CommandMineRewards (by AlanZ) has been disabled!");
 	}
 	
@@ -91,9 +88,8 @@ public class CommandMineRewards extends JavaPlugin {
 			if (logToConsole) getLogger().info(msg);
 			if (GlobalConfigManager.isDebugLog()) {
 				try {
-					BufferedWriter bf = new BufferedWriter(new FileWriter(debugLog, true));
-					bf.append(msg + "\n");
-					bf.close();
+					debugWriter.append(msg + "\n");
+					debugWriter.flush();
 				} catch (IOException e) {
 					getLogger().severe("Failed to write to CMR debug log! Do we have write permission?");
 					e.printStackTrace();
@@ -101,7 +97,12 @@ public class CommandMineRewards extends JavaPlugin {
 			}
 		}
 	}
+	@SuppressWarnings("deprecation") // because < 1.9 doesn't have main hand/offhand
 	public ItemStack getItemInHand(Player player) {
-		return iih.getItemInHand(player);
+		if (getMinecraftVersion() < 9) {
+			return player.getItemInHand();
+		} else {
+			return player.getInventory().getItemInMainHand();
+		}
 	}
 }

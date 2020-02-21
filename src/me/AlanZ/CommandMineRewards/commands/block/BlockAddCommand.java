@@ -58,7 +58,7 @@ public class BlockAddCommand extends BlockCommand {
 				return true;
 			}
 			Player player = (Player) sender;
-			Material item = player.getInventory().getItemInMainHand().getType();
+			Material item = getItemInHand(player).getType();
 			if (!item.isBlock() || item == Material.AIR) {
 				player.sendMessage(ChatColor.RED + "You are not holding a block!  Please either hold a block to add or manually specify one.");
 				return true;
