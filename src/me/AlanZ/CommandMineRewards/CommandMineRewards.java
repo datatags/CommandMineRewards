@@ -38,8 +38,20 @@ public class CommandMineRewards extends JavaPlugin {
 		new EventListener(this);
 		getLogger().info("CommandMineRewards (by AlanZ) is enabled!");
 	}
+	public void reload() {
+		initDebugLog();
+	}
 	private void initDebugLog() {
-		if (GlobalConfigManager.isDebugLog() && debugLog == null) {
+		if (debugWriter != null) {
+			try {
+				debugWriter.close();
+			} catch (IOException e) {
+				getLogger().warning("Failed to close debug log");
+				e.printStackTrace();
+			}
+			debugWriter = null;
+		}
+		if (GlobalConfigManager.isDebugLog()) {
 			try {
 				File log = new File(this.getDataFolder().getAbsolutePath() + File.separator + "debug.log");
 				if (log.createNewFile()) { // will check if file exists before creating in a single operation. using an if would be a redundant check anyway.

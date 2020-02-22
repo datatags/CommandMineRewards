@@ -11,15 +11,20 @@ import me.AlanZ.CommandMineRewards.GlobalConfigManager;
 import me.AlanZ.CommandMineRewards.RewardSection;
 
 public class WorldGuardManager {
-	private static RegionChecker checker;
+	private static RegionChecker checker = null;
 	private static boolean useWorldGuard = false;
 	private static CommandMineRewards cmr;
 	public static void init(CommandMineRewards cmr) {
 		WorldGuardManager.cmr = cmr;
-		if (useWorldGuard = (getWorldGuard() != null)) {
+		if (getWorldGuard() != null) {
 			cmr.getLogger().info("Found WorldGuard.");
 			RegionChecker rc = new RegionCheckerWG7x();
-			if (checkWGVersion(rc)) checker = rc;
+			if (checkWGVersion(rc)) {
+				checker = rc;
+				useWorldGuard = true;
+			} else {
+				cmr.getLogger().info("WorldGuard support will be disabled until otherwise noted.");
+			}
 		} else {
 			cmr.getLogger().info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
 		}
@@ -55,6 +60,7 @@ public class WorldGuardManager {
 	public static void registerRegionChecker(RegionChecker rc) {
 		if (checkWGVersion(rc)) {
 			checker = rc;
+			useWorldGuard = true;
 		}
 	}
 	public static int getWGMajorVersion() {

@@ -32,6 +32,7 @@ public class ReloadCommand extends CMRCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		GlobalConfigManager.load();
+		getPlugin().reload();
 		sender.sendMessage(ChatColor.GREEN + "CMR config reloaded!");
 		return true;
 	}
