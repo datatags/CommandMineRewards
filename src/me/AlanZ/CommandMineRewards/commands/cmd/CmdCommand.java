@@ -30,9 +30,4 @@ public class CmdCommand extends CompoundCommand {
 	public void init() {
 		registerChildren(new CmdAddCommand(), new CmdInsertCommand(), new CmdListCommand(), new CmdRemoveCommand());
 	}
-
-	@Override
-	public String[] getExamples() {
-		return new String[] {};
-	}
 }

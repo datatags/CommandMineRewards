@@ -103,6 +103,7 @@ public class HelpCommand extends CMRCommand {
 				StringJoiner pipeSeparator = new StringJoiner("|", "<", ">");
 				ccmd.getChildren().stream().forEach(c -> names.add(c.getName()));
 				ccmd.getChildren().stream().forEach(c -> pipeSeparator.add(c.getName()));
+				if (ccmd.getExtensiveDescription() != null) printCommandDescription(ccmd, sender);
 				sender.sendMessage(ChatColor.GOLD + "Available subcommands: " + ChatColor.GREEN + names.toString() + ". Try '/cmr help <subcommand>' for more information.");
 				sender.sendMessage(ChatColor.GOLD + "Usage: " + ChatColor.GREEN + "/cmr " + cmd.getName() + " " + pipeSeparator.toString() + " ...");
 				sender.sendMessage(GENERIC_HELP);
@@ -110,8 +111,11 @@ public class HelpCommand extends CMRCommand {
 		}
 		return true;
 	}
+	private void printCommandDescription(CMRCommand cmd, CommandSender sender) {
+		sender.sendMessage(ChatColor.GOLD + "Description: " + ChatColor.GREEN + cmd.getExtensiveDescription());
+	}
 	private void printCommandHelp(CMRCommand cmd, String usagePrefix, CommandSender sender) {
-		sender.sendMessage(ChatColor.GOLD + "Description:  " + ChatColor.GREEN + cmd.getExtensiveDescription());
+		printCommandDescription(cmd, sender);
 		sender.sendMessage(ChatColor.GOLD + "Usage: " + ChatColor.GREEN + "/cmr " + usagePrefix + cmd.getName() + " " + cmd.getUsage());
 		for (String example : cmd.getExamples()) {
 			sender.sendMessage(ChatColor.GOLD + "Example: " + ChatColor.GREEN + "/cmr " + usagePrefix + cmd.getName() + " " + example);

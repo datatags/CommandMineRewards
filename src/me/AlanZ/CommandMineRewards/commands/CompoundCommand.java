@@ -13,7 +13,7 @@ public abstract class CompoundCommand extends CMRCommand {
 	}
 	@Override
 	public String getUsage() {
-		return null; // auto-generated
+		return null; // also auto-generated
 	}
 	// we don't specify getArgs() specially here because they're auto-generated as well
 	@Override
@@ -29,6 +29,9 @@ public abstract class CompoundCommand extends CMRCommand {
 	}
 	protected void registerChildren(CompoundCommand... cc) {
 		children.addAll(Arrays.asList(cc));
+	}
+	public String[] getExamples() {
+		return new String[] {}; // compound commands don't need examples
 	}
 	public abstract void init();
 }

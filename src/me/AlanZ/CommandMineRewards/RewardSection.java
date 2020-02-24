@@ -59,21 +59,21 @@ public class RewardSection {
 	public RewardSection(ConfigurationSection section) {
 		this.section = section;
 	}
-	protected static void init() {
+	public static void init() {
 		fillCache();
 		registerPermissions();
 	}
-	protected static void fillCache() {
+	public static void fillCache() {
 		for (RewardSection work : GlobalConfigManager.getRewardSections()) {
 			if (!blocksCache.containsKey(work.getName())) { // if not cached
 				blocksCache.put(work.getName(), work.validateBlocks(true)); // validate it and cache the result.
 			}
 		}
 		// Probably don't need the following line because this method checks to see if it's already cached first before re-caching it. Plus it doesn't even check if it's already initialized :P
-		//cmr.getLogger().severe("Received an attempt to initialize cache when it has already been initialized!"); // we didn't cache it, 
+		//cmr.error("Received an attempt to initialize cache when it has already been initialized!"); // we didn't cache it, 
 	}
-	protected static void clearCache() {
-		blocksCache = new HashMap<String,List<String>>();
+	public static void clearCache() {
+		blocksCache.clear();
 	}
 	private static void registerPermissions() {
 		for (RewardSection section : GlobalConfigManager.getRewardSections()) {
@@ -83,7 +83,7 @@ public class RewardSection {
 					debug("Adding permission " + permission);
 					Bukkit.getPluginManager().addPermission(new Permission(permission));
 				} else {
-					cmr.getLogger().warning("Permission " + permission + " already exists! Was the server reloaded with /reload?");
+					cmr.warning("Permission " + permission + " already exists! Was the server reloaded with /reload?");
 				}
 			}
 		}
@@ -91,7 +91,7 @@ public class RewardSection {
 	}
 	public List<String> getRawBlocks() {
 		if (!blocksCache.containsKey(this.getName())) { // if not cached
-			cmr.getLogger().warning("Reward section " + this.getName() + "'s block list was not cached.  Was it just created?");
+			cmr.warning("Reward section " + this.getName() + "'s block list was not cached.  Was it just created?");
 			blocksCache.put(this.getName(), validateBlocks(false)); // validate it and cache the result.
 		}
 		return blocksCache.get(this.getName());
@@ -102,16 +102,16 @@ public class RewardSection {
 			debug("work = " + this.getName());
 			String[] sections = block.split(":", 2); // item [0] = block; item [1] = data, if applicable
 			if (Material.matchMaterial(sections[0]) == null || !Material.matchMaterial(sections[0]).isBlock()) {
-				if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
+				if (log) cmr.error("Reward section " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
 				continue;
 			}
 			if (block.contains(":")) {
 				if (!(Material.matchMaterial(sections[0]).createBlockData() instanceof Ageable)) {
-					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
+					if (log) cmr.error("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 				if (!sections[1].equalsIgnoreCase("true") && !sections[1].equalsIgnoreCase("false")) {
-					if (log) cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
+					if (log) cmr.error("Reward section " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (GlobalConfigManager.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 			}
@@ -134,7 +134,7 @@ public class RewardSection {
 		for (String block : getRawBlocks()) {
 			if (!block.contains(":")) { // one element
 				if (blocks.containsKey(block)) {
-					cmr.getLogger().warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + ".");
+					cmr.warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + ".");
 					String prefix = "";
 					while (blocks.containsKey(prefix + block)) {
 						prefix += "$";
@@ -145,7 +145,7 @@ public class RewardSection {
 				}
 			} else { // two elements
 				if (!(Material.matchMaterial(block.split(":")[0]).createBlockData() instanceof Ageable)) {
-					cmr.getLogger().severe("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
+					cmr.error("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
 					continue;
 				}
 				String blockStripped = block.split(":")[0];
@@ -155,11 +155,11 @@ public class RewardSection {
 				} else if (block.split(":")[1].equalsIgnoreCase("false")) {
 					data = false;
 				} else {
-					cmr.getLogger().severe("Reward section " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
+					cmr.error("Reward section " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
 					continue;
 				}
 				if (blocks.containsKey(blockStripped)) {
-					cmr.getLogger().warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
+					cmr.warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
 					String prefix = "";
 					while (blocks.containsKey(prefix + blockStripped)) {
 						prefix += "$";

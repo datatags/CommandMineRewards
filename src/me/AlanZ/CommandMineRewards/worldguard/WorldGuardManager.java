@@ -17,16 +17,16 @@ public class WorldGuardManager {
 	public static void init(CommandMineRewards cmr) {
 		WorldGuardManager.cmr = cmr;
 		if (getWorldGuard() != null) {
-			cmr.getLogger().info("Found WorldGuard.");
+			cmr.info("Found WorldGuard.");
 			RegionChecker rc = new RegionCheckerWG7x();
 			if (checkWGVersion(rc)) {
 				checker = rc;
 				useWorldGuard = true;
 			} else {
-				cmr.getLogger().info("WorldGuard support will be disabled until otherwise noted.");
+				cmr.info("WorldGuard support will be disabled until otherwise noted.");
 			}
 		} else {
-			cmr.getLogger().info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
+			cmr.info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
 		}
 	}
 	public static boolean isAllowedInRegions(RewardSection rewardSection, Block block) {
@@ -71,15 +71,15 @@ public class WorldGuardManager {
 	}
 	private static boolean checkWGVersion(RegionChecker checker) {
 		if (checker == null) {
-			cmr.getLogger().info("Something is wrong, please report this error: Something attempted to inject a null RegionChecker");
+			cmr.warning("Something is wrong, please report this error: Something attempted to inject a null RegionChecker");
 			return false;
 		}
 		int wgVersion = getWGMajorVersion();
 		if (wgVersion != checker.getNative()) {
-			cmr.getLogger().info("A plugin has registered a RegionChecker for WorldGuard v" + checker.getNative() + " which is not installed.");
+			cmr.warning("A plugin has registered a RegionChecker for WorldGuard v" + checker.getNative() + " which is not installed.");
 			return false;
 		}
-		cmr.getLogger().info("WorldGuard support for v" + wgVersion + " has been registered.");
+		cmr.info("WorldGuard support for v" + wgVersion + " has been registered.");
 		return true;
 	}
 }

@@ -19,9 +19,4 @@ public class RewardCommand extends CompoundCommand {
 		registerChildren(new RewardAddCommand(), new RewardChanceCommand(), new RewardListCommand(), new RewardRemoveCommand());
 	}
 
-	@Override
-	public String[] getExamples() {
-		return new String[] {};
-	}
-
 }

@@ -19,7 +19,7 @@ public class MessageCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Simply sends the specified message. Color codes are supported. When used in-game, sends message to the command sender. When used in rewards, sends to the reward recipient.";
+		return "Simply sends the specified message. Color codes are supported.";
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class MessageCommand extends SpecialCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		if (args.length == 0) {
-			this.getPlugin().getLogger().warning(ChatColor.RED + "Command error: Not enough args in /cmr " + getName() + " " + args);
+			this.getPlugin().warning(ChatColor.RED + "Command error: Not enough args in /cmr " + getName() + " " + args);
 			return true;
 		}
 		StringJoiner message = new StringJoiner(" ");

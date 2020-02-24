@@ -19,7 +19,7 @@ public class SoundCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Plays the sound to the target. Available sounds in latest: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html, legacy sounds at https://helpch.at/docs/" + getPlugin().getFullMinecraftVersion() + "/org/bukkit/Sound.html If you want to use a custom sound, prefix it with ! to bypass validity check. If used in-game, the target is the command sender. If used in a reward, the target is the reward recipient.";
+		return "Plays the sound to the target. If you are using the latest MC server version, sounds are here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html, otherwise, sounds are here: https://helpch.at/docs/" + getPlugin().getFullMinecraftVersion() + "/org/bukkit/Sound.html  If you want to use a custom sound like from a resource pack, prefix it with ! to bypass validity check.";
 	}
 	
 	@Override
@@ -29,7 +29,7 @@ public class SoundCommand extends SpecialCommand {
 	
 	@Override
 	public String[] getExamples() {
-		return new String[] {"BLOCK_ANVIL_LAND", "ENTITY_VILLAGER_YES"};
+		return new String[] {"BLOCK_ANVIL_LAND", "!mycoolresourcepack.winlottery"};
 	}
 	
 	@Override
@@ -55,7 +55,7 @@ public class SoundCommand extends SpecialCommand {
 		}
 		Player target = (Player) sender;
 		if (args.length < 1) {
-			getPlugin().getLogger().warning("No sound argument supplied to sound command");
+			getPlugin().warning("No sound argument supplied to sound command");
 			return true;
 		}
 		Sound sound = null;
@@ -68,7 +68,7 @@ public class SoundCommand extends SpecialCommand {
 		try {
 			sound = Sound.valueOf(soundString);
 		} catch (IllegalArgumentException e) {
-			if (warn) getPlugin().getLogger().warning("Couldn't find sound " + soundString + ", if you are sure the sound works please prefix it with ! to disable this message.");
+			if (warn) getPlugin().warning("Couldn't find sound " + soundString + ", if you are sure the sound works please prefix it with ! to disable this message.");
 		}
 		if (sound == null) {
 			target.playSound(target.getLocation(), args[0], 100, 0);

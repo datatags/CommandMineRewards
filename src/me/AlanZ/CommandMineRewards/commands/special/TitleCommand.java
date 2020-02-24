@@ -17,7 +17,7 @@ public class TitleCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Sends a title. The title is sent to the command sender if used in-game or to the reward recipient when used in rewards. Use underscores instead of spaces. This command is not supported in 1.8 or below and setting fadeIn/stay/fadeOut isn't supported in 1.10 or below";
+		return "Sends a title. You must enter both a title and a subtitle or put 'none' for whichever one you don't want to use.  Use underscores instead of spaces. This command is not supported in 1.8 or below and setting fadeIn/stay/fadeOut isn't supported in 1.10 or below";
 	}
 	
 	@Override
@@ -54,15 +54,15 @@ public class TitleCommand extends SpecialCommand {
 		}
 		Player target = (Player) sender;
 		if (args.length != 5 && args.length != 2) {
-			getPlugin().getLogger().warning("Incorrect number of args: " + args.length);
+			getPlugin().warning("Incorrect number of args: " + args.length);
 			return true;
 		}
 		if (getPlugin().getMinecraftVersion() < 9) {
-			getPlugin().getLogger().warning("This version of minecraft does not support the !title command.");
+			getPlugin().warning("This version of minecraft does not support the !title command.");
 			return true;
 		}
 		if (getPlugin().getMinecraftVersion() < 11 && args.length == 5) {
-			getPlugin().getLogger().warning("This version of minecraft does not support setting the fadeIn/stay/fadeOut for titles, but you can still use it without those.");
+			getPlugin().warning("This version of minecraft does not support setting the fadeIn/stay/fadeOut for titles, but you can still use it without those.");
 			return true;
 		}
 		String title = args[0];
@@ -78,7 +78,7 @@ public class TitleCommand extends SpecialCommand {
 				stay = Integer.parseInt(args[3]);
 				fadeOut = Integer.parseInt(args[4]);
 			} catch (NumberFormatException e) {
-				getPlugin().getLogger().warning("Couldn't run command title: Couldn't parse one of: " + args[2] + ", " + args[3] + ", " + args[4] + " as number");
+				getPlugin().warning("Couldn't run command title: Couldn't parse one of: " + args[2] + ", " + args[3] + ", " + args[4] + " as number");
 				return true;
 			}
 		}
@@ -91,7 +91,7 @@ public class TitleCommand extends SpecialCommand {
 			subtitle = "";
 		}
 		if (getPlugin().getMinecraftVersion() < 11) {
-			// if we don't have the featureful method, use the old one
+			// if we don't have the featureful method, use the old, deprecated one
 			target.sendTitle(title, subtitle);
 		} else {
 			target.sendTitle(title, subtitle, fadeIn, stay, fadeOut);

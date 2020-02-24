@@ -35,9 +35,7 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new RewardCommand());
 		registerCommand(new SilkTouchPolicyCommand());
 		registerCommand(new WorldCommand());
-		registerCommand(new MessageCommand());
-		registerCommand(new SoundCommand());
-		registerCommand(new TitleCommand());
+		registerCommand(new SpecialCommand());
 	}
 	protected static void registerCommand(CMRCommand command) {
 		command.init();

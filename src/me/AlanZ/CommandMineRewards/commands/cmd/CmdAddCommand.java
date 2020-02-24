@@ -21,7 +21,7 @@ public class CmdAddCommand extends CmdCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Adds a command to a reward section that is executed when the reward is triggered. (don't put a slash before the command.) Placeholder %player% is the player's name. You can use special commands !msg <message> and !title <title> <subtitle> [<fadeIn> <duration> <fadeOut>]. You can put 'none' instead of title or subtitle. Use underscores instead of spaces in title and subtitle, they will be converted to spaces. The last three arguments are time in ticks, and 20 ticks = 1 second. If the last three arguments are not specified, defaults will be used.";
+		return "Adds a command to a reward section that is executed when the reward is triggered. (don't put a slash before the command.) Placeholder %player% is the player's name. You can also use a few special commands, see more info with /cmr help title, /cmr help sound, and /cmr help msg.";
 	}
 
 	@Override

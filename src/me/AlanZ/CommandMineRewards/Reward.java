@@ -199,7 +199,7 @@ public class Reward {
 					String[] split = command.split(" ");
 					SpecialCommand scmd = CommandDispatcher.getSpecialCommand(split[0].substring(1)); 
 					if (scmd == null) {
-						cmr.getLogger().warning("Invalid special command: " + command);
+						cmr.warning("Invalid special command: " + command);
 						continue;
 					}
 					String[] args = Arrays.copyOfRange(split, 1, split.length);

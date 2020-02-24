@@ -18,22 +18,22 @@ public class CMRBlockManager {
 				String[] segments = blockName.split(":", 2);
 				Material mat = Material.matchMaterial(segments[0]);
 				if (mat == null) {
-					cmr.getLogger().severe("Invalid material " + segments[0]);
+					cmr.error("Invalid material " + segments[0] + " found when initializing handlers");
 					continue;
 				}
 				if (segments.length == 1) {
 					addHandler(rs, mat);
 				} else { // must have two elements
 					if (!(mat.createBlockData() instanceof Ageable)) {
-						cmr.getLogger().severe("Type " + mat.toString() + " does not grow!");
+						cmr.error("Type " + mat.toString() + " does not grow!");
 					}
 					if (segments[1].equalsIgnoreCase("true")) { // using if statements instead of Boolean.parse because if the user puts in garbage, Boolean.parse assumes false when we should notify the user and move on
 						addCropHandler(rs, mat, true);
 					} else if (segments[1].equalsIgnoreCase("false")) {
 						addCropHandler(rs, mat, false);
 					} else {
-						cmr.getLogger().severe("Invalid growth identifier for material " + mat.toString() + ": " + segments[1]);
-						cmr.getLogger().severe("Defaulting to any growth stage for " + mat.toString() + " in " + rs.getName());
+						cmr.error("Invalid growth identifier for material " + mat.toString() + ": " + segments[1]);
+						cmr.error("Defaulting to any growth stage for " + mat.toString() + " in " + rs.getName());
 						addHandler(rs, mat);
 					}
 				}
@@ -59,7 +59,7 @@ public class CMRBlockManager {
 		CMRBlockState state = new CMRBlockState(type, growth);
 		CMRBlockHandler handler = getHandler(state);
 		if (handler == null) {
-			cmr.getLogger().warning("Attempted to remove an non-existant handler for " + type + ", " + growth + " in " + rs.getName());
+			cmr.warning("Attempted to remove an non-existant handler for " + type + ", " + growth + " in " + rs.getName());
 			return;
 		}
 		if (handler.getSections().size() > 1) {

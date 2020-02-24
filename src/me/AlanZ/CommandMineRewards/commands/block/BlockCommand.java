@@ -20,8 +20,4 @@ public class BlockCommand extends CompoundCommand {
 	protected ItemStack getItemInHand(Player player) {
 		return getPlugin().getItemInHand(player);
 	}
-	@Override
-	public String[] getExamples() {
-		return new String[] {};
-	}
 }
