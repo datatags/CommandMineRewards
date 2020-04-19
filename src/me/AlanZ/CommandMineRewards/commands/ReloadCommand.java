@@ -2,8 +2,9 @@ package me.AlanZ.CommandMineRewards.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import me.AlanZ.CommandMineRewards.CMRBlockManager;
 import me.AlanZ.CommandMineRewards.GlobalConfigManager;
-import me.AlanZ.CommandMineRewards.RewardSection;
 
 public class ReloadCommand extends CMRCommand {
 	@Override
@@ -32,10 +33,9 @@ public class ReloadCommand extends CMRCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
-		GlobalConfigManager.load();
+		GlobalConfigManager.getInstance().load();
 		getPlugin().reload();
-		RewardSection.clearCache();
-		RewardSection.fillCache();
+		CMRBlockManager.getInstance().reloadCache();
 		sender.sendMessage(ChatColor.GREEN + "CMR config reloaded!");
 		return true;
 	}

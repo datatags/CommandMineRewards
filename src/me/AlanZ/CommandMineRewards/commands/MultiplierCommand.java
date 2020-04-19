@@ -44,8 +44,9 @@ public class MultiplierCommand extends CMRCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			sender.sendMessage(ChatColor.YELLOW + "Current multiplier:  " + GlobalConfigManager.getMultiplier());
+			sender.sendMessage(ChatColor.YELLOW + "Current multiplier:  " + gcm.getMultiplier());
 			return true;
 		}
 		// args.length == 1 unless something went wrong and we don't care anyway so
@@ -57,7 +58,7 @@ public class MultiplierCommand extends CMRCommand {
 				sender.sendMessage(ChatColor.RED + args[0] + " is not a valid number!");
 				return true;
 			}
-			GlobalConfigManager.setMultiplier(multiplier); // does bounds checking on its own
+			gcm.setMultiplier(multiplier); // does bounds checking on its own
 			sender.sendMessage(ChatColor.GREEN + "Multiplier successfully updated!  New multiplier:  " + multiplier);
 		} else {
 			sender.sendMessage(NO_PERMISSION);

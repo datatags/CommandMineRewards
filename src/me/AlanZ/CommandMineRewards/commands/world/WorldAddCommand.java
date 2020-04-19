@@ -56,6 +56,7 @@ public class WorldAddCommand extends WorldCommand {
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(ChatColor.RED + "Please specify a world to add.");
@@ -63,7 +64,7 @@ public class WorldAddCommand extends WorldCommand {
 			}
 			Player player = (Player)sender;
 			try {
-				GlobalConfigManager.addGlobalAllowedWorld(player.getWorld().getName());
+				gcm.addGlobalAllowedWorld(player.getWorld().getName());
 			} catch (WorldAlreadyInListException | InvalidWorldException e) {
 				sender.sendMessage(e.getMessage());
 			}
@@ -72,7 +73,7 @@ public class WorldAddCommand extends WorldCommand {
 		String world = args[0];
 		if (args.length == 1) {
 			try {
-				GlobalConfigManager.addGlobalAllowedWorld(world);
+				gcm.addGlobalAllowedWorld(world);
 			} catch (WorldAlreadyInListException | InvalidWorldException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;

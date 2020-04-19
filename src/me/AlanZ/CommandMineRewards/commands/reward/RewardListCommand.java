@@ -46,12 +46,13 @@ public class RewardListCommand extends RewardCommand {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			if (GlobalConfigManager.getRewardSections().size() == 0) {
+			if (gcm.getRewardSections().size() == 0) {
 				sender.sendMessage(ChatColor.RED + "There are no defined reward sections.  Add some with /cmr reward add");
 				return true;
 			}
-			sender.sendMessage(ChatColor.GREEN + "The defined reward sections are:  " + GlobalConfigManager.getPrettyRewardSections());
+			sender.sendMessage(ChatColor.GREEN + "The defined reward sections are:  " + gcm.getPrettyRewardSections());
 		} else if (args.length == 1) {
 			try {
 				if (new RewardSection(args[0]).getChildren().size() == 0) {

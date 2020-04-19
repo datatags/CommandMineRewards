@@ -25,8 +25,7 @@ public class CMRBlockState {
 	public boolean equals(CMRBlockState b) {
 		if (this.type != b.type) return false;
 		if (this.growth == null) {
-			if (b.growth == null) return true;
-			return false; // we can't do null.equals() so we have to do this bit of gymnastics to make this work
+			return b.growth == null; // we can't do null.equals() so we have to do this bit of gymnastics to make this work
 		}
 		return this.growth.equals(b.growth);
 	}

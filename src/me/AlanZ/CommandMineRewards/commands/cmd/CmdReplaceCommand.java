@@ -8,34 +8,34 @@ import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.AlanZ.CommandMineRewards.commands.ArgType;
 
-public class CmdAddCommand extends CmdCommand {
+public class CmdReplaceCommand extends CmdCommand {
 	@Override
 	public String getName() {
-		return "add";
+		return "replace";
 	}
 	@Override
 	public String getBasicDescription() {
-		return "Adds a command to be executed as a reward.";
+		return "Replaces a command to be executed as a reward.";
 	}
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Adds a command to a reward section that is executed when the reward is triggered. (don't put a slash before the command.) Placeholder %player% is the player's name. You can also use a few special commands, see more info with /cmr help title, /cmr help sound, and /cmr help msg.";
+		return "Replaces an existing index in a reward command list, in case you didn't get it quite right the first time.  Same as cmd remove X and cmd insert X.";
 	}
 
 	@Override
 	public String getUsage() {
-		return "<rewardSection> <reward> <command>";
+		return "<rewardSection> <reward> <index> <command>";
 	}
 	
 	@Override
 	public String[] getExamples() {
-		return new String[] {"genericRewards bigReward eco take %player% 15"};
+		return new String[] {"genericRewards bigReward 1 eco take %player% 150"};
 	}
 
 	@Override
 	public int getMinArgs() {
-		return 3;
+		return 4;
 	}
 
 	@Override
@@ -53,10 +53,19 @@ public class CmdAddCommand extends CmdCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		String rewardSection = args[0];
-		String reward = args[1];
-		String command = parseCommand(2, args);
+		String rewardName = args[1];
+		int index;
 		try {
-			new Reward(rewardSection, reward).addCommand(command);
+			index = Integer.parseInt(args[2]);
+		} catch (NumberFormatException e) {
+			sender.sendMessage(ChatColor.RED + args[2] + " is not a valid number!");
+			return true;
+		}
+		String command = parseCommand(3, args);
+		try {
+			Reward reward = new Reward(rewardSection, rewardName);
+			reward.removeCommand(index);
+			reward.insertCommand(command, index);
 		} catch (InvalidRewardSectionException | InvalidRewardException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;

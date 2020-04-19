@@ -62,7 +62,7 @@ public class RegionAddCommand extends RegionCommand {
 		String region = args[0];
 		if (args.length == 1) {
 			try {
-				GlobalConfigManager.addGlobalAllowedRegion(region);
+				GlobalConfigManager.getInstance().addGlobalAllowedRegion(region);
 			} catch (RegionAlreadyInListException | InvalidRegionException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;

@@ -61,7 +61,7 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 			return true;
 		}
 		if (args.length == 1) {
-			GlobalConfigManager.setGlobalSilkTouchRequirement(req);
+			GlobalConfigManager.getInstance().setGlobalSilkTouchRequirement(req);
 			sender.sendMessage(SUCCESS);
 			return true;
 		}

@@ -59,10 +59,10 @@ public class CmdListCommand extends CmdCommand {
 			return true;
 		}
 		if (reward.getCommands().size() == 0) {
-			sender.sendMessage(ChatColor.RED + "There are no commands in that reward.  Add some with /cmr addcommand " + rewardSection + " " + reward + " <command>");
+			sender.sendMessage(ChatColor.RED + "There are no commands in that reward.  Add some with /cmr addcommand " + rewardSection + " " + reward.getName() + " <command>");
 		} else {
 			for (int i = 0; i < reward.getCommands().size(); i++) {
-				sender.sendMessage(i + ": /" + reward.getCommands().get(i));
+				sender.sendMessage(i + ": /" + reward.getCommands().get(i).getCommand());
 			}
 		}
 		return true;

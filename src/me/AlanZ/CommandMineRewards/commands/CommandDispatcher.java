@@ -21,9 +21,10 @@ import me.AlanZ.CommandMineRewards.commands.special.*;
 import me.AlanZ.CommandMineRewards.commands.world.WorldCommand;
 
 public class CommandDispatcher implements CommandExecutor {
+	private static CommandDispatcher instance = null;
 	private CommandMineRewards cmr;
-	private static List<CMRCommand> commands = new ArrayList<>();
-	public CommandDispatcher(CommandMineRewards cmr) {
+	private List<CMRCommand> commands = new ArrayList<>();
+	private CommandDispatcher(CommandMineRewards cmr) {
 		this.cmr = cmr;
 		cmr.getCommand("cmr").setExecutor(this);
 		registerCommand(new HelpCommand());
@@ -37,7 +38,15 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new WorldCommand());
 		registerCommand(new SpecialCommand());
 	}
-	protected static void registerCommand(CMRCommand command) {
+	public static void init(CommandMineRewards cmr) {
+		if (instance == null) {
+			instance = new CommandDispatcher(cmr);
+		}
+	}
+	public static CommandDispatcher getInstance() {
+		return instance;
+	}
+	protected void registerCommand(CMRCommand command) {
 		command.init();
 		commands.add(command);
 	}
@@ -92,11 +101,14 @@ public class CommandDispatcher implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Available args: " + cmd.getUsage());
 		}
 	}
-	protected static List<CMRCommand> getCommands() {
+	protected List<CMRCommand> getCommands() {
 		return commands;
 	}
-	public static CMRCommand getCommand(String name) {
-		for (CMRCommand cmd : commands) {
+	public CMRCommand getCommand(String name) {
+		return getCommand(name, commands);
+	}
+	public CMRCommand getCommand(String name, List<? extends CMRCommand> commandList) {
+		for (CMRCommand cmd : commandList) {
 			if (cmd.getName().equalsIgnoreCase(name)) return cmd;
 			String[] aliases = cmd.getAliases();
 			if (aliases != null && aliases.length > 0) {
@@ -107,12 +119,17 @@ public class CommandDispatcher implements CommandExecutor {
 		}
 		return null;
 	}
-	public static SpecialCommand getSpecialCommand(String name) {
-		CMRCommand cmd = getCommand(name);
-		if (cmd == null) return null;
-		if (cmd instanceof SpecialCommand) {
-			return (SpecialCommand) cmd;
+	public SpecialCommand getSpecialCommand(String name) {
+		CompoundCommand special = (CompoundCommand)getCommand("special");
+		if (special == null)  {
+			cmr.warning("Couldn't find base special command?!");
+			return null;
 		}
-		return null;
+		SpecialCommand cmd = (SpecialCommand) getCommand(name, special.getChildren());
+		if (cmd == null) {
+			cmr.debug("Couldn't find special command " + name);
+			return null;
+		}
+		return cmd;
 	}
 }

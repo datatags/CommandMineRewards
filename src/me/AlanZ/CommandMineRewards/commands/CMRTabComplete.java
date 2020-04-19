@@ -18,16 +18,19 @@ import me.AlanZ.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
 import me.AlanZ.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CMRTabComplete implements TabCompleter {
+	private CommandMineRewards cmr;
 	public CMRTabComplete(CommandMineRewards cmr) {
+		this.cmr = cmr;
 		cmr.getCommand("cmr").setTabCompleter(this);
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		CommandDispatcher cd = CommandDispatcher.getInstance();
 		List<String> options = new ArrayList<String>();
 		if (args.length < 1) { // this shouldn't ever happen but handle it anyway
 			return options;
 		} else if (args.length == 1 || (args.length == 2 && args[0].equalsIgnoreCase("help"))) {
-			for (CMRCommand item : CommandDispatcher.getCommands()) {
+			for (CMRCommand item : cd.getCommands()) {
 				if (sender.hasPermission(item.getPermission())) { // if value is null, there is no permission for that command
 					options.add(item.getName());
 					String[] aliases = item.getAliases();
@@ -37,7 +40,7 @@ public class CMRTabComplete implements TabCompleter {
 				}
 			}
 		} else {
-			CMRCommand command = CommandDispatcher.getCommand(args[0]);
+			CMRCommand command = cd.getCommand(args[0]);
 			if (command == null) {
 				return options; // return empty
 			}
@@ -45,10 +48,10 @@ public class CMRTabComplete implements TabCompleter {
 				if ((command instanceof CompoundCommand && args.length == 2) || (command.getName().equals("help") && args.length == 3)) {
 					CompoundCommand ccmd;
 					if (command.getName().equals("help")) {
-						if (!(CommandDispatcher.getCommand(args[1]) instanceof CompoundCommand)) {
+						if (!(cd.getCommand(args[1]) instanceof CompoundCommand)) {
 							break COMPOUNDARGS;
 						}
-						ccmd = (CompoundCommand) CommandDispatcher.getCommand(args[1]);
+						ccmd = (CompoundCommand) cd.getCommand(args[1]);
 					} else {
 						ccmd = (CompoundCommand) command;
 					}
@@ -78,7 +81,7 @@ public class CMRTabComplete implements TabCompleter {
 				return options; // no more args we know of
 			}
 			if (args[0].equalsIgnoreCase("help")) {
-				for (CMRCommand item : CommandDispatcher.getCommands()) {
+				for (CMRCommand item : cd.getCommands()) {
 					if (sender.hasPermission(item.getPermission())) {
 						options.add(item.getName());
 					}
@@ -90,7 +93,7 @@ public class CMRTabComplete implements TabCompleter {
 				return options; // TODO: Return list of blocks rather than nothing?
 			}
 			if (currentArg == ArgType.REWARD_SECTION) {
-				options.addAll(GlobalConfigManager.getRewardSectionNames());
+				options.addAll(GlobalConfigManager.getInstance().getRewardSectionNames());
 			}
 			if (currentArg == ArgType.REWARD) {
 				String sectionName = args[args.length - 2]; // not the last one, the incomplete one, but the second-to-last one that has the section in it.  I hope this works...
@@ -101,8 +104,9 @@ public class CMRTabComplete implements TabCompleter {
 				}
 			}
 			if (currentArg == ArgType.REGION) {
-				if (WorldGuardManager.usingWorldGuard()) {
-					options.addAll(WorldGuardManager.getAllRegions());
+				WorldGuardManager wgm = cmr.getWGManager();
+				if (wgm.usingWorldGuard()) {
+					options.addAll(wgm.getAllRegions());
 				}
 			}
 			if (currentArg == ArgType.WORLD) {

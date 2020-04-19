@@ -51,11 +51,12 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			if (GlobalConfigManager.getGlobalSilkTouchRequirement() == null) {
+			if (gcm.getGlobalSilkTouchRequirement() == null) {
 				sender.sendMessage(ChatColor.RED + "There is no global silk touch requirement, any rewards or reward sections inheriting from the global setting will default to Ignored.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The global silk touch policy is " + GlobalConfigManager.getGlobalSilkTouchRequirement() + ".  Please note this will be overridden by this setting in any reward sections or rewards.");
+				sender.sendMessage(ChatColor.GREEN + "The global silk touch policy is " + gcm.getGlobalSilkTouchRequirement() + ".  Please note this will be overridden by this setting in any reward sections or rewards.");
 			}
 			return true;
 		}

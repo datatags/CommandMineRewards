@@ -28,6 +28,6 @@ public class CmdCommand extends CompoundCommand {
 	}
 	@Override
 	public void init() {
-		registerChildren(new CmdAddCommand(), new CmdInsertCommand(), new CmdListCommand(), new CmdRemoveCommand());
+		registerChildren(new CmdAddCommand(), new CmdInsertCommand(), new CmdListCommand(), new CmdRemoveCommand(), new CmdReplaceCommand());
 	}
 }

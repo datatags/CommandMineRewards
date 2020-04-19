@@ -56,25 +56,26 @@ public class HelpCommand extends CMRCommand {
 				command = args[0];
 			}
 		}
+		CommandDispatcher cd = CommandDispatcher.getInstance();
 		if (command == null) {
 			int index = (int) ((page - 1) * MAX_PAGE_SIZE);
-			double maxPage = Math.ceil(CommandDispatcher.getCommands().size() / MAX_PAGE_SIZE); 
+			double maxPage = Math.ceil(cd.getCommands().size() / MAX_PAGE_SIZE); 
 			if (page > maxPage) {
 				sender.sendMessage(ChatColor.RED + "There are only " + (int)maxPage + " pages, but you asked for page " + page);
 				return true;
 			}
-			int stop = (int) Math.min(MAX_PAGE_SIZE + index, CommandDispatcher.getCommands().size());
+			int stop = (int) Math.min(MAX_PAGE_SIZE + index, cd.getCommands().size());
 			printHelpHeader(page, sender);
 			if (sender instanceof ConsoleCommandSender) {
-				stop = CommandDispatcher.getCommands().size(); // just dump all commands on console because they have a useful scroll function
+				stop = cd.getCommands().size(); // just dump all commands on console because they have a useful scroll function
 			}
 			for (int i = index; i < stop; i++) {
-				CMRCommand cmd = CommandDispatcher.getCommands().get(i);
+				CMRCommand cmd = cd.getCommands().get(i);
 				sender.sendMessage(ChatColor.GOLD + "/cmr " + cmd.getName() + ": " + ChatColor.GREEN + cmd.getBasicDescription());
 			}
 			printHelpFooter(page, sender);
 		} else {
-			CMRCommand[] matches = CommandDispatcher.getCommands().stream().filter(c -> c.getName().equalsIgnoreCase(args[0])).toArray(CMRCommand[]::new);
+			CMRCommand[] matches = cd.getCommands().stream().filter(c -> c.getName().equalsIgnoreCase(args[0])).toArray(CMRCommand[]::new);
 			if (matches.length == 0) {
 				sender.sendMessage(ChatColor.RED + "Unknown command: /cmr " + args[0] + ", try '/cmr help'.");
 				return true;
@@ -137,7 +138,7 @@ public class HelpCommand extends CMRCommand {
 			printConsoleHelp(sender);
 			return;
 		}
-		if (CommandDispatcher.getCommands().size() / MAX_PAGE_SIZE <= page) { // if last page or past what was expected
+		if (CommandDispatcher.getInstance().getCommands().size() / MAX_PAGE_SIZE <= page) { // if last page or past what was expected
 			sender.sendMessage(ChatColor.GREEN + "----------------" + ChatColor.GOLD + "Page " + page + ChatColor.GREEN + "----------------");
 		} else {
 			sender.sendMessage(ChatColor.GREEN + "----------" + ChatColor.GOLD + "Page " + page + " - /cmr help " + (page + 1) + " for next page" + ChatColor.GREEN + "----------");

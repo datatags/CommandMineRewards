@@ -55,6 +55,7 @@ public class WorldRemoveCommand extends WorldCommand {
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
 				sender.sendMessage(ChatColor.RED + "Please specify a world to remove.");
@@ -62,7 +63,7 @@ public class WorldRemoveCommand extends WorldCommand {
 			}
 			Player player = (Player)sender;
 			try {
-				GlobalConfigManager.removeGlobalAllowedWorld(player.getWorld().getName());
+				gcm.removeGlobalAllowedWorld(player.getWorld().getName());
 			} catch (WorldNotInListException e) {
 				player.sendMessage(e.getMessage());
 			}
@@ -71,7 +72,7 @@ public class WorldRemoveCommand extends WorldCommand {
 		String world = args[0];
 		if (args.length == 1) {
 			try {
-				GlobalConfigManager.removeGlobalAllowedWorld(world);
+				gcm.removeGlobalAllowedWorld(world);
 			} catch (WorldNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;

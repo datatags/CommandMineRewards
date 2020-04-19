@@ -19,7 +19,7 @@ public class SoundCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Plays the sound to the target. If you are using the latest MC server version, sounds are here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html, otherwise, sounds are here: https://helpch.at/docs/" + getPlugin().getFullMinecraftVersion() + "/org/bukkit/Sound.html  If you want to use a custom sound like from a resource pack, prefix it with ! to bypass validity check.";
+		return "Plays the sound to the target. If you are using the latest MC server version, sounds are here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html, otherwise, sounds are here: https://helpch.at/docs/" + getPlugin().getFullMinecraftVersion() + "/org/bukkit/Sound.html  If you want to use a custom sound like from a resource pack, prefix it with ! to bypass validity check. PLEASE SEE /cmr help special FOR USAGE INFORMATION.";
 	}
 	
 	@Override

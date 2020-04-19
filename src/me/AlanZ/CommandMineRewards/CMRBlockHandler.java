@@ -11,21 +11,27 @@ import org.bukkit.entity.Player;
 public class CMRBlockHandler {
 	private Material type;
 	private Boolean growth = null;
-	// we don't store actual reward sections since they're intended to be single-use objects and won't get updated if info changes
 	private Set<String> rewardSections = new HashSet<String>();
-	CMRBlockHandler(RewardSection rs, Material type) {
+	private long uses = 0;
+	protected CMRBlockHandler(RewardSection rs, Material type) {
 		this.type = type;
 		this.rewardSections.add(rs.getName());
 	}
-	CMRBlockHandler(RewardSection rs, Material type, Boolean growth) {
+	protected CMRBlockHandler(RewardSection rs, Material type, Boolean growth) {
 		this(rs, type);
 		this.growth = growth;
 	}
 	public void execute(Block block, Player player) {
-		CMRBlockManager.cmr.debug("Processing block " + block.getType().toString());
-		for (String sectionName : rewardSections) {
-			new RewardSection(sectionName).execute(block, player);
+		CommandMineRewards cmr = CommandMineRewards.getInstance();
+		cmr.debug("Processing block " + block.getType().toString());
+		for (RewardSection section : CMRBlockManager.getInstance().getSectionCache()) {
+			cmr.debug("Processing section from cache: " + section.getName());
+			if (rewardSections.contains(section.getName())) {
+				cmr.debug("Found section from cache: " + section.getName());
+				section.execute(block, player);
+			}
 		}
+		uses++;
 	}
 	public boolean matches(Block block) {
 		if (block.getType() != this.type) return false;
@@ -44,13 +50,16 @@ public class CMRBlockHandler {
 	public Boolean getGrowth() {
 		return growth;
 	}
-	Set<String> getSections() {
+	protected Set<String> getSections() {
 		return rewardSections;
 	}
-	void addSection(RewardSection rs) {
+	protected void addSection(RewardSection rs) {
 		rewardSections.add(rs.getName());
 	}
-	void removeSection(RewardSection rs) {
+	protected void removeSection(RewardSection rs) {
 		rewardSections.remove(rs.getName());
+	}
+	public long getUses() {
+		return uses;
 	}
 }

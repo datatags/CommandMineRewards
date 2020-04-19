@@ -54,11 +54,12 @@ public class RegionListCommand extends RegionCommand {
 			sender.sendMessage(ChatColor.RED + "Region commands are disabled because WorldGuard was not found.");
 			return true;
 		}
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			if (GlobalConfigManager.getGlobalAllowedRegions().size() == 0) {
+			if (gcm.getGlobalAllowedRegions().size() == 0) {
 				sender.sendMessage(ChatColor.RED + "There are no globally allowed regions.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The globally allowed regions are:  " + GlobalConfigManager.makePretty(GlobalConfigManager.getGlobalAllowedRegions()));
+				sender.sendMessage(ChatColor.GREEN + "The globally allowed regions are:  " + gcm.makePretty(gcm.getGlobalAllowedRegions()));
 			}
 		} else if (args.length == 1) {
 			RewardSection rs;
@@ -71,7 +72,7 @@ public class RegionListCommand extends RegionCommand {
 			if (rs.getAllowedRegions().size() == 0) {
 				sender.sendMessage(ChatColor.YELLOW + "There are no defined allowed regions in this reward section.  The rewards region checker will use the global ones.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The allowed regions are:  " + GlobalConfigManager.makePretty(rs.getAllowedRegions()));
+				sender.sendMessage(ChatColor.GREEN + "The allowed regions are:  " + gcm.makePretty(rs.getAllowedRegions()));
 			}
 		}
 		return true;

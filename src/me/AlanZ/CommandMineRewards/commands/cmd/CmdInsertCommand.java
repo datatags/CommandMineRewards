@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import me.AlanZ.CommandMineRewards.Reward;
-import me.AlanZ.CommandMineRewards.Exceptions.CommandAlreadyInListException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.AlanZ.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.AlanZ.CommandMineRewards.commands.ArgType;
@@ -66,7 +65,7 @@ public class CmdInsertCommand extends CmdCommand {
 		String command = parseCommand(3, args);
 		try {
 			new Reward(rewardSection, reward).insertCommand(command, index);
-		} catch (InvalidRewardSectionException | InvalidRewardException | ArrayIndexOutOfBoundsException | CommandAlreadyInListException e) {
+		} catch (InvalidRewardSectionException | InvalidRewardException | ArrayIndexOutOfBoundsException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
 		}

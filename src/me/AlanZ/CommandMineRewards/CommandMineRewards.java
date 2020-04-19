@@ -23,22 +23,31 @@ public class CommandMineRewards extends JavaPlugin {
 	private BufferedWriter debugWriter = null;
 	// asdf: A Simple Date Format not a random keyboard mash
 	private SimpleDateFormat asdf = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss a");
+	private GlobalConfigManager gcm;
+	private WorldGuardManager wgm;
+	private static CommandMineRewards instance;
+	private boolean pluginReady = false;
 	
 	@Override
 	public void onEnable() {
-		GlobalConfigManager.cmr = this; // this needs to run before any other GCM calls or it won't have config access
+		instance = this;
+		GlobalConfigManager.init(this);
+		this.gcm = GlobalConfigManager.getInstance();
 		initDebugLog(); // this should run before any debug() calls
 		initVersion(); // this needs to be called before anything uses getMinecraftVersion()
-		WorldGuardManager.init(this); // this can probably actually run about anytime
-		new CommandDispatcher(this);
+		this.wgm = new WorldGuardManager(this); // this can probably actually run about anytime
+		CommandDispatcher.init(this);
 		new CMRTabComplete(this); // this can run anytime really
-		GlobalConfigManager.load(); // this needs to run before RewardSections start loading
-		RewardSection.cmr = this; // needs to run before RS calls
-		Reward.cmr = this; // probably also needs to run before RS calls for various reasons
-		RewardSection.init(); // is sorta optional but should run before other RS block access
-		CMRBlockManager.initializeHandlers(this); // should run after cache is loaded but really just anytime before someone joins the server
+		gcm.load(); // this needs to run before RewardSections start loading
+		CMRBlockManager.init(this); // should run after cache is loaded but really just anytime before someone joins the server
 		new EventListener(this);
 		info("CommandMineRewards is enabled!");
+		pluginReady = true;
+	}
+	public static CommandMineRewards getInstance() {
+		return instance;
+		// JavaPlugin is a singleton, and dependency injection isn't really practical
+		// for RewardSection and Reward. Dependency injection is still used whenever possible.
 	}
 	public void reload() {
 		initDebugLog();
@@ -52,7 +61,7 @@ public class CommandMineRewards extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-		if (GlobalConfigManager.isDebugLog()) {
+		if (gcm.isDebugLog()) {
 			try {
 				File log = new File(this.getDataFolder().getAbsolutePath() + File.separator + "debug.log");
 				int mega = 1024 * 1024;
@@ -108,7 +117,7 @@ public class CommandMineRewards extends JavaPlugin {
 	}
 	public void logMessage(String msg, Level level, boolean logToConsole) {
 		if (logToConsole) getLogger().log(level.intValue() < Level.INFO.intValue() ? Level.INFO : level, msg); // nothing lower than info will be logged
-		if (GlobalConfigManager.isDebugLog()) {
+		if (gcm.isDebugLog()) {
 			try {
 				debugWriter.append("[" + level.toString().replace("FINE", "DEBUG") + "] " + msg + "\n");
 				debugWriter.flush();
@@ -122,7 +131,7 @@ public class CommandMineRewards extends JavaPlugin {
 		debug(msg, true);
 	}
 	public void debug(String msg, boolean logToConsole) {
-		logMessage(msg, Level.FINE, GlobalConfigManager.getDebug() && logToConsole); // we use log level FINE then substitute it for debug or INFO where required
+		logMessage(msg, Level.FINE, gcm.getDebug() && logToConsole); // we use log level FINE then substitute it for debug or INFO where required
 	}
 	public void info(String msg) {
 		logMessage(msg, Level.INFO);
@@ -140,5 +149,11 @@ public class CommandMineRewards extends JavaPlugin {
 		} else {
 			return player.getInventory().getItemInMainHand();
 		}
+	}
+	public boolean isPluginReady() {
+		return pluginReady;
+	}
+	public WorldGuardManager getWGManager() {
+		return wgm;
 	}
 }

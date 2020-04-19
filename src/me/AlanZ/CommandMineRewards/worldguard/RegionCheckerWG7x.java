@@ -19,7 +19,7 @@ public class RegionCheckerWG7x implements RegionChecker {
 	public boolean isInRegion(List<String> regions, Block block) {
 		ApplicableRegionSet set = getRegionManager(block.getWorld()).getApplicableRegions(BukkitAdapter.asBlockVector(block.getLocation()));
 		for (ProtectedRegion region : set) {
-			if (GlobalConfigManager.containsIgnoreCase(regions, region.getId())) {
+			if (GlobalConfigManager.getInstance().containsIgnoreCase(regions, region.getId())) {
 				return true;
 			}
 		}

@@ -50,11 +50,12 @@ public class WorldListCommand extends WorldCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
+		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			if (GlobalConfigManager.getGlobalAllowedWorlds().size() == 0) {
+			if (gcm.getGlobalAllowedWorlds().size() == 0) {
 				sender.sendMessage(ChatColor.RED + "There are no globally allowed worlds.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The globally allowed worlds are:  " + GlobalConfigManager.makePretty(GlobalConfigManager.getGlobalAllowedWorlds()));
+				sender.sendMessage(ChatColor.GREEN + "The globally allowed worlds are:  " + gcm.makePretty(gcm.getGlobalAllowedWorlds()));
 			}
 		} else if (args.length == 1) {
 			RewardSection rs;
@@ -67,7 +68,7 @@ public class WorldListCommand extends WorldCommand {
 			if (rs.getAllowedWorlds().size() == 0) {
 				sender.sendMessage(ChatColor.YELLOW + "There are no defined allowed worlds in this reward section.  The rewards world checker will use the global ones.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The allowed worlds are:  " + GlobalConfigManager.makePretty(rs.getAllowedWorlds()));
+				sender.sendMessage(ChatColor.GREEN + "The allowed worlds are:  " + gcm.makePretty(rs.getAllowedWorlds()));
 			}
 		}
 		return true;

@@ -61,7 +61,7 @@ public class RegionRemoveCommand extends RegionCommand {
 		String region = args[0];
 		if (args.length == 1) {
 			try {
-				GlobalConfigManager.removeGlobalAllowedRegion(region);
+				GlobalConfigManager.getInstance().removeGlobalAllowedRegion(region);
 			} catch (RegionNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
