@@ -229,6 +229,9 @@ public class GlobalConfigManager {
 	public boolean removeInvalidValues() {
 		return getConfig().getBoolean("removeInvalidValues");
 	}
+	public boolean isAutopickupCompat() {
+		return getConfig().getBoolean("autopickupCompat", false);
+	}
 	public List<String> getRewardSectionNames() {
 		List<String> names = new ArrayList<String>();
 		for (String key : cmr.getConfig().getKeys(false)) {

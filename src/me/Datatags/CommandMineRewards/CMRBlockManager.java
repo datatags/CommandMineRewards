@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,7 +21,6 @@ public class CMRBlockManager {
 	private CMRBlockManager(CommandMineRewards cmr) {
 		this.cmr = cmr;
 		reloadCache();
-		reloadHandlers();
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -74,6 +73,7 @@ public class CMRBlockManager {
 		removeCropHandler(rs, type, null);
 	}
 	public void addCropHandler(RewardSection rs, Material type, Boolean growth) {
+		debug("Adding handler for " + type);
 		CMRBlockState state = new CMRBlockState(type, growth);
 		CMRBlockHandler handler = getHandler(state);
 		if (handler == null) {
@@ -83,6 +83,7 @@ public class CMRBlockManager {
 		}
 	}
 	public void removeCropHandler(RewardSection rs, Material type, Boolean growth) {
+		debug("Removing handler for " + type);
 		CMRBlockState state = new CMRBlockState(type, growth);
 		CMRBlockHandler handler = getHandler(state);
 		if (handler == null) {
@@ -98,14 +99,17 @@ public class CMRBlockManager {
 	private void debug(String msg) {
 		cmr.debug(msg);
 	}
-	public void executeAllSections(Block block, Player player) {
+	public void executeAllSections(BlockState state, Player player) {
 		debug("----------START REWARD CALCS----------");
 		debug("If nothing is listed here, no handlers were found.");
+		debug("Available handlers: " + handlers.size());
 		for (CMRBlockHandler handler : handlers) {
-			if (handler.matches(block)) {
-				handler.execute(block, player);
+			if (handler.matches(state)) {
+				handler.execute(state, player);
 				// we don't return here in case we have different crop states in different
 				// reward sections, like one manages any stage of wheat while one only does full-grown wheat.
+			} else {
+				debug("Handler " + handler.getType() + " did not match block " + state.getType());
 			}
 		}
 		debug("-----------END REWARD CALCS-----------");

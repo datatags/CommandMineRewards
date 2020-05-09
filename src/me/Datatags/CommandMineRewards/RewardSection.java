@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -116,6 +116,7 @@ public class RewardSection {
 					continue;
 				}
 			}
+			debug("Adding block " + block + " to section " + this.getName());
 			blocks.add(block);
 		}
 		if (gcm.removeInvalidValues()) {
@@ -364,24 +365,24 @@ public class RewardSection {
 	private void debug(String msg) {
 		cmr.debug(msg);
 	}
-	public boolean isApplicable(Block block, Player player) {
+	public boolean isApplicable(BlockState state, Player player) {
 		// block type is checked by CMRBlockHandler
 		if (!gcm.isWorldAllowed(this, player.getWorld().getName())) {
 			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this world.");
 			return false;
 		}
 		WorldGuardManager wgm = cmr.getWGManager();
-		if (wgm.usingWorldGuard() && !wgm.isAllowedInRegions(this, block)) {
+		if (wgm.usingWorldGuard() && !wgm.isAllowedInRegions(this, state.getBlock())) {
 			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this region.");
 			return false;
 		}
 		return true;
 	}
-	public void execute(Block block, Player player) {
+	public void execute(BlockState state, Player player) {
 		debug("Processing section " + this.getName());
-		if (!isApplicable(block, player)) return;
+		if (!isApplicable(state, player)) return;
 		for (Reward reward : getChildren()) {
-			if (reward.isApplicable(block, player)) {
+			if (reward.isApplicable(player)) {
 				reward.execute(player);
 			}
 		}

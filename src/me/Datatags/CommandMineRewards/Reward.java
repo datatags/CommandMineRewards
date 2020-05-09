@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.GameMode;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -174,7 +173,7 @@ public class Reward {
 	private void debug(String msg) {
 		cmr.debug(msg);
 	}
-	public boolean isApplicable(Block block, Player player) {
+	public boolean isApplicable(Player player) {
 		// does not check things that should be checked by RewardSection
 		if (this.getChance() == 0) {
 			debug("Warning! Chance property was 0, invalid, or non-existant in reward " + this.getName() + " in section " + getParent().getName());

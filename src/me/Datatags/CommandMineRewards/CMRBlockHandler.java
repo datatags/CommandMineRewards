@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 
@@ -21,7 +21,7 @@ public class CMRBlockHandler {
 		this(rs, type);
 		this.growth = growth;
 	}
-	public void execute(Block block, Player player) {
+	public void execute(BlockState block, Player player) {
 		CommandMineRewards cmr = CommandMineRewards.getInstance();
 		cmr.debug("Processing block " + block.getType().toString());
 		for (RewardSection section : CMRBlockManager.getInstance().getSectionCache()) {
@@ -33,10 +33,10 @@ public class CMRBlockHandler {
 		}
 		uses++;
 	}
-	public boolean matches(Block block) {
-		if (block.getType() != this.type) return false;
+	public boolean matches(BlockState state) {
+		if (state.getType() != this.type) return false;
 		if (this.growth == null) return true;
-		Ageable cropData = (Ageable) block.getBlockData();
+		Ageable cropData = (Ageable) state.getBlockData();
 		if (this.growth && cropData.getAge() == cropData.getMaximumAge()) return true;
 		if (!this.growth && cropData.getAge() < cropData.getMaximumAge()) return true;
 		return false;

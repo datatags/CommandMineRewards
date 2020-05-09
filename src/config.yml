@@ -31,6 +31,7 @@ survivalOnly: true
 validateWorldsAndRegions: true
 verbosity: 1
 debugLog: false
+autopickupCompat: false
 genericRewards:
     blocks:
         - cobblestone

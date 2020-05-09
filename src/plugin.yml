@@ -1,7 +1,7 @@
 name: CommandMineRewards
 main: me.Datatags.CommandMineRewards.CommandMineRewards
 author: Datatags
-version: 6.4
+version: 6.5
 api-version: 1.13
 softdepend: [WorldGuard]
 commands:
