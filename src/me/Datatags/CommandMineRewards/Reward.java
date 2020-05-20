@@ -201,7 +201,7 @@ public class Reward {
 		}
 		return true;
 	}
-	public void execute(Player player) {
+	public boolean execute(Player player) {
 		debug("Processing reward " + this.getName());
 		double randomNumber = RANDOM.nextDouble() * 100; 
 		debug("Random: " + randomNumber);
@@ -210,8 +210,10 @@ public class Reward {
 			for (RewardCommandEntry command : getCommands()) {
 				command.execute(player);
 			}
+			return true;
 		} else {
 			debug(randomNumber + " !< " + getChance() + ", doing nothing");
+			return false;
 		}
 	}
 }

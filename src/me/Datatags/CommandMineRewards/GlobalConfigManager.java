@@ -24,12 +24,10 @@ public class GlobalConfigManager {
 	private GlobalConfigManager(CommandMineRewards cmr) {
 		this.cmr = cmr;
 	}
-	protected static void init(CommandMineRewards cmr) {
-		if (instance == null) {
-			instance = new GlobalConfigManager(cmr);
-		}
-	}
 	public static GlobalConfigManager getInstance() {
+		if (instance == null) {
+			instance = new GlobalConfigManager(CommandMineRewards.getInstance());
+		}
 		return instance;
 	}
 	private ConfigurationSection getConfig() {
@@ -42,7 +40,7 @@ public class GlobalConfigManager {
 		cmr.saveConfig();
 	}
 	private void checkOldConfig() {
-		// we don't clear the debug log setting because if the plugin is spamming the log
+		// we don't clear the debug log setting because if the plugin is spamming the log,
 		// the plugin is in verbosity: 2 which no one in their right mind would use except for troubleshooting
 		if (getConfig().contains("debug")) {
 			getConfig().set("verbosity", getConfig().getBoolean("debug") ? 2 : 1);
@@ -232,6 +230,12 @@ public class GlobalConfigManager {
 	public boolean isAutopickupCompat() {
 		return getConfig().getBoolean("autopickupCompat", false);
 	}
+	public int getGlobalRewardLimit() {
+		return Math.max(getConfig().getInt("globalRewardLimit", -1), -1); // return -1 if not found and return -1 if found is less than -1
+	}
+	public boolean isRandomizingRewardOrder() {
+		return getConfig().getBoolean("randomizeRewardOrder", false);
+	}
 	public List<String> getRewardSectionNames() {
 		List<String> names = new ArrayList<String>();
 		for (String key : cmr.getConfig().getKeys(false)) {
@@ -266,6 +270,7 @@ public class GlobalConfigManager {
 		if (!isValidatingWorldsAndRegions()) {
 			return true;
 		}
+		if (test.equals("*")) return true;
 		for (World world : Bukkit.getServer().getWorlds()) {
 			if (world.getName().equalsIgnoreCase(test)) {
 				return true;

@@ -31,23 +31,22 @@ public class CommandMineRewards extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		GlobalConfigManager.init(this);
 		this.gcm = GlobalConfigManager.getInstance();
 		initDebugLog(); // this should run before any debug() calls
 		initVersion(); // this needs to be called before anything uses getMinecraftVersion()
 		this.wgm = new WorldGuardManager(this); // this can probably actually run about anytime
-		CommandDispatcher.init(this);
 		new CMRTabComplete(this); // this can run anytime really
 		gcm.load(); // this needs to run before RewardSections start loading
-		CMRBlockManager.init(this); // should run after cache is loaded but really just anytime before someone joins the server
-		new EventListener(this);
+		CMRBlockManager.getInstance(); // not a priority, just to get the sort timer ticking
+		new EventListener(this); // initialize the block break listener
+		CommandDispatcher.getInstance(); // initialize the commands
 		info("CommandMineRewards is enabled!");
 		pluginReady = true;
 	}
 	public static CommandMineRewards getInstance() {
 		return instance;
 		// JavaPlugin is a singleton, and dependency injection isn't really practical
-		// for RewardSection and Reward. Dependency injection is still used whenever possible.
+		// for some classes. Dependency injection is still used when possible.
 	}
 	public void reload() {
 		initDebugLog();
@@ -68,7 +67,7 @@ public class CommandMineRewards extends JavaPlugin {
 				if (log.createNewFile()) { // will check if file exists before creating in a single operation. using an if would be a redundant check anyway.
 					this.getLogger().info("CMR debug log was successfully created!");
 				} else if (log.length() > 8 * mega) {
-					getLogger().severe("Your debug.log is over 8MB, we won't log any more debug messages until you delete it.");
+					getLogger().severe("Your debug.log is over 8MB, we won't log any more debug messages until you reset it.");
 					return;
 				} else if (log.length() > mega) {
 					getLogger().warning("Your debug.log is over 1MB, you should probably reset it or disable it if you don't need it.");
@@ -116,7 +115,7 @@ public class CommandMineRewards extends JavaPlugin {
 		logMessage(msg, level, true);
 	}
 	public void logMessage(String msg, Level level, boolean logToConsole) {
-		if (logToConsole) getLogger().log(level.intValue() < Level.INFO.intValue() ? Level.INFO : level, msg); // nothing lower than info will be logged
+		if (logToConsole) getLogger().log(level.intValue() < Level.INFO.intValue() ? Level.INFO : level, msg); // nothing lower than info will be logged so convert it to info
 		if (gcm.isDebugLog()) {
 			try {
 				debugWriter.append("[" + level.toString().replace("FINE", "DEBUG") + "] " + msg + "\n");

@@ -18,9 +18,10 @@ public class CMRBlockManager {
 	private Set<RewardSection> rewardSectionCache = new HashSet<RewardSection>();
 	private static CMRBlockManager instance;
 	private static final int sortDelayTicks = 300*20;
+	private GlobalConfigManager gcm;
 	private CMRBlockManager(CommandMineRewards cmr) {
 		this.cmr = cmr;
-		reloadCache();
+		this.gcm = GlobalConfigManager.getInstance();
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -31,10 +32,11 @@ public class CMRBlockManager {
 			}
 		}.runTaskTimer(cmr, sortDelayTicks, sortDelayTicks);
 	}
-	protected static void init(CommandMineRewards cmr) {
-		instance = new CMRBlockManager(cmr);
-	}
 	public static CMRBlockManager getInstance() {
+		if (instance == null) {
+			instance = new CMRBlockManager(CommandMineRewards.getInstance());
+			instance.reloadCache(); // after init so we don't have a StackOverflowException
+		}
 		return instance;
 	}
 	private void reloadHandlers() {
@@ -102,10 +104,16 @@ public class CMRBlockManager {
 	public void executeAllSections(BlockState state, Player player) {
 		debug("----------START REWARD CALCS----------");
 		debug("If nothing is listed here, no handlers were found.");
-		debug("Available handlers: " + handlers.size());
+		debug("Total available handlers: " + handlers.size());
+		int globalRewardLimit = gcm.getGlobalRewardLimit();
+		int rewardsExecuted = 0;
 		for (CMRBlockHandler handler : handlers) {
 			if (handler.matches(state)) {
-				handler.execute(state, player);
+				rewardsExecuted += handler.execute(state, player, globalRewardLimit - rewardsExecuted);
+				if (globalRewardLimit > -1 && globalRewardLimit - rewardsExecuted < 1) {
+					debug("Hit global reward limit, quitting");
+					break;
+				}
 				// we don't return here in case we have different crop states in different
 				// reward sections, like one manages any stage of wheat while one only does full-grown wheat.
 			} else {

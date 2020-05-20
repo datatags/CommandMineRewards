@@ -4,14 +4,19 @@
 # removeInvalidValues: boolean: If true, will delete invalid blocks in the lists of blocks.
 # multiplier: double (integer or floating point):  Number to multiply chance of getting reward by.
 # survivalOnly: boolean:  If the reward should only be enabled when the player is in survival mode.
-# verbosity:  number (0, 1, or 2) (default 1):  How verbose console messages should be.  0 for none except errors, 1 for errors and executed commands, 2 for a metric ton of logging detail. (probably don't use 2 in production.)
+# verbosity: number (0, 1, or 2) (default 1):  How verbose console messages should be.  0 for none except errors, 1 for errors and executed commands, 2 for a metric ton of logging detail. (probably don't use 2 in production.)
 # debugLog: boolean (true or false): If true, will create a separate debug log in the CMR folder for easy bug reporting.  This setting is ignored unless verbosity is 2.
+# autopickupCompat: boolean (true or false): If true, will grab the broken block type at a lower priority than normal to allow compatibility with plugins such as auto pickup plugins. This setting should be disabled unless required as it may add a bit of overhead
+# globalRewardLimit: integer: If set greater than -1, will limit the total amount of rewards issued per block broken to that number, meaning if it's set to 0, no rewards will ever be issued.
+# randomizeRewardOrder: boolean (true or false): If true, will randomize the order rewards are evaluated in, so it isn't weighted toward the first reward in the list. This usually only matters if you are using any sort of reward limit.
 # Please note that even with verbosity: 0 you will still receive command output in console.  ex. if you have in a reward /give %player% diamond, you will still receive the message "Gave 1 [Diamond] to %player%" every time it runs. If you find a way to prevent the command output, message me on Spigot.
 # (rewardSectionName): section: put rewards in this format:
 # (rewardSectionName):
 #   (name):
-#       blocks: String list:  Name of block to trigger rewards.  You can use :s in name to indicate data values.  Note this will change in 1.13.
+#       blocks: string list: Name of block to trigger rewards.  You can use :s in name to indicate data values.  Note this will change in 1.13.
+#       rewardLimit: number: maximum amount of rewards in this section that can be issued from a single block break.
 #       allowedWorlds: string list: a list of worlds this reward section will operate in.  Defaults to "*", meaning it will operate in any world.
+#       allowedRegions: string list: same as allowedWorlds, but WorldGuard regions
 #       silkTouch: string, can be REQUIRED, IGNORED, or DISALLOWED:  Sets whether silk touch is required, ignored, or prevented from receiving a reward in this section.  Overrides globalSilkTouch, is overriden by silkTouch in a reward under this section.  Defaults to IGNORED.
 #       rewards:
 #           (individualname):
@@ -32,6 +37,8 @@ validateWorldsAndRegions: true
 verbosity: 1
 debugLog: false
 autopickupCompat: false
+globalRewardLimit: -1
+randomizeRewardOrder: false
 genericRewards:
     blocks:
         - cobblestone

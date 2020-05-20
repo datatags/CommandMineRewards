@@ -38,12 +38,10 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new WorldCommand());
 		registerCommand(new SpecialCommand());
 	}
-	public static void init(CommandMineRewards cmr) {
-		if (instance == null) {
-			instance = new CommandDispatcher(cmr);
-		}
-	}
 	public static CommandDispatcher getInstance() {
+		if (instance == null) {
+			instance = new CommandDispatcher(CommandMineRewards.getInstance());
+		}
 		return instance;
 	}
 	protected void registerCommand(CMRCommand command) {

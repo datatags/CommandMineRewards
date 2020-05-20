@@ -1,6 +1,9 @@
 package me.Datatags.CommandMineRewards;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
@@ -13,25 +16,34 @@ public class CMRBlockHandler {
 	private Boolean growth = null;
 	private Set<String> rewardSections = new HashSet<String>();
 	private long uses = 0;
+	private GlobalConfigManager gcm;
 	protected CMRBlockHandler(RewardSection rs, Material type) {
 		this.type = type;
 		this.rewardSections.add(rs.getName());
+		this.gcm = GlobalConfigManager.getInstance();
 	}
 	protected CMRBlockHandler(RewardSection rs, Material type, Boolean growth) {
 		this(rs, type);
 		this.growth = growth;
 	}
-	public void execute(BlockState block, Player player) {
+	public int execute(BlockState block, Player player, int globalRewardLimit) {
 		CommandMineRewards cmr = CommandMineRewards.getInstance();
 		cmr.debug("Processing block " + block.getType().toString());
-		for (RewardSection section : CMRBlockManager.getInstance().getSectionCache()) {
+		int rewardsExecuted = 0;
+		List<RewardSection> sectionCache = new ArrayList<>(CMRBlockManager.getInstance().getSectionCache());
+		if (gcm.isRandomizingRewardOrder()) {
+			Collections.shuffle(sectionCache);
+		}
+		for (RewardSection section : sectionCache) {
 			cmr.debug("Processing section from cache: " + section.getName());
 			if (rewardSections.contains(section.getName())) {
 				cmr.debug("Found section from cache: " + section.getName());
-				section.execute(block, player);
+				rewardsExecuted += section.execute(block, player, globalRewardLimit - rewardsExecuted);
+				if (globalRewardLimit > -1 && globalRewardLimit - rewardsExecuted < 1) break;
 			}
 		}
 		uses++;
+		return rewardsExecuted;
 	}
 	public boolean matches(BlockState state) {
 		if (state.getType() != this.type) return false;

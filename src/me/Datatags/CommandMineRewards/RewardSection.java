@@ -1,6 +1,7 @@
 package me.Datatags.CommandMineRewards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -283,8 +284,7 @@ public class RewardSection {
 		return this.section.getStringList("allowedRegions");
 	}
 	public void setAllowedRegions(List<String> newAllowedRegions) {
-		this.section.set("allowedRegions", newAllowedRegions);
-		cmr.saveConfig();
+		set("allowedRegions", newAllowedRegions);
 	}
 	public void addAllowedRegion(String region) throws RegionAlreadyInListException {
 		if (gcm.containsIgnoreCase(this.getAllowedRegions(), region)) {
@@ -306,8 +306,13 @@ public class RewardSection {
 		return SilkTouchRequirement.getByName(this.section.getString("silkTouch"));
 	}
 	public void setSilkTouchRequirement(SilkTouchRequirement newRequirement) {
-		this.section.set("silkTouch", newRequirement.toString());
-		cmr.saveConfig();
+		set("silkTouch", newRequirement.toString());
+	}
+	public int getRewardLimit() {
+		return Math.max(this.section.getInt("rewardLimit", -1), -1);
+	}
+	public void setRewardLimit(int rewardLimit) {
+		set("rewardLimit", rewardLimit);
 	}
 	public void delete() {
 		for (Entry<String,Boolean> entry : getBlocksWithData().entrySet()) {
@@ -362,7 +367,7 @@ public class RewardSection {
 		cmr.warning("Section " + this.getName() + " tried to find new child " + child + " but failed.");
 		return null;
 	}
-	private void debug(String msg) {
+	protected void debug(String msg) {
 		cmr.debug(msg);
 	}
 	public boolean isApplicable(BlockState state, Player player) {
@@ -378,16 +383,36 @@ public class RewardSection {
 		}
 		return true;
 	}
-	public void execute(BlockState state, Player player) {
+	public int execute(BlockState state, Player player, int globalRewardLimit) {
 		debug("Processing section " + this.getName());
-		if (!isApplicable(state, player)) return;
-		for (Reward reward : getChildren()) {
-			if (reward.isApplicable(player)) {
-				reward.execute(player);
+		if (!isApplicable(state, player)) return 0;
+		List<Reward> rewards = getChildren();
+		int rewardLimit = -1; // this only carries through when both are -1
+		// if both are equal to -1 this is false
+		boolean isRewardLimit = globalRewardLimit != -1 || getRewardLimit() != -1;
+		if (isRewardLimit) {
+			if (globalRewardLimit == -1 || getRewardLimit() == -1) { // if one but not both are -1
+				rewardLimit = Math.max(globalRewardLimit, getRewardLimit()); // neither can be less than -1 so this is ok
+			} else { // both have a value
+				rewardLimit = Math.min(globalRewardLimit, getRewardLimit());
 			}
 		}
+		if (gcm.isRandomizingRewardOrder()) {
+			Collections.shuffle(rewards);
+		}
+		int rewardsExecuted = 0;
+		for (Reward reward : rewards) {
+			if (reward.isApplicable(player)) {
+				boolean rewardIssued = reward.execute(player);
+				if (rewardIssued && isRewardLimit && ++rewardsExecuted >= rewardLimit) {
+					debug("Reward limit reached, quitting");
+					break;
+				}
+			}
+		}
+		return rewardsExecuted;
 	}
-	private void set(String path, Object value) {
+	protected void set(String path, Object value) {
 		this.section.set(path, value);
 		cmr.saveConfig();
 		cbm.reloadSection(this.getName());
