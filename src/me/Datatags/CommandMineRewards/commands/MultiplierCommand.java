@@ -2,12 +2,9 @@ package me.Datatags.CommandMineRewards.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 
 public class MultiplierCommand extends CMRCommand {
-	private static final Permission MODIFY_MULTIPLIER = new Permission("cmr.multiplier.modify");
 	@Override
 	public String getName() {
 		return "multiplier";
@@ -50,7 +47,7 @@ public class MultiplierCommand extends CMRCommand {
 			return true;
 		}
 		// args.length == 1 unless something went wrong and we don't care anyway so
-		if (sender.hasPermission(MODIFY_MULTIPLIER)) {
+		if (sender.hasPermission(getPermission(true))) {
 			double multiplier;
 			try {
 				multiplier = Double.parseDouble(args[0]);

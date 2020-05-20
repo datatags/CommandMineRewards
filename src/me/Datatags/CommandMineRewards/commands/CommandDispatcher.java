@@ -30,6 +30,7 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new HelpCommand());
 		registerCommand(new MultiplierCommand());
 		registerCommand(new ReloadCommand());
+		registerCommand(new LimitCommand());
 		registerCommand(new BlockCommand());
 		registerCommand(new CmdCommand());
 		registerCommand(new RegionCommand());

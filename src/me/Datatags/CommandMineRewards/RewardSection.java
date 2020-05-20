@@ -41,20 +41,20 @@ public class RewardSection {
 		if (path.contains(".")) {
 			throw new InvalidRewardSectionException("You cannot use periods in the reward section name!");
 		}
-		if (!cmr.getConfig().isConfigurationSection(path) && !createIfNotFound) { // if we couldn't find it easily and we're not supposed to create it,
+		if (!gcm.getRewardsConfig().isConfigurationSection(path) && !createIfNotFound) { // if we couldn't find it easily and we're not supposed to create it,
 			if (gcm.searchIgnoreCase(path, "") == null) { // search for it
 				throw new InvalidRewardSectionException("Reward section " + path + " does not exist!"); // if we still couldn't find it, throw an exception
 			}
 			path = gcm.searchIgnoreCase(path, "");
-		} else if (cmr.getConfig().isConfigurationSection(path) && createIfNotFound){
+		} else if (gcm.getRewardsConfig().isConfigurationSection(path) && createIfNotFound){
 			throw new RewardSectionAlreadyExistsException("Reward section " + path + " already exists!");
 		}
-		if (!cmr.getConfig().isConfigurationSection(path) && createIfNotFound) {
-			section = cmr.getConfig().createSection(path);
-			cmr.saveConfig();
+		if (!gcm.getRewardsConfig().isConfigurationSection(path) && createIfNotFound) {
+			section = gcm.getRewardsConfig().createSection(path);
+			gcm.saveRewardsConfig();
 			cbm.loadSection(getName());
 		} else {
-			section = cmr.getConfig().getConfigurationSection(path);
+			section = gcm.getRewardsConfig().getConfigurationSection(path);
 		}
 		postinit();
 	}
@@ -278,7 +278,14 @@ public class RewardSection {
 		}
 	}
 	public boolean isWorldAllowed(String world) {
-		return gcm.containsIgnoreCase(getAllowedWorlds(), world);
+		List<String> worlds;
+		if (getAllowedWorlds().size() == 0) {
+			if (gcm.getGlobalAllowedWorlds().size() == 0) return true;
+			worlds = gcm.getGlobalAllowedWorlds();
+		} else {
+			worlds = getAllowedWorlds();
+		}
+		return (worlds.contains("*")) || gcm.containsIgnoreCase(worlds, world);
 	}
 	public List<String> getAllowedRegions() {
 		return this.section.getStringList("allowedRegions");
@@ -312,14 +319,14 @@ public class RewardSection {
 		return Math.max(this.section.getInt("rewardLimit", -1), -1);
 	}
 	public void setRewardLimit(int rewardLimit) {
-		set("rewardLimit", rewardLimit);
+		set("rewardLimit", Math.max(rewardLimit, -1));
 	}
 	public void delete() {
 		for (Entry<String,Boolean> entry : getBlocksWithData().entrySet()) {
 			cbm.removeCropHandler(this, Material.matchMaterial(entry.getKey().replace("$", "")), entry.getValue());
 		}
-		cmr.getConfig().set(this.getPath(), null);
-		cmr.saveConfig();
+		gcm.getRewardsConfig().set(this.getPath(), null);
+		gcm.saveRewardsConfig();
 		cbm.unloadSection(getName());
 	}
 	public String getName() {
@@ -372,7 +379,7 @@ public class RewardSection {
 	}
 	public boolean isApplicable(BlockState state, Player player) {
 		// block type is checked by CMRBlockHandler
-		if (!gcm.isWorldAllowed(this, player.getWorld().getName())) {
+		if (!isWorldAllowed(player.getWorld().getName())) {
 			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this world.");
 			return false;
 		}
@@ -414,7 +421,7 @@ public class RewardSection {
 	}
 	protected void set(String path, Object value) {
 		this.section.set(path, value);
-		cmr.saveConfig();
+		gcm.saveRewardsConfig();
 		cbm.reloadSection(this.getName());
 	}
 	public void unloadChild(String name) {

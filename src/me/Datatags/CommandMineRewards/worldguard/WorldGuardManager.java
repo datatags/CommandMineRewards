@@ -39,6 +39,7 @@ public class WorldGuardManager {
 		} else {
 			return true;
 		}
+		if (allowedRegions.contains("*")) return true;
 		return checker.isInRegion(allowedRegions, block);
 	}
 	public boolean isValidRegion(String region) {

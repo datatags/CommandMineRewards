@@ -37,7 +37,10 @@ public abstract class CMRCommand {
 	public abstract boolean onCommand(CommandSender sender, String[] args);
 	
 	public Permission getPermission() {
-		return new Permission("cmr." + getName() + (isModifier() ? ".modify" : ""));
+		return getPermission(isModifier());
+	}
+	public Permission getPermission(boolean modify) {
+		return new Permission("cmr." + getName() + (modify ? ".modify" : ""));
 	}
 	protected CommandMineRewards getPlugin() {
 		return (CommandMineRewards) Bukkit.getPluginManager().getPlugin("CommandMineRewards");

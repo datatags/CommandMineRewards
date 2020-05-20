@@ -38,7 +38,7 @@ public class Reward {
 		}
 		this.gcm = GlobalConfigManager.getInstance();
 		this.parent = parent;
-		boolean rewardExists = cmr.getConfig().isConfigurationSection(parent.getName() + ".rewards." + reward); 
+		boolean rewardExists = gcm.getRewardsConfig().isConfigurationSection(parent.getName() + ".rewards." + reward); 
 		if (!rewardExists && !createIfNotFound) {
 			if (gcm.searchIgnoreCase(reward, parent.getName() + ".rewards") == null) {
 				throw new InvalidRewardException("Reward " + reward + " does not exist under section " + parent.getName() + "!");
@@ -48,11 +48,11 @@ public class Reward {
 			throw new RewardAlreadyExistsException("Reward " + reward + " already exists under section " + parent.getName() + "!");
 		}
 		if (!rewardExists && createIfNotFound) {
-			this.section = cmr.getConfig().createSection(parent.getName() + ".rewards." + reward);
-			cmr.saveConfig();
+			this.section = gcm.getRewardsConfig().createSection(parent.getName() + ".rewards." + reward);
+			gcm.saveRewardsConfig();
 			getCacheParent().loadChild(getName());
 		}
-		this.section = cmr.getConfig().getConfigurationSection(parent.getName() + ".rewards." + reward);
+		this.section = gcm.getRewardsConfig().getConfigurationSection(parent.getName() + ".rewards." + reward);
 		perm = new Permission("cmr.use." + parent.getName() + "." + reward);
 		buildCommands();
 	}
@@ -136,8 +136,8 @@ public class Reward {
 		set("silkTouch", silkTouch.toString());
 	}
 	public void delete() {
-		cmr.getConfig().set(this.getPath(), null);
-		cmr.saveConfig();
+		gcm.getRewardsConfig().set(this.getPath(), null);
+		gcm.saveRewardsConfig();
 		getCacheParent().unloadChild(getName());
 	}
 	public String getName() {
@@ -148,7 +148,7 @@ public class Reward {
 	}
 	private void set(String path, Object newValue) {
 		this.section.set(path, newValue);
-		cmr.saveConfig();
+		gcm.saveRewardsConfig();
 		getCacheParent().reloadChild(getName());
 	}
 	private RewardSection getCacheParent() {
