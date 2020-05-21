@@ -73,16 +73,27 @@ public class GlobalConfigManager {
 		}
 		for (String key : getConfig().getKeys(false)) {
 			if (getConfig().isConfigurationSection(key)) {
-				getRewardsConfig().set(key, getConfig().getConfigurationSection(key));
-				getConfig().set(key, null);
+				moveToRewards(key);
 				changed = true;
 			}
+		}
+		// bitwise or, no short circuiting.
+		if (moveToRewards("multiplier") | moveToRewards("globalRewardLimit")) {
+			changed = true;
 		}
 		if (changed) {
 			cmr.saveConfig();
 			saveRewardsConfig();
 			cmr.info("Successfully migrated config!");
 		}
+	}
+	private boolean moveToRewards(String key) {
+		if (getConfig().contains(key)) {
+			rewardsConfig.set(key, getConfig().get(key));
+			getConfig().set(key, null);
+			return true;
+		}
+		return false;
 	}
 	public boolean containsIgnoreCase(List<String> list, String search) {
 		for (String item : list) {
