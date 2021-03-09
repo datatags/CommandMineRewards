@@ -19,13 +19,10 @@ import me.Datatags.CommandMineRewards.Exceptions.BlockAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.BlockNotInListException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidMaterialException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidWorldException;
-import me.Datatags.CommandMineRewards.Exceptions.RegionAlreadyInListException;
-import me.Datatags.CommandMineRewards.Exceptions.RegionNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
 import me.Datatags.CommandMineRewards.Exceptions.RewardSectionAlreadyExistsException;
-import me.Datatags.CommandMineRewards.Exceptions.WorldAlreadyInListException;
-import me.Datatags.CommandMineRewards.Exceptions.WorldNotInListException;
-import me.Datatags.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
 import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class RewardSection {
@@ -36,20 +33,20 @@ public class RewardSection {
 	// purpose of blocksCache is to not pass bad block values (i.e. invalid material, invalid growth state identifier, etc.)
 	private List<String> blocksCache = null;
 	private List<Reward> children = null;
-	public RewardSection(String path, boolean createIfNotFound) {
+	public RewardSection(String path, boolean create) {
 		init();
 		if (path.contains(".")) {
 			throw new InvalidRewardSectionException("You cannot use periods in the reward section name!");
 		}
-		if (!gcm.getRewardsConfig().isConfigurationSection(path) && !createIfNotFound) { // if we couldn't find it easily and we're not supposed to create it,
+		if (!gcm.getRewardsConfig().isConfigurationSection(path) && !create) { // if we couldn't find it easily and we're not supposed to create it,
 			if (gcm.searchIgnoreCase(path, "") == null) { // search for it
 				throw new InvalidRewardSectionException("Reward section " + path + " does not exist!"); // if we still couldn't find it, throw an exception
 			}
 			path = gcm.searchIgnoreCase(path, "");
-		} else if (gcm.getRewardsConfig().isConfigurationSection(path) && createIfNotFound){
+		} else if (gcm.getRewardsConfig().isConfigurationSection(path) && create){
 			throw new RewardSectionAlreadyExistsException("Reward section " + path + " already exists!");
 		}
-		if (!gcm.getRewardsConfig().isConfigurationSection(path) && createIfNotFound) {
+		if (!gcm.getRewardsConfig().isConfigurationSection(path) && create) {
 			section = gcm.getRewardsConfig().createSection(path);
 			gcm.saveRewardsConfig();
 			cbm.loadSection(getName());
@@ -216,11 +213,15 @@ public class RewardSection {
 		cbm.addHandler(this, Material.matchMaterial(block));
 		this.setBlocks(blocks);
 	}
-	public void addBlock(Material block) throws BlockAlreadyInListException, InvalidMaterialException {
-		addBlock(block.toString());
+	public void addBlock(Material block) throws BlockAlreadyInListException {
+		try {
+			addBlock(block.toString());
+		} catch (InvalidMaterialException e) {}
 	}
-	public void addBlock(Material block, String data) throws BlockAlreadyInListException, InvalidMaterialException {
-		addBlock(block.toString(), data);
+	public void addBlock(Material block, String data) throws BlockAlreadyInListException {
+		try {
+			addBlock(block.toString(), data);
+		} catch (InvalidMaterialException e) {} // this shouldn't ever happen
 	}
 	public void addBlock(String block, String data) throws BlockAlreadyInListException, InvalidMaterialException {
 		validateBlock(block + ":" + data); // in case it came from addBlock(Material, String) or a direct call. Plus it's just a command, doesn't hurt to validate twice.
@@ -232,7 +233,7 @@ public class RewardSection {
 		cbm.addCropHandler(this, Material.matchMaterial(block), Boolean.parseBoolean(data));
 		this.setBlocks(blocks);
 	}
-	public void removeBlock(String block, boolean hasData) throws BlockNotInListException {
+	public void removeBlockRaw(String block, boolean hasData) throws BlockNotInListException {
 		List<String> blocks = this.getRawBlocks();
 		if (gcm.removeIgnoreCase(blocks, block)) {
 			blocks.remove(block);
@@ -246,11 +247,15 @@ public class RewardSection {
 			throw new BlockNotInListException("The block " + block + " is not handled by the reward section " + this.getName() + "!");
 		}
 	}
-	public void removeBlock(String block, byte data) throws BlockNotInListException {
-		removeBlock(block + ":" + data, true);
+	public void removeBlock(String block, Boolean data) throws BlockNotInListException {
+		if (data == null) {
+			removeBlockRaw(block, false);
+		} else {
+			removeBlockRaw(block + ":" + data, true);
+		}
 	}
 	public void removeBlock(Material block) throws BlockNotInListException {
-		removeBlock(block.toString(), false);
+		removeBlockRaw(block.toString(), false);
 	}
 	public List<String> getAllowedWorlds() {
 		return this.section.getStringList("allowedWorlds");
@@ -258,23 +263,23 @@ public class RewardSection {
 	public void setAllowedWorlds(List<String> newAllowedWorlds) {
 		set("allowedWorlds", newAllowedWorlds);
 	}
-	public void addAllowedWorld(String world) throws WorldAlreadyInListException, InvalidWorldException {
+	public void addAllowedWorld(String world) throws AreaAlreadyInListException, InvalidAreaException {
 		if (gcm.containsIgnoreCase(this.getAllowedWorlds(), world)) {
-			throw new WorldAlreadyInListException("The world " + world + " is already handled by the reward section " + this.getName() + "!");
+			throw new AreaAlreadyInListException("The world " + world + " is already handled by the reward section " + this.getName() + "!");
 		}
 		if (!gcm.isValidWorld(world)) {
-			throw new InvalidWorldException("The world " + world + " does not exist!");
+			throw new InvalidAreaException("The world " + world + " does not exist!");
 		}
 		List<String> worlds = this.getAllowedWorlds();
 		worlds.add(world);
 		this.setAllowedWorlds(worlds);
 	}
-	public void removeAllowedWorld(String world) throws WorldNotInListException {
+	public void removeAllowedWorld(String world) throws AreaNotInListException {
 		List<String> worlds = this.getAllowedWorlds();
 		if (gcm.removeIgnoreCase(worlds, world)) {
 			this.setAllowedWorlds(worlds);
 		} else {
-			throw new WorldNotInListException("The world " + world + " is not handled by the reward section " + this.getName() + "!");
+			throw new AreaNotInListException("The world " + world + " is not handled by the reward section " + this.getName() + "!");
 		}
 	}
 	public boolean isWorldAllowed(String world) {
@@ -293,26 +298,27 @@ public class RewardSection {
 	public void setAllowedRegions(List<String> newAllowedRegions) {
 		set("allowedRegions", newAllowedRegions);
 	}
-	public void addAllowedRegion(String region) throws RegionAlreadyInListException {
+	public void addAllowedRegion(String region) throws AreaAlreadyInListException {
 		if (gcm.containsIgnoreCase(this.getAllowedRegions(), region)) {
-			throw new RegionAlreadyInListException("The region " + region + " is already handled by the reward section " + this.getName() + "!");
+			throw new AreaAlreadyInListException("The region " + region + " is already handled by the reward section " + this.getName() + "!");
 		}
 		List<String> regions = this.getAllowedRegions();
 		regions.add(region);
 		this.setAllowedRegions(regions);
 	}
-	public void removeAllowedRegion(String region) throws RegionNotInListException {
+	public void removeAllowedRegion(String region) throws AreaNotInListException {
 		List<String> regions = this.getAllowedRegions();
 		if (gcm.removeIgnoreCase(regions, region)) {
 			this.setAllowedRegions(regions);
 		} else {
-			throw new RegionNotInListException("The region " + region + " is not handled by the reward section " + this.getName() + "!");
+			throw new AreaNotInListException("The region " + region + " is not handled by the reward section " + this.getName() + "!");
 		}
 	}
-	public SilkTouchRequirement getSilkTouchRequirement() {
-		return SilkTouchRequirement.getByName(this.section.getString("silkTouch"));
+	public SilkTouchPolicy getSilkTouchPolicy() {
+		SilkTouchPolicy stp = SilkTouchPolicy.getByName(this.section.getString("silkTouch"));
+		return stp == null ? SilkTouchPolicy.INHERIT : stp;
 	}
-	public void setSilkTouchRequirement(SilkTouchRequirement newRequirement) {
+	public void setSilkTouchPolicy(SilkTouchPolicy newRequirement) {
 		set("silkTouch", newRequirement.toString());
 	}
 	public int getRewardLimit() {

@@ -3,6 +3,7 @@ package me.Datatags.CommandMineRewards.commands.block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.commands.CompoundCommand;
 
 public class BlockCommand extends CompoundCommand {
@@ -19,5 +20,9 @@ public class BlockCommand extends CompoundCommand {
 	}
 	protected ItemStack getItemInHand(Player player) {
 		return getPlugin().getItemInHand(player);
+	}
+	@Override
+	public CMRPermission getPermission() {
+		return CMRPermission.BLOCK;
 	}
 }

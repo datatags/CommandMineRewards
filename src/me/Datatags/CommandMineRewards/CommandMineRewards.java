@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.Datatags.CommandMineRewards.commands.CMRTabComplete;
 import me.Datatags.CommandMineRewards.commands.CommandDispatcher;
+import me.Datatags.CommandMineRewards.gui.GUIListener;
 import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CommandMineRewards extends JavaPlugin {
@@ -38,8 +39,10 @@ public class CommandMineRewards extends JavaPlugin {
 		new CMRTabComplete(this); // this can run anytime really
 		gcm.load(); // this needs to run before RewardSections start loading
 		CMRBlockManager.getInstance(); // not a priority, just to get the sort timer ticking
-		new EventListener(this); // initialize the block break listener
+		getServer().getPluginManager().registerEvents(new EventListener(this), this); // initialize the block break listener
+		getServer().getPluginManager().registerEvents(new GUIListener(), this);
 		CommandDispatcher.getInstance(); // initialize the commands
+		new Metrics(this, 9691);
 		info("CommandMineRewards is enabled!");
 		pluginReady = true;
 	}
@@ -94,6 +97,9 @@ public class CommandMineRewards extends JavaPlugin {
 	public String getFullMinecraftVersion() {
 		String ver = Bukkit.getBukkitVersion(); // ex: 1.15.2-R0.1-SNAPSHOT
 		return ver.substring(0, ver.indexOf('-'));
+	}
+	public boolean isLegacyMinecraft() {
+		return minecraftVersion < 13;
 	}
 	@Override
 	public void onDisable() {

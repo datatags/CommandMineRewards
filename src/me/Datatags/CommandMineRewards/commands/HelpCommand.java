@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
+
 public class HelpCommand extends CMRCommand {
 	private static final double MAX_PAGE_SIZE = 5; // is a double because int + int = int but int + double = double, and we need that for rounding.
 	private static final String GENERIC_HELP = ChatColor.GREEN + "----------" + ChatColor.GOLD + "CommandMineRewards Help" + ChatColor.GREEN + "----------"; 
@@ -39,8 +41,8 @@ public class HelpCommand extends CMRCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return false;
+	public CMRPermission getPermission() {
+		return CMRPermission.HELP;
 	}
 
 	@Override
@@ -81,7 +83,7 @@ public class HelpCommand extends CMRCommand {
 				return true;
 			}
 			CMRCommand cmd = matches[0];
-			if (!sender.hasPermission(cmd.getPermission())) {
+			if (!cmd.getPermission().test(sender)) {
 				sender.sendMessage(ChatColor.RED + "You do not have permission to use that command, and therefore need no help with it.");
 				return true;
 			}

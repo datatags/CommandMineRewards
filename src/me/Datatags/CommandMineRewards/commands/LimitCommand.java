@@ -3,6 +3,7 @@ package me.Datatags.CommandMineRewards.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
@@ -34,8 +35,8 @@ public class LimitCommand extends CMRCommand {
 	}
 
 	@Override
-	public boolean isModifier() {
-		return false;
+	public CMRPermission getPermission() {
+		return CMRPermission.LIMIT;
 	}
 	
 	@Override
@@ -62,10 +63,7 @@ public class LimitCommand extends CMRCommand {
 		} else if (args.length == 1) {
 			try {
 				int newValue = Integer.parseInt(args[0]);
-				if (!sender.hasPermission(getPermission(true))) {
-					sender.sendMessage(NO_PERMISSION);
-					return true;
-				}
+				if (!CMRPermission.LIMIT_MODIFY.attempt(sender)) return true;
 				gcm.setGlobalRewardLimit(newValue);
 				sender.sendMessage(ChatColor.GREEN + "Success!");
 				return true;
@@ -83,10 +81,7 @@ public class LimitCommand extends CMRCommand {
 		if (args.length == 1) {
 			sender.sendMessage(ChatColor.GREEN + "The reward limit for section " + section.getName() + " is currently " + section.getRewardLimit());
 		} else { // args.length == 2
-			if (!sender.hasPermission(getPermission(true))) {
-				sender.sendMessage(NO_PERMISSION);
-				return true;
-			}
+			if (!CMRPermission.LIMIT_MODIFY.attempt(sender)) return true;
 			try {
 				section.setRewardLimit(Integer.parseInt(args[1]));
 				sender.sendMessage(ChatColor.GREEN + "Success!");

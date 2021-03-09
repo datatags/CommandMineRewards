@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.BlockAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidMaterialException;
@@ -37,8 +38,8 @@ public class BlockAddCommand extends BlockCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.BLOCK_MODIFY;
 	}
 	
 	@Override
@@ -71,7 +72,7 @@ public class BlockAddCommand extends BlockCommand {
 			}
 			try {
 				new RewardSection(args[0]).addBlock(item);
-			} catch (InvalidRewardSectionException | BlockAlreadyInListException | InvalidMaterialException e) {
+			} catch (InvalidRewardSectionException | BlockAlreadyInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

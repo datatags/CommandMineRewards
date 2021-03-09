@@ -2,6 +2,8 @@ package me.Datatags.CommandMineRewards.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 
 public class MultiplierCommand extends CMRCommand {
@@ -35,8 +37,8 @@ public class MultiplierCommand extends CMRCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return false;
+	public CMRPermission getPermission() {
+		return CMRPermission.MULTIPLIER;
 	}
 
 	@Override
@@ -47,19 +49,16 @@ public class MultiplierCommand extends CMRCommand {
 			return true;
 		}
 		// args.length == 1 unless something went wrong and we don't care anyway so
-		if (sender.hasPermission(getPermission(true))) {
-			double multiplier;
-			try {
-				multiplier = Double.parseDouble(args[0]);
-			} catch (NumberFormatException e) {
-				sender.sendMessage(ChatColor.RED + args[0] + " is not a valid number!");
-				return true;
-			}
-			gcm.setMultiplier(multiplier); // does bounds checking on its own
-			sender.sendMessage(ChatColor.GREEN + "Multiplier successfully updated!  New multiplier:  " + multiplier);
-		} else {
-			sender.sendMessage(NO_PERMISSION);
+		if (CMRPermission.MULTIPLIER_MODIFY.attempt(sender)) return true;
+		double multiplier;
+		try {
+			multiplier = Double.parseDouble(args[0]);
+		} catch (NumberFormatException e) {
+			sender.sendMessage(ChatColor.RED + args[0] + " is not a valid number!");
+			return true;
 		}
+		gcm.setMultiplier(multiplier); // does bounds checking on its own
+		sender.sendMessage(ChatColor.GREEN + "Multiplier successfully updated!  New multiplier:  " + multiplier);
 		return true;
 	}
 

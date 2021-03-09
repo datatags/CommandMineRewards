@@ -3,6 +3,7 @@ package me.Datatags.CommandMineRewards.commands.cmd;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
@@ -48,8 +49,8 @@ public class CmdInsertCommand extends CmdCommand {
 		return new ArgType[] {ArgType.REWARD_SECTION, ArgType.REWARD};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.COMMAND_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {

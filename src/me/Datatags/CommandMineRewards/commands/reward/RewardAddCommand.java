@@ -3,6 +3,7 @@ package me.Datatags.CommandMineRewards.commands.reward;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
@@ -36,8 +37,8 @@ public class RewardAddCommand extends RewardCommand {
 		return new String[] {"miningRewards", "genericRewards superMegaReward"};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.REWARD_MODIFY;
 	}
 	@Override
 	public int getMinArgs() {

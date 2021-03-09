@@ -1,5 +1,6 @@
 package me.Datatags.CommandMineRewards.commands.region;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.commands.CompoundCommand;
 
 public class RegionCommand extends CompoundCommand {
@@ -20,6 +21,10 @@ public class RegionCommand extends CompoundCommand {
 	@Override
 	public void init() {
 		registerChildren(new RegionAddCommand(), new RegionListCommand(), new RegionRemoveCommand());
+	}
+	@Override
+	public CMRPermission getPermission() {
+		return CMRPermission.REGION;
 	}
 
 }

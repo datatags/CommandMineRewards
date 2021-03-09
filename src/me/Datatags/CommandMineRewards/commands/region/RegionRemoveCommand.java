@@ -3,10 +3,11 @@ package me.Datatags.CommandMineRewards.commands.region;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.RegionNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RegionRemoveCommand extends RegionCommand {
@@ -49,8 +50,8 @@ public class RegionRemoveCommand extends RegionCommand {
 		return new ArgType[] {ArgType.REGION, ArgType.REWARD_SECTION};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.REGION_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
@@ -62,7 +63,7 @@ public class RegionRemoveCommand extends RegionCommand {
 		if (args.length == 1) {
 			try {
 				GlobalConfigManager.getInstance().removeGlobalAllowedRegion(region);
-			} catch (RegionNotInListException e) {
+			} catch (AreaNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -70,7 +71,7 @@ public class RegionRemoveCommand extends RegionCommand {
 			String rewardSection = args[1];
 			try {
 				new RewardSection(rewardSection).removeAllowedRegion(region);
-			} catch (InvalidRewardSectionException | RegionNotInListException e) {
+			} catch (InvalidRewardSectionException | AreaNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

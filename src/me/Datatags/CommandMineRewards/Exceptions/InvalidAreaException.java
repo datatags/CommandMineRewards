@@ -1,13 +1,13 @@
 package me.Datatags.CommandMineRewards.Exceptions;
 
-public class InvalidRegionException extends Exception {
+public class InvalidAreaException extends Exception {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2506450256039021677L;
 	
-	public InvalidRegionException(String message) {
+	public InvalidAreaException(String message) {
 		super(message);
 	}
 }

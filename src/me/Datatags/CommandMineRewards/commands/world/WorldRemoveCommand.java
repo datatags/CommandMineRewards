@@ -4,10 +4,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.WorldNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class WorldRemoveCommand extends WorldCommand {
@@ -50,8 +51,8 @@ public class WorldRemoveCommand extends WorldCommand {
 		return new ArgType[] {ArgType.WORLD, ArgType.REWARD_SECTION};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.WORLD_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
@@ -64,7 +65,7 @@ public class WorldRemoveCommand extends WorldCommand {
 			Player player = (Player)sender;
 			try {
 				gcm.removeGlobalAllowedWorld(player.getWorld().getName());
-			} catch (WorldNotInListException e) {
+			} catch (AreaNotInListException e) {
 				player.sendMessage(e.getMessage());
 			}
 			return true;
@@ -73,7 +74,7 @@ public class WorldRemoveCommand extends WorldCommand {
 		if (args.length == 1) {
 			try {
 				gcm.removeGlobalAllowedWorld(world);
-			} catch (WorldNotInListException e) {
+			} catch (AreaNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -82,7 +83,7 @@ public class WorldRemoveCommand extends WorldCommand {
 			String rewardSection = args[1];
 			try {
 				new RewardSection(rewardSection).removeAllowedWorld(world);
-			} catch (InvalidRewardSectionException | WorldNotInListException e) {
+			} catch (InvalidRewardSectionException | AreaNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

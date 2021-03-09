@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.BlockNotInListException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
@@ -50,8 +51,8 @@ public class BlockRemoveCommand extends BlockCommand {
 		return new ArgType[] {ArgType.REWARD_SECTION, ArgType.BLOCK, ArgType.BOOLEAN};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.BLOCK_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
@@ -77,7 +78,7 @@ public class BlockRemoveCommand extends BlockCommand {
 		}
 		if (args.length == 2) {
 			try {
-				new RewardSection(args[0]).removeBlock(args[1], args[1].contains(":") ? true : false);
+				new RewardSection(args[0]).removeBlockRaw(args[1], args[1].contains(":") ? true : false);
 			} catch (InvalidRewardSectionException | BlockNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;

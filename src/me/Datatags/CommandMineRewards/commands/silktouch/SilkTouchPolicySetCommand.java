@@ -3,9 +3,11 @@ package me.Datatags.CommandMineRewards.commands.silktouch;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.SilkTouchPolicy;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
@@ -50,25 +52,25 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 		return new ArgType[] {ArgType.SILKTOUCH, ArgType.REWARD_SECTION, ArgType.REWARD};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.SILKTOUCHPOLICY_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
-		SilkTouchRequirement req = SilkTouchRequirement.getByName(args[0]);
+		SilkTouchPolicy req = SilkTouchPolicy.getByName(args[0]);
 		if (req == null) {
 			sender.sendMessage(ChatColor.RED + "The policy " + args[0] + " was not understood.  Please put REQUIRED, IGNORED, OR DISALLOWED.");
 			return true;
 		}
 		if (args.length == 1) {
-			GlobalConfigManager.getInstance().setGlobalSilkTouchRequirement(req);
+			GlobalConfigManager.getInstance().setGlobalSilkTouchPolicy(req);
 			sender.sendMessage(SUCCESS);
 			return true;
 		}
 		String rewardSection = args[1];
 		if (args.length == 2) {
 			try {
-				new RewardSection(rewardSection).setSilkTouchRequirement(req);
+				new RewardSection(rewardSection).setSilkTouchPolicy(req);
 			} catch (InvalidRewardSectionException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
@@ -76,7 +78,7 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 		} else if (args.length == 3) {
 			String reward = args[2];
 			try {
-				new Reward(rewardSection, reward).setSilkTouchRequirement(req);
+				new Reward(rewardSection, reward).setSilkTouchPolicy(req);
 			} catch (InvalidRewardSectionException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;

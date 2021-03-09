@@ -31,11 +31,6 @@ public class TitleCommand extends SpecialCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return false;
-	}
-	
-	@Override
 	public int getMinArgs() {
 		return 2;
 	}

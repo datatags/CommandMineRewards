@@ -4,11 +4,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.RewardSection;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidWorldException;
-import me.Datatags.CommandMineRewards.Exceptions.WorldAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class WorldAddCommand extends WorldCommand {
@@ -51,8 +52,8 @@ public class WorldAddCommand extends WorldCommand {
 		return new ArgType[] {ArgType.WORLD, ArgType.REWARD_SECTION};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.WORLD_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
@@ -65,7 +66,7 @@ public class WorldAddCommand extends WorldCommand {
 			Player player = (Player)sender;
 			try {
 				gcm.addGlobalAllowedWorld(player.getWorld().getName());
-			} catch (WorldAlreadyInListException | InvalidWorldException e) {
+			} catch (AreaAlreadyInListException | InvalidAreaException e) {
 				sender.sendMessage(e.getMessage());
 			}
 			return true;
@@ -74,7 +75,7 @@ public class WorldAddCommand extends WorldCommand {
 		if (args.length == 1) {
 			try {
 				gcm.addGlobalAllowedWorld(world);
-			} catch (WorldAlreadyInListException | InvalidWorldException e) {
+			} catch (AreaAlreadyInListException | InvalidAreaException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -83,7 +84,7 @@ public class WorldAddCommand extends WorldCommand {
 			String rewardSection = args[1];
 			try {
 				new RewardSection(rewardSection).addAllowedWorld(world);
-			} catch (InvalidRewardSectionException | WorldAlreadyInListException | InvalidWorldException e) {
+			} catch (InvalidRewardSectionException | AreaAlreadyInListException | InvalidAreaException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

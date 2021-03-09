@@ -1,5 +1,6 @@
 package me.Datatags.CommandMineRewards.commands.world;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.commands.CompoundCommand;
 
 public class WorldCommand extends CompoundCommand {
@@ -17,6 +18,10 @@ public class WorldCommand extends CompoundCommand {
 	@Override
 	public void init() {
 		registerChildren(new WorldAddCommand(), new WorldListCommand(), new WorldRemoveCommand());
+	}
+	@Override
+	public CMRPermission getPermission() {
+		return CMRPermission.WORLD;
 	}
 	
 }

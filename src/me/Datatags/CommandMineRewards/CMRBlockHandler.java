@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 public class CMRBlockHandler {
 	private Material type;
+	private boolean canHaveData = false;
 	private Boolean growth = null;
 	private Set<String> rewardSections = new HashSet<String>();
 	private long uses = 0;
@@ -21,6 +22,9 @@ public class CMRBlockHandler {
 		this.type = type;
 		this.rewardSections.add(rs.getName());
 		this.gcm = GlobalConfigManager.getInstance();
+		if (!CommandMineRewards.getInstance().isLegacyMinecraft() && Ageable.class.isAssignableFrom(type.data)) {
+			this.canHaveData = true;
+		}
 	}
 	protected CMRBlockHandler(RewardSection rs, Material type, Boolean growth) {
 		this(rs, type);
@@ -73,5 +77,8 @@ public class CMRBlockHandler {
 	}
 	public long getUses() {
 		return uses;
+	}
+	public boolean canHaveData() {
+		return canHaveData;
 	}
 }

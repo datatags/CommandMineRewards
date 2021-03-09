@@ -11,13 +11,9 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRegionException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidWorldException;
-import me.Datatags.CommandMineRewards.Exceptions.RegionAlreadyInListException;
-import me.Datatags.CommandMineRewards.Exceptions.RegionNotInListException;
-import me.Datatags.CommandMineRewards.Exceptions.WorldAlreadyInListException;
-import me.Datatags.CommandMineRewards.Exceptions.WorldNotInListException;
-import me.Datatags.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
 
 public class GlobalConfigManager {
 	private static GlobalConfigManager instance = null;
@@ -128,20 +124,20 @@ public class GlobalConfigManager {
 		getConfig().set("globalAllowedWorlds", newAllowedWorlds);
 		cmr.saveConfig();
 	}
-	public void addGlobalAllowedWorld(String world) throws WorldAlreadyInListException, InvalidWorldException {
+	public void addGlobalAllowedWorld(String world) throws AreaAlreadyInListException, InvalidAreaException {
 		if (containsIgnoreCase(getGlobalAllowedWorlds(), world)) {
-			throw new WorldAlreadyInListException("The world " + world + " is already globally allowed.");
+			throw new AreaAlreadyInListException("The world " + world + " is already globally allowed.");
 		}
 		if (!isValidWorld(world)) {
-			throw new InvalidWorldException("There is no world with the name " + world);
+			throw new InvalidAreaException("There is no world with the name " + world);
 		}
 		List<String> worlds = getGlobalAllowedWorlds();
 		worlds.add(world);
 		setGlobalAllowedWorlds(worlds);
 	}
-	public void removeGlobalAllowedWorld(String world) throws WorldNotInListException {
+	public void removeGlobalAllowedWorld(String world) throws AreaNotInListException {
 		if (!containsIgnoreCase(getGlobalAllowedWorlds(), world)) {
-			throw new WorldNotInListException("The world " + world + " is not globally allowed.");
+			throw new AreaNotInListException("The world " + world + " is not globally allowed.");
 		}
 		List<String> worlds = getGlobalAllowedWorlds();
 		worlds.remove(world);
@@ -154,50 +150,51 @@ public class GlobalConfigManager {
 		getConfig().set("globalAllowedRegions", newAllowedRegions);
 		cmr.saveConfig();
 	}
-	public void addGlobalAllowedRegion(String region) throws RegionAlreadyInListException, InvalidRegionException {
+	public void addGlobalAllowedRegion(String region) throws AreaAlreadyInListException, InvalidAreaException {
 		if (containsIgnoreCase(getGlobalAllowedRegions(), region)) {
-			throw new RegionAlreadyInListException("The WorldGuard region " + region + " is already globally allowed.");
+			throw new AreaAlreadyInListException("The WorldGuard region " + region + " is already globally allowed.");
 		}
 		if (!cmr.getWGManager().isValidRegion(region)) {
-			throw new InvalidRegionException("There is no such WorldGuard region with the name " + region + ".");
+			throw new InvalidAreaException("There is no such WorldGuard region with the name " + region + ".");
 		}
 		List<String> regions = getGlobalAllowedRegions();
 		regions.add(region);
 		setGlobalAllowedRegions(regions);
 	}
-	public void removeGlobalAllowedRegion(String region) throws RegionNotInListException {
+	public void removeGlobalAllowedRegion(String region) throws AreaNotInListException {
 		if (!containsIgnoreCase(getGlobalAllowedRegions(), region)) {
-			throw new RegionNotInListException("The WorldGuard region " + region + " is not globally allowed!");
+			throw new AreaNotInListException("The WorldGuard region " + region + " is not globally allowed!");
 		}
 		List<String> regions = getGlobalAllowedRegions();
 		regions.remove(region);
 		setGlobalAllowedRegions(regions);
 	}
-	public SilkTouchRequirement getGlobalSilkTouchRequirement() {
-		return SilkTouchRequirement.getByName(getConfig().getString("globalSilkTouch"));
+	public SilkTouchPolicy getGlobalSilkTouchPolicy() {
+		SilkTouchPolicy stp = SilkTouchPolicy.getByName(getConfig().getString("globalSilkTouch"));
+		return stp == null ? SilkTouchPolicy.INHERIT : stp;
 	}
-	public void setGlobalSilkTouchRequirement(SilkTouchRequirement newRequirement) {
+	public void setGlobalSilkTouchPolicy(SilkTouchPolicy newRequirement) {
 		getConfig().set("globalSilkTouch", newRequirement.toString());
 		cmr.saveConfig();
 	}
-	public SilkTouchRequirement getSilkTouchRequirement(RewardSection rewardSection, Reward reward) {
-		if (reward.getSilkTouchRequirement() != null) {
-			return reward.getSilkTouchRequirement();
-		} else if (rewardSection.getSilkTouchRequirement() != null) {
-			return rewardSection.getSilkTouchRequirement();
-		} else if (getGlobalSilkTouchRequirement() != null) {
-			return getGlobalSilkTouchRequirement();
+	public SilkTouchPolicy getSilkTouchPolicy(RewardSection rewardSection, Reward reward) {
+		if (reward != null && reward.getSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
+			return reward.getSilkTouchPolicy();
+		} else if (rewardSection != null && rewardSection.getSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
+			return rewardSection.getSilkTouchPolicy();
+		} else if (getGlobalSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
+			return getGlobalSilkTouchPolicy();
 		} else {
-			return SilkTouchRequirement.IGNORED;
+			return SilkTouchPolicy.IGNORED;
 		}
 	}
 	public boolean silkStatusAllowed(RewardSection rewardSection, Reward reward, boolean silkTouch) {
-		SilkTouchRequirement current = getSilkTouchRequirement(rewardSection, reward);
-		if (current == SilkTouchRequirement.IGNORED) {
+		SilkTouchPolicy current = getSilkTouchPolicy(rewardSection, reward);
+		if (current == SilkTouchPolicy.IGNORED) {
 			return true;
-		} else if (current == SilkTouchRequirement.REQUIRED && silkTouch) {
+		} else if (current == SilkTouchPolicy.REQUIRED && silkTouch) {
 			return true;
-		} else if (current == SilkTouchRequirement.DISALLOWED && !silkTouch) {
+		} else if (current == SilkTouchPolicy.DISALLOWED && !silkTouch) {
 			return true;
 		} else {
 			return false;

@@ -38,6 +38,7 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new SilkTouchPolicyCommand());
 		registerCommand(new WorldCommand());
 		registerCommand(new SpecialCommand());
+		registerCommand(new GUICommand());
 	}
 	public static CommandDispatcher getInstance() {
 		if (instance == null) {
@@ -92,10 +93,7 @@ public class CommandDispatcher implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "Available args: " + cmd.getUsage());
 			return;
 		}
-		if (!sender.hasPermission(cmd.getPermission())) {
-			sender.sendMessage(CMRCommand.NO_PERMISSION);
-			return;
-		}
+		if (!cmd.getPermission().attempt(sender)) return;
 		if (!cmd.onCommand(sender, args)) {
 			sender.sendMessage(ChatColor.RED + "Available args: " + cmd.getUsage());
 		}

@@ -31,11 +31,6 @@ public class MessageCommand extends SpecialCommand {
 	public String[] getExamples() {
 		return new String[] {"&aYou found a &8rock!"};
 	}
-
-	@Override
-	public boolean isModifier() {
-		return false;
-	}
 	
 	@Override
 	public int getMinArgs() {

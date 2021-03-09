@@ -19,6 +19,7 @@ public class CMRBlockManager {
 	private static CMRBlockManager instance;
 	private static final int sortDelayTicks = 300*20;
 	private GlobalConfigManager gcm;
+	private Set<RSCacheListener> listeners = new HashSet<>();
 	private CMRBlockManager(CommandMineRewards cmr) {
 		this.cmr = cmr;
 		this.gcm = GlobalConfigManager.getInstance();
@@ -114,8 +115,9 @@ public class CMRBlockManager {
 					debug("Hit global reward limit, quitting");
 					break;
 				}
-				// we don't return here in case we have different crop states in different
-				// reward sections, like one manages any stage of wheat while one only does full-grown wheat.
+				if (!(handler.getType().createBlockData() instanceof Ageable)) {
+					break;
+				}
 			} else {
 				debug("Handler " + handler.getType() + " did not match block " + state.getType());
 			}
@@ -134,15 +136,34 @@ public class CMRBlockManager {
 			rewardSectionCache.add(section);
 		}
 		reloadHandlers();
+		for (RSCacheListener listener : listeners) {
+			listener.reloadCache();
+		}
 	}
 	public void reloadSection(String name) {
-		unloadSection(name);
-		loadSection(name);
+		unloadSection(name, true);
+		RewardSection section = loadSection(name, true);
+		for (RSCacheListener listener : listeners) {
+			listener.reloadSection(section);
+		}
 	}
-	public void loadSection(String name) {
-		rewardSectionCache.add(new RewardSection(name, false));
+	public RewardSection loadSection(String name) {
+		return loadSection(name, false);
+	}
+	public RewardSection loadSection(String name, boolean reload) {
+		RewardSection section = new RewardSection(name, false);
+		rewardSectionCache.add(section);
+		if (!reload) {
+			for (RSCacheListener listener : listeners) {
+				listener.loadSection(section);
+			}
+		}
+		return section;
 	}
 	public void unloadSection(String name) {
+		unloadSection(name, false);
+	}
+	public void unloadSection(String name, boolean reload) {
 		cmr.debug("Reloading section " + name);
 		RewardSection reloading = null;
 		for (RewardSection section : rewardSectionCache) {
@@ -155,8 +176,19 @@ public class CMRBlockManager {
 		} else {
 			cmr.warning("A section reload was requested but the section in question was not found!");
 		}
+		if (!reload) {
+			for (RSCacheListener listener : listeners) {
+				listener.unloadSection(name);
+			}
+		}
 	}
 	public Set<RewardSection> getSectionCache() {
 		return rewardSectionCache;
+	}
+	public void registerListener(RSCacheListener listener) {
+		listeners.add(listener);
+	}
+	public void unregisterListener(RSCacheListener listener) {
+		listeners.remove(listener);
 	}
 }

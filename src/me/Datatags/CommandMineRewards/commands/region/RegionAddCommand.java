@@ -3,11 +3,12 @@ package me.Datatags.CommandMineRewards.commands.region;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRegionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.RegionAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RegionAddCommand extends RegionCommand {
@@ -50,8 +51,8 @@ public class RegionAddCommand extends RegionCommand {
 		return new ArgType[] {ArgType.REGION, ArgType.REWARD_SECTION};
 	}
 	@Override
-	public boolean isModifier() {
-		return true;
+	public CMRPermission getPermission() {
+		return CMRPermission.REGION_MODIFY;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
@@ -63,7 +64,7 @@ public class RegionAddCommand extends RegionCommand {
 		if (args.length == 1) {
 			try {
 				GlobalConfigManager.getInstance().addGlobalAllowedRegion(region);
-			} catch (RegionAlreadyInListException | InvalidRegionException e) {
+			} catch (AreaAlreadyInListException | InvalidAreaException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -71,7 +72,7 @@ public class RegionAddCommand extends RegionCommand {
 			String rewardSection = args[1];
 			try {
 				new RewardSection(rewardSection).addAllowedRegion(region);
-			} catch (InvalidRewardSectionException | RegionAlreadyInListException e) {
+			} catch (InvalidRewardSectionException | AreaAlreadyInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

@@ -18,7 +18,6 @@ public class EventListener implements Listener {
 	public EventListener(CommandMineRewards plugin) {
 		this.cmr = plugin;
 		this.gcm = GlobalConfigManager.getInstance();
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		this.cbm = CMRBlockManager.getInstance();
 	}
 	@EventHandler(priority = EventPriority.MONITOR)

@@ -1,5 +1,6 @@
 package me.Datatags.CommandMineRewards.commands.silktouch;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.commands.CompoundCommand;
 
 public class SilkTouchPolicyCommand extends CompoundCommand {
@@ -19,6 +20,10 @@ public class SilkTouchPolicyCommand extends CompoundCommand {
 	@Override
 	public void init() {
 		registerChildren(new SilkTouchPolicyGetCommand(), new SilkTouchPolicySetCommand());
+	}
+	@Override
+	public CMRPermission getPermission() {
+		return CMRPermission.SILKTOUCHPOLICY;
 	}
 
 }

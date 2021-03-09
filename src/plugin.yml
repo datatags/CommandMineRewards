@@ -1,7 +1,7 @@
 name: CommandMineRewards
 main: me.Datatags.CommandMineRewards.CommandMineRewards
 author: Datatags
-version: 6.7
+version: 7.0
 api-version: 1.13
 softdepend: [WorldGuard]
 commands:
@@ -11,7 +11,6 @@ commands:
 permissions:
     cmr.seeall:
         description: Allows you the permission to see everything related to CMR but not change it.
-        default: OP
         children:
             cmr.help: true
             cmr.block: true
@@ -20,9 +19,9 @@ permissions:
             cmr.multiplier: true
             cmr.world: true
             cmr.region: true
+            cmr.limit: true
     cmr.admin:
         description: Allows you to use any CMR commands
-        default: OP
         children:
             cmr.*: true
     cmr.help:
@@ -30,46 +29,41 @@ permissions:
         default: true
     cmr.reload:
         description: The permission required to reload the CMR config.
-        default: OP
     cmr.multiplier.modify:
         description: The permission required to adjust the reward chance multiplier.
-        default: OP
     cmr.multiplier:
         description: The permission required to view the reward chance multiplier.
-        default: OP
     cmr.block.modify:
         description: The permission required to edit the list of blocks that trigger rewards.
-        default: OP
     cmr.block:
         description: The permission required to view the list of blocks which trigger rewards.
-        default: OP
     cmr.reward.modify:
         description: The permission required to create or delete rewards.  Be careful who you give this to!
-        default: OP
     cmr.reward:
         description: The permission required to see the list of rewards.
-        default: OP
     cmr.command.modify:
         description: The permission required to add and remove commands from rewards.
-        default: OP
     cmr.command:
         description: The permission required to see all commands added to all rewards.
-        default: OP
+        children:
+            cmr.special: true
     cmr.world.modify:
         description: The permission required to add and remove worlds from the global and per-reward-section allowed world lists.
-        default: OP
     cmr.world:
         description: The permission required to see the global and per-reward-section allowed world lists.
-        default: OP
     cmr.region.modify:
         description: The permission required to add and remove regions from the global and per-reward-section allowed region lists.
-        default: OP
     cmr.region:
         description: The permission required to see the global and per-reward-section allowed region lists.
-        default: OP
     cmr.silktouchpolicy:
         description: The permission required to see the silk touch requirement of a reward or globally.
-        default: OP
     cmr.silktouchpolicy.modify:
         description: The permission required to change the silk touch requirement of a reward or globally.
-        default: OP
+    cmr.special:
+        description: Allows you to use CMR built-in demo commands, like /cmr special sound
+    cmr.limit:
+        description: The permission required to see reward limits.
+    cmr.limit.modify:
+        description: The permission required to adjust reward limits.
+    cmr.gui:
+        description: The permission required to use the CMR GUI. Permission is still required for all actions in the interface.

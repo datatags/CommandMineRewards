@@ -53,10 +53,10 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 	public boolean onCommand(CommandSender sender, String[] args) {
 		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			if (gcm.getGlobalSilkTouchRequirement() == null) {
+			if (gcm.getGlobalSilkTouchPolicy() == null) {
 				sender.sendMessage(ChatColor.RED + "There is no global silk touch requirement, any rewards or reward sections inheriting from the global setting will default to Ignored.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The global silk touch policy is " + gcm.getGlobalSilkTouchRequirement() + ".  Please note this will be overridden by this setting in any reward sections or rewards.");
+				sender.sendMessage(ChatColor.GREEN + "The global silk touch policy is " + gcm.getGlobalSilkTouchPolicy() + ".  Please note this will be overridden by this setting in any reward sections or rewards.");
 			}
 			return true;
 		}
@@ -65,8 +65,8 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 			String result = null;
 			try {
 				RewardSection rs = new RewardSection(rewardSection); 
-				if (rs.getSilkTouchRequirement() != null) {
-					result = rs.getSilkTouchRequirement().getFriendlyName();
+				if (rs.getSilkTouchPolicy() != null) {
+					result = rs.getSilkTouchPolicy().getFriendlyName();
 				}
 			} catch (InvalidRewardSectionException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
@@ -82,8 +82,8 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 			String result = null;
 			try {
 				Reward reward = new Reward(rewardSection, rewardName);
-				if (reward.getSilkTouchRequirement() != null) {
-					result = reward.getSilkTouchRequirement().getFriendlyName();
+				if (reward.getSilkTouchPolicy() != null) {
+					result = reward.getSilkTouchPolicy().getFriendlyName();
 				}
 			} catch (InvalidRewardSectionException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());

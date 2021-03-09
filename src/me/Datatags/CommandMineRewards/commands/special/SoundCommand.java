@@ -33,11 +33,6 @@ public class SoundCommand extends SpecialCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return false;
-	}
-	
-	@Override
 	public int getMinArgs() {
 		return 1;
 	}

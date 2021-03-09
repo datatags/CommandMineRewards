@@ -13,8 +13,8 @@ import org.bukkit.util.StringUtil;
 import me.Datatags.CommandMineRewards.CommandMineRewards;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.SilkTouchPolicy;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
 import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CMRTabComplete implements TabCompleter {
@@ -31,7 +31,7 @@ public class CMRTabComplete implements TabCompleter {
 			return options;
 		} else if (args.length == 1 || (args.length == 2 && args[0].equalsIgnoreCase("help"))) {
 			for (CMRCommand item : cd.getCommands()) {
-				if (sender.hasPermission(item.getPermission())) { // if value is null, there is no permission for that command
+				if (item.getPermission().test(sender)) { // if value is null, there is no permission for that command
 					options.add(item.getName());
 					String[] aliases = item.getAliases();
 					if (aliases != null && aliases.length > 0) {
@@ -56,7 +56,7 @@ public class CMRTabComplete implements TabCompleter {
 						ccmd = (CompoundCommand) command;
 					}
 					for (CompoundCommand child : ccmd.getChildren()) {
-						if (sender.hasPermission(child.getPermission())) {
+						if (child.getPermission().test(sender)) {
 							options.add(child.getName());
 						}
 					}
@@ -82,7 +82,7 @@ public class CMRTabComplete implements TabCompleter {
 			}
 			if (args[0].equalsIgnoreCase("help")) {
 				for (CMRCommand item : cd.getCommands()) {
-					if (sender.hasPermission(item.getPermission())) {
+					if (item.getPermission().test(sender)) {
 						options.add(item.getName());
 					}
 				}
@@ -115,7 +115,7 @@ public class CMRTabComplete implements TabCompleter {
 				}
 			}
 			if (currentArg == ArgType.SILKTOUCH) {
-				for (SilkTouchRequirement str : SilkTouchRequirement.values()) {
+				for (SilkTouchPolicy str : SilkTouchPolicy.values()) {
 					options.add(str.toString()); // forgot the pretty names include color codes which screws with commands pretty badly
 				}
 			}

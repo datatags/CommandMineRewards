@@ -17,10 +17,6 @@ public abstract class CompoundCommand extends CMRCommand {
 	}
 	// we don't specify getArgs() specially here because they're auto-generated as well
 	@Override
-	public boolean isModifier() {
-		return false;
-	}
-	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		return false; // so they see the usage information. If this command is used with an argument, the dispatcher should pass it to the subcommand
 	}

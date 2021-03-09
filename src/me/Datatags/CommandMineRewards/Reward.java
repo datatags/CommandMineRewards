@@ -17,7 +17,6 @@ import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.Datatags.CommandMineRewards.Exceptions.RewardAlreadyExistsException;
 import me.Datatags.CommandMineRewards.commands.CommandDispatcher;
 import me.Datatags.CommandMineRewards.commands.RewardCommandEntry;
-import me.Datatags.CommandMineRewards.commands.silktouch.SilkTouchRequirement;
 import me.Datatags.CommandMineRewards.commands.special.SpecialCommand;
 
 public class Reward {
@@ -129,10 +128,11 @@ public class Reward {
 		commands.add(index, command);
 		setCommands(commands);
 	}
-	public SilkTouchRequirement getSilkTouchRequirement() {
-		return SilkTouchRequirement.getByName(this.section.getString("silkTouch"));
+	public SilkTouchPolicy getSilkTouchPolicy() {
+		SilkTouchPolicy stp = SilkTouchPolicy.getByName(this.section.getString("silkTouch"));
+		return stp == null ? SilkTouchPolicy.INHERIT : stp;
 	}
-	public void setSilkTouchRequirement(SilkTouchRequirement silkTouch) {
+	public void setSilkTouchPolicy(SilkTouchPolicy silkTouch) {
 		set("silkTouch", silkTouch.toString());
 	}
 	public void delete() {

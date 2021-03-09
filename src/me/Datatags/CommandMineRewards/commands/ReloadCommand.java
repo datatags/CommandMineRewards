@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.CMRBlockManager;
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 
 public class ReloadCommand extends CMRCommand {
@@ -27,8 +28,8 @@ public class ReloadCommand extends CMRCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return false;
+	public CMRPermission getPermission() {
+		return CMRPermission.RELOAD;
 	}
 
 	@Override

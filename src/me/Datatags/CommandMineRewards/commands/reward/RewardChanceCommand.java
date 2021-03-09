@@ -2,15 +2,13 @@ package me.Datatags.CommandMineRewards.commands.reward;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RewardChanceCommand extends RewardCommand {
-	private static final Permission MODIFY_CHANCE = new Permission("cmr.reward.modify");
 	
 	@Override
 	public String getName() {
@@ -43,11 +41,6 @@ public class RewardChanceCommand extends RewardCommand {
 	}
 	
 	@Override
-	public boolean isModifier() {
-		return false;
-	}
-	
-	@Override
 	public String getUsage() {
 		return "<rewardSection> <reward> [chance]";
 	}
@@ -71,10 +64,7 @@ public class RewardChanceCommand extends RewardCommand {
 			}
 			sender.sendMessage(ChatColor.GREEN + "Chance of triggering reward is: " + result + "%");
 		} else if (args.length == 3) {
-			if (!sender.hasPermission(MODIFY_CHANCE)) {
-				sender.sendMessage(NO_PERMISSION);
-				return true;
-			}
+			if (!CMRPermission.REWARD_MODIFY.attempt(sender)) return true;
 			double chance;
 			try {
 				chance = Double.parseDouble(args[2]);

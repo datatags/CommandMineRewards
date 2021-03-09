@@ -1,5 +1,6 @@
 package me.Datatags.CommandMineRewards.commands.cmd;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.commands.CompoundCommand;
 
 public class CmdCommand extends CompoundCommand {
@@ -29,5 +30,9 @@ public class CmdCommand extends CompoundCommand {
 	@Override
 	public void init() {
 		registerChildren(new CmdAddCommand(), new CmdInsertCommand(), new CmdListCommand(), new CmdRemoveCommand(), new CmdReplaceCommand());
+	}
+	@Override
+	public CMRPermission getPermission() {
+		return CMRPermission.COMMAND;
 	}
 }

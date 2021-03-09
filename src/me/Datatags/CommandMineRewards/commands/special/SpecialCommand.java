@@ -1,5 +1,6 @@
 package me.Datatags.CommandMineRewards.commands.special;
 
+import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.commands.CompoundCommand;
 
 public class SpecialCommand extends CompoundCommand {
@@ -20,13 +21,12 @@ public class SpecialCommand extends CompoundCommand {
 	}
 
 	@Override
-	public boolean isModifier() {
-		return false;
-	}
-
-	@Override
 	public void init() {
 		registerChildren(new MessageCommand(), new SoundCommand(), new TitleCommand());
+	}
+	@Override
+	public CMRPermission getPermission() {
+		return CMRPermission.SPECIAL;
 	}
 
 }
