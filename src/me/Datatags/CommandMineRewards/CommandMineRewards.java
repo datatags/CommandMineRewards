@@ -91,6 +91,9 @@ public class CommandMineRewards extends JavaPlugin {
 	public int getMinecraftVersion() {
 		return minecraftVersion;
 	}
+	public boolean isLegacyMinecraft() {
+		return minecraftVersion < 13;
+	}
 	public String getFullMinecraftVersion() {
 		String ver = Bukkit.getBukkitVersion(); // ex: 1.15.2-R0.1-SNAPSHOT
 		return ver.substring(0, ver.indexOf('-'));

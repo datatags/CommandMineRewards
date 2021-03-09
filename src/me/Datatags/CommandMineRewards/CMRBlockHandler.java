@@ -8,8 +8,9 @@ import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
+
+import me.Datatags.CommandMineRewards.state.StateManager;
 
 public class CMRBlockHandler {
 	private Material type;
@@ -17,13 +18,15 @@ public class CMRBlockHandler {
 	private Set<String> rewardSections = new HashSet<String>();
 	private long uses = 0;
 	private GlobalConfigManager gcm;
-	protected CMRBlockHandler(RewardSection rs, Material type) {
+	private StateManager sm;
+	protected CMRBlockHandler(RewardSection rs, Material type, StateManager sm) {
+		this(rs, type, sm, null);
+	}
+	protected CMRBlockHandler(RewardSection rs, Material type, StateManager sm, Boolean growth) {
 		this.type = type;
 		this.rewardSections.add(rs.getName());
 		this.gcm = GlobalConfigManager.getInstance();
-	}
-	protected CMRBlockHandler(RewardSection rs, Material type, Boolean growth) {
-		this(rs, type);
+		this.sm = sm;
 		this.growth = growth;
 	}
 	public int execute(BlockState block, Player player, int globalRewardLimit) {
@@ -47,11 +50,7 @@ public class CMRBlockHandler {
 	}
 	public boolean matches(BlockState state) {
 		if (state.getType() != this.type) return false;
-		if (this.growth == null) return true;
-		Ageable cropData = (Ageable) state.getBlockData();
-		if (this.growth && cropData.getAge() == cropData.getMaximumAge()) return true;
-		if (!this.growth && cropData.getAge() < cropData.getMaximumAge()) return true;
-		return false;
+		return sm.matches(state, growth);
 	}
 	public CMRBlockState getBlockState() {
 		return new CMRBlockState(this.getType(), this.getGrowth());
@@ -73,5 +72,13 @@ public class CMRBlockHandler {
 	}
 	public long getUses() {
 		return uses;
+	}
+	@Override
+	public String toString() {
+		String s = getType().toString();
+		if (growth != null) {
+			s += ":" + growth.toString();
+		}
+		return s;
 	}
 }

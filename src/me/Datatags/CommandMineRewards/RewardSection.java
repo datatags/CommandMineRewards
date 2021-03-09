@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -108,7 +107,7 @@ public class RewardSection {
 				continue;
 			}
 			if (block.contains(":")) {
-				if (!(Material.matchMaterial(sections[0]).createBlockData() instanceof Ageable)) {
+				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(sections[0]))) {
 					if (log) cmr.error("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
@@ -147,7 +146,7 @@ public class RewardSection {
 					blocks.put(block, null);
 				}
 			} else { // two elements
-				if (!(Material.matchMaterial(block.split(":")[0]).createBlockData() instanceof Ageable)) {
+				if (cbm.getStateManager().canHaveData(Material.matchMaterial(block.split(":")[0]))) {
 					cmr.error("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
 					continue;
 				}
@@ -192,7 +191,7 @@ public class RewardSection {
 		}
 		if (block.contains(":")) {
 			String data = block.split(":")[1];
-			if (!(strippedBlock.createBlockData() instanceof Ageable)) {
+			if (!cbm.getStateManager().canHaveData(strippedBlock)) {
 				throw new InvalidMaterialException("You can't add growth data to a non-growable block!");
 			}
 			if (!data.equalsIgnoreCase("true") && !data.equalsIgnoreCase("false")) {
@@ -245,9 +244,6 @@ public class RewardSection {
 		} else {
 			throw new BlockNotInListException("The block " + block + " is not handled by the reward section " + this.getName() + "!");
 		}
-	}
-	public void removeBlock(String block, byte data) throws BlockNotInListException {
-		removeBlock(block + ":" + data, true);
 	}
 	public void removeBlock(Material block) throws BlockNotInListException {
 		removeBlock(block.toString(), false);
