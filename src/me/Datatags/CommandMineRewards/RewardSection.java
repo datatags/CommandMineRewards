@@ -120,7 +120,7 @@ public class RewardSection {
 			blocks.add(block);
 		}
 		if (gcm.removeInvalidValues()) {
-			set("blocks", blocks);
+			set("blocks", blocks, true);
 		}
 		return blocks;
 	}
@@ -146,7 +146,7 @@ public class RewardSection {
 					blocks.put(block, null);
 				}
 			} else { // two elements
-				if (cbm.getStateManager().canHaveData(Material.matchMaterial(block.split(":")[0]))) {
+				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(block.split(":")[0]))) {
 					cmr.error("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
 					continue;
 				}
@@ -416,9 +416,14 @@ public class RewardSection {
 		return rewardsExecuted;
 	}
 	protected void set(String path, Object value) {
+		set(path, value, false);
+	}
+	protected void set(String path, Object value, boolean noReload) {
 		this.section.set(path, value);
 		gcm.saveRewardsConfig();
-		cbm.reloadSection(this.getName());
+		if (!noReload) {
+			cbm.reloadSection(this.getName());
+		}
 	}
 	public void unloadChild(String name) {
 		cmr.debug("Section " + this.getName() + " is attempting to reload child " + name);
