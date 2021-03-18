@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -105,7 +104,7 @@ public class RewardSection {
 				continue;
 			}
 			if (block.contains(":")) {
-				if (!(Material.matchMaterial(sections[0]).createBlockData() instanceof Ageable)) {
+				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(sections[0]))) {
 					if (log) cmr.error("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
@@ -118,7 +117,7 @@ public class RewardSection {
 			blocks.add(block);
 		}
 		if (gcm.removeInvalidValues()) {
-			set("blocks", blocks);
+			set("blocks", blocks, true);
 		}
 		return blocks;
 	}
@@ -144,7 +143,7 @@ public class RewardSection {
 					blocks.put(block, null);
 				}
 			} else { // two elements
-				if (!(Material.matchMaterial(block.split(":")[0]).createBlockData() instanceof Ageable)) {
+				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(block.split(":")[0]))) {
 					cmr.error("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
 					continue;
 				}
@@ -189,7 +188,7 @@ public class RewardSection {
 		}
 		if (block.contains(":")) {
 			String data = block.split(":")[1];
-			if (!(strippedBlock.createBlockData() instanceof Ageable)) {
+			if (!cbm.getStateManager().canHaveData(strippedBlock)) {
 				throw new InvalidMaterialException("You can't add growth data to a non-growable block!");
 			}
 			if (!data.equalsIgnoreCase("true") && !data.equalsIgnoreCase("false")) {
@@ -426,9 +425,14 @@ public class RewardSection {
 		return rewardsExecuted;
 	}
 	protected void set(String path, Object value) {
+		set(path, value, false);
+	}
+	protected void set(String path, Object value, boolean noReload) {
 		this.section.set(path, value);
 		gcm.saveRewardsConfig();
-		cbm.reloadSection(this.getName());
+		if (!noReload) {
+			cbm.reloadSection(this.getName());
+		}
 	}
 	public void unloadChild(String name) {
 		cmr.debug("Section " + this.getName() + " is attempting to reload child " + name);

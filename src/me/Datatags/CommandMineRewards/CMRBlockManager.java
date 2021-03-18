@@ -8,9 +8,12 @@ import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import me.Datatags.CommandMineRewards.state.FlatteningStateManager;
+import me.Datatags.CommandMineRewards.state.LegacyStateManager;
+import me.Datatags.CommandMineRewards.state.StateManager;
 
 public class CMRBlockManager {
 	private List<CMRBlockHandler> handlers = new ArrayList<>();
@@ -20,9 +23,15 @@ public class CMRBlockManager {
 	private static final int sortDelayTicks = 300*20;
 	private GlobalConfigManager gcm;
 	private Set<RSCacheListener> listeners = new HashSet<>();
+	private StateManager sm;
 	private CMRBlockManager(CommandMineRewards cmr) {
 		this.cmr = cmr;
 		this.gcm = GlobalConfigManager.getInstance();
+		if (CommandMineRewards.getInstance().isLegacyMinecraft()) {
+			sm = new LegacyStateManager();
+		} else {
+			sm = new FlatteningStateManager();
+		}
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -53,7 +62,7 @@ public class CMRBlockManager {
 				if (segments.length == 1) {
 					addHandler(rs, mat);
 				} else { // must have two elements
-					if (!(mat.createBlockData() instanceof Ageable)) {
+					if (!sm.canHaveData(mat)) {
 						cmr.error("Type " + mat.toString() + " does not grow!");
 					}
 					if (segments[1].equalsIgnoreCase("true")) { // using if statements instead of Boolean.parse because if the user puts in garbage, Boolean.parse assumes false when we should notify the user and move on
@@ -80,7 +89,7 @@ public class CMRBlockManager {
 		CMRBlockState state = new CMRBlockState(type, growth);
 		CMRBlockHandler handler = getHandler(state);
 		if (handler == null) {
-			handlers.add(new CMRBlockHandler(rs, type, growth));
+			handlers.add(new CMRBlockHandler(rs, type, sm, growth));
 		} else {
 			handler.addSection(rs);
 		}
@@ -115,11 +124,11 @@ public class CMRBlockManager {
 					debug("Hit global reward limit, quitting");
 					break;
 				}
-				if (!(handler.getType().createBlockData() instanceof Ageable)) {
+				if (!handler.canHaveData()) {
 					break;
 				}
 			} else {
-				debug("Handler " + handler.getType() + " did not match block " + state.getType());
+				debug("Handler " + handler.toString() + " did not match block " + state.getType());
 			}
 		}
 		debug("-----------END REWARD CALCS-----------");
@@ -190,5 +199,8 @@ public class CMRBlockManager {
 	}
 	public void unregisterListener(RSCacheListener listener) {
 		listeners.remove(listener);
+	}
+	public StateManager getStateManager() {
+		return sm;
 	}
 }
