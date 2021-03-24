@@ -2,6 +2,7 @@ package me.Datatags.CommandMineRewards.gui.conversations;
 
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;

@@ -4,8 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class WorldListCommand extends WorldCommand {
@@ -20,7 +20,7 @@ public class WorldListCommand extends WorldCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Lists all worlds in which rewards are allowed to occur. With no arguments it lists global worlds, with a reward section as an argument it lists worlds under that section.";
+		return "Lists all worlds in which rewards are allowed to occur. With no arguments it lists global worlds, with a reward group as an argument it lists worlds under that group.";
 	}
 
 	@Override
@@ -58,17 +58,17 @@ public class WorldListCommand extends WorldCommand {
 				sender.sendMessage(ChatColor.GREEN + "The globally allowed worlds are:  " + gcm.makePretty(gcm.getGlobalAllowedWorlds()));
 			}
 		} else if (args.length == 1) {
-			RewardSection rs;
+			RewardGroup rg;
 			try {
-				rs = new RewardSection(args[0]);
-			} catch (InvalidRewardSectionException e) {
+				rg = new RewardGroup(args[0]);
+			} catch (InvalidRewardGroupException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
-			if (rs.getAllowedWorlds().size() == 0) {
-				sender.sendMessage(ChatColor.YELLOW + "There are no defined allowed worlds in this reward section.  The rewards world checker will use the global ones.");
+			if (rg.getAllowedWorlds().size() == 0) {
+				sender.sendMessage(ChatColor.YELLOW + "There are no defined allowed worlds in this reward group.  The rewards world checker will use the global ones.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The allowed worlds are:  " + gcm.makePretty(rs.getAllowedWorlds()));
+				sender.sendMessage(ChatColor.GREEN + "The allowed worlds are:  " + gcm.makePretty(rg.getAllowedWorlds()));
 			}
 		}
 		return true;

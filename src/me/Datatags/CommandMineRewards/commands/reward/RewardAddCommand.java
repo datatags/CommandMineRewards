@@ -5,11 +5,11 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.Exceptions.RewardAlreadyExistsException;
-import me.Datatags.CommandMineRewards.Exceptions.RewardSectionAlreadyExistsException;
+import me.Datatags.CommandMineRewards.Exceptions.RewardGroupAlreadyExistsException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RewardAddCommand extends RewardCommand {
@@ -19,12 +19,12 @@ public class RewardAddCommand extends RewardCommand {
 	}
 	@Override
 	public String getBasicDescription() {
-		return "Create a reward or reward section";
+		return "Create a reward or reward group";
 	}
 
 	@Override
 	public String getExtensiveDescription() {
-		return "If one argument is specified, creates a reward section. If two, creates a reward in an existing reward section.";
+		return "If one argument is specified, creates a reward group. If two, creates a reward in an existing reward group.";
 	}
 
 	@Override
@@ -56,24 +56,24 @@ public class RewardAddCommand extends RewardCommand {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
-		String section = args[0];
+		String group = args[0];
 		if (args.length == 1) {
 			try {
-				new RewardSection(section, true);
-			} catch (InvalidRewardSectionException | RewardSectionAlreadyExistsException e) {
+				new RewardGroup(group, true);
+			} catch (InvalidRewardGroupException | RewardGroupAlreadyExistsException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
-			sender.sendMessage(ChatColor.GREEN + "Reward section creation complete, add some rewards with /cmr reward add " + section + " <reward> and some blocks with /cmr block add " + section + " [block]");
+			sender.sendMessage(ChatColor.GREEN + "Reward group creation complete, add some rewards with /cmr reward add " + group + " <reward> and some blocks with /cmr block add " + group + " [block]");
 		} else if (args.length == 2) {
 			String name = args[1];
 			try {
-				new Reward(section, name, true);
+				new Reward(group, name, true);
 			} catch (RewardAlreadyExistsException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
-			sender.sendMessage(ChatColor.YELLOW + "Reward creation complete, use /cmr command add " + section + " " + name + " <command> to add commands to this reward, and /cmr reward chance " + section + " " + name + " <chance> to set the chance.");
+			sender.sendMessage(ChatColor.YELLOW + "Reward creation complete, use /cmr command add " + group + " " + name + " <command> to add commands to this reward, and /cmr reward chance " + group + " " + name + " <chance> to set the chance.");
 		}
 		return true;
 	}

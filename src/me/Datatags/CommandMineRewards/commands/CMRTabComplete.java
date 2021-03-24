@@ -12,9 +12,9 @@ import org.bukkit.util.StringUtil;
 
 import me.Datatags.CommandMineRewards.CommandMineRewards;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.SilkTouchPolicy;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class CMRTabComplete implements TabCompleter {
@@ -96,10 +96,10 @@ public class CMRTabComplete implements TabCompleter {
 				options.addAll(GlobalConfigManager.getInstance().getRewardSectionNames());
 			}
 			if (currentArg == ArgType.REWARD) {
-				String sectionName = args[args.length - 2]; // not the last one, the incomplete one, but the second-to-last one that has the section in it.  I hope this works...
+				String sectionName = args[args.length - 2]; // not the last one, the incomplete one, but the second-to-last one that has the group in it.  I hope this works...
 				try {
-				options.addAll(new RewardSection(sectionName).getChildrenNames());
-				} catch (InvalidRewardSectionException e) {
+				options.addAll(new RewardGroup(sectionName).getChildrenNames());
+				} catch (InvalidRewardGroupException e) {
 					return options;
 				}
 			}

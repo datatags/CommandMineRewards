@@ -10,23 +10,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import me.Datatags.CommandMineRewards.RewardSection;
+
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.BlockAlreadyInListException;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.buttons.misc.BlockButton;
 
 public class BlockListGUI extends PaginatedGUI {
-	private RewardSection section;
+	private RewardGroup group;
 	private List<BlockButton> buttons;
-	public BlockListGUI(RewardSection section) {
-		this.section = section;
-		for (Entry<String,Boolean> entry : section.getBlocksWithData().entrySet()) {
-			buttons.add(new BlockButton(section, Material.matchMaterial(entry.getKey()), entry.getValue()));
+	public BlockListGUI(RewardGroup group) {
+		this.group = group;
+		for (Entry<String,Boolean> entry : group.getBlocksWithData().entrySet()) {
+			buttons.add(new BlockButton(group, Material.matchMaterial(entry.getKey()), entry.getValue()));
 		}
 	}
 	@Override
 	public int getMaxPages() {
-		return (int)Math.ceil(section.getBlocksWithData().size() / 54d);
+		return (int)Math.ceil(group.getBlocksWithData().size() / 54d);
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class BlockListGUI extends PaginatedGUI {
 
 	@Override
 	public String getTitle() {
-		return ChatColor.GOLD + "Blocks list for section " + section.getName();
+		return ChatColor.GOLD + "Blocks list for group " + group.getName();
 	}
 	
 	@Override
@@ -55,7 +56,7 @@ public class BlockListGUI extends PaginatedGUI {
 	
 	@Override
 	public CMRGUI getPreviousGUI() {
-		return getGUIManager().getGUI(RewardSectionGUI.class, section, null);
+		return getGUIManager().getGUI(RewardSectionGUI.class, group, null);
 	}
 	
 	@Override
@@ -79,11 +80,11 @@ public class BlockListGUI extends PaginatedGUI {
 		}
 		if (testItem == null || !testItem.getType().isBlock()) return;
 		try {
-			section.addBlock(testItem.getType());
+			group.addBlock(testItem.getType());
 		} catch (BlockAlreadyInListException ex) {
 			return;
 		}
-		buttons.add(new BlockButton(section, testItem.getType(), null));
+		buttons.add(new BlockButton(group, testItem.getType(), null));
 		e.setCancelled(false);
 		this.refreshGUI((Player) e.getWhoClicked());
 	}

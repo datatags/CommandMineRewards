@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 
-import me.Datatags.CommandMineRewards.RSCacheListener;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RGCacheListener;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.buttons.RewardButtonManager;
 import me.Datatags.CommandMineRewards.gui.buttons.area.RegionListButton;
@@ -14,40 +14,40 @@ import me.Datatags.CommandMineRewards.gui.buttons.area.WorldListButton;
 import me.Datatags.CommandMineRewards.gui.buttons.general.NewRewardButton;
 import me.Datatags.CommandMineRewards.gui.buttons.general.RewardLimitButton;
 import me.Datatags.CommandMineRewards.gui.buttons.general.SilkTouchButton;
-import me.Datatags.CommandMineRewards.gui.buttons.rewardsection.BlockListButton;
+import me.Datatags.CommandMineRewards.gui.buttons.rewardgroup.BlockListButton;
 
-public class RewardSectionGUI extends PaginatedGUI implements RSCacheListener {
-	private RewardSection section;
+public class RewardSectionGUI extends PaginatedGUI implements RGCacheListener {
+	private RewardGroup group;
 	private RewardButtonManager rbm;
 	private NewRewardButton newRewardButton;
-	public RewardSectionGUI(RewardSection section) {
-		this.section = section;
+	public RewardSectionGUI(RewardGroup group) {
+		this.group = group;
 		this.rbm = RewardButtonManager.getInstance();
-		gui[0][0] = new BlockListButton(section);
-		gui[0][2] = new RewardLimitButton(section);
-		gui[0][4] = new SilkTouchButton(section, null);
-		gui[0][6] = new WorldListButton(section);
-		gui[0][8] = new RegionListButton(section);
-		this.newRewardButton = new NewRewardButton(section);
+		gui[0][0] = new BlockListButton(group);
+		gui[0][2] = new RewardLimitButton(group);
+		gui[0][4] = new SilkTouchButton(group, null);
+		gui[0][6] = new WorldListButton(group);
+		gui[0][8] = new RegionListButton(group);
+		this.newRewardButton = new NewRewardButton(group);
 		addPageButtons();
 		registerCacheListener();
 	}
 	
 	@Override
 	public int getMaxPages() {
-		return (int)Math.ceil((section.getChildrenNames().size() + 1) / 27d); // once again, add one for the new reward button
+		return (int)Math.ceil((group.getChildrenNames().size() + 1) / 27d); // once again, add one for the new reward button
 	}
 
 	@Override
 	public GUIButton[][] getPage(int pageN) {
-		List<GUIButton> buttonCache = new ArrayList<>(rbm.getRewardCache(section));
+		List<GUIButton> buttonCache = new ArrayList<>(rbm.getRewardCache(group));
 		buttonCache.add(newRewardButton);
 		return generatePage(pageN, 2, 27, buttonCache);
 	}
 
 	@Override
 	public String getTitle() {
-		return ChatColor.GOLD + "Reward section: " + ChatColor.BLUE + section.getName();
+		return ChatColor.GOLD + "Reward group: " + ChatColor.BLUE + group.getName();
 	}
 
 	@Override

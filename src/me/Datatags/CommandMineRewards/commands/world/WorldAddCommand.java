@@ -6,10 +6,10 @@ import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class WorldAddCommand extends WorldCommand {
@@ -24,7 +24,7 @@ public class WorldAddCommand extends WorldCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Adds a world in which rewards under a reward section, or globally, are allowed to occur. If an allowed world list is specified in a reward section it overrides the global one. Adding no arguments will add your current world to the global list if you are a player.";
+		return "Adds a world in which rewards under a reward group, or globally, are allowed to occur. If an allowed world list is specified in a reward group it overrides the global one. Adding no arguments will add your current world to the global list if you are a player.";
 	}
 
 	@Override
@@ -83,8 +83,8 @@ public class WorldAddCommand extends WorldCommand {
 		} else if (args.length == 2) {
 			String rewardSection = args[1];
 			try {
-				new RewardSection(rewardSection).addAllowedWorld(world);
-			} catch (InvalidRewardSectionException | AreaAlreadyInListException | InvalidAreaException e) {
+				new RewardGroup(rewardSection).addAllowedWorld(world);
+			} catch (InvalidRewardGroupException | AreaAlreadyInListException | InvalidAreaException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

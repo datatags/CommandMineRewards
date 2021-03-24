@@ -1,13 +1,13 @@
 package me.Datatags.CommandMineRewards.Exceptions;
 
-public class RewardSectionAlreadyExistsException extends RuntimeException {
+public class RewardGroupAlreadyExistsException extends RuntimeException {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1771224635327585934L;
 	
-	public RewardSectionAlreadyExistsException(String message) {
+	public RewardGroupAlreadyExistsException(String message) {
 		super(message);
 	}
 }

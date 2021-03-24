@@ -1,4 +1,4 @@
-package me.Datatags.CommandMineRewards.gui.buttons.rewardsection;
+package me.Datatags.CommandMineRewards.gui.buttons.rewardgroup;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,16 +11,16 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.guis.BlockListGUI;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 
 public class BlockListButton extends GUIButton {
-	private RewardSection section;
-	public BlockListButton(RewardSection section) {
-		this.section = section;
+	private RewardGroup group;
+	public BlockListButton(RewardGroup group) {
+		this.group = group;
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -41,7 +41,7 @@ public class BlockListButton extends GUIButton {
 	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
 		ItemBuilder ib = getBase();
 		int i = 0;
-		Map<String,Boolean> blocks = section.getBlocksWithData();
+		Map<String,Boolean> blocks = group.getBlocksWithData();
 		for (Entry<String,Boolean> entry : blocks.entrySet()) {
 			if (entry.getValue() == null) {
 				ib.lore(entry.getKey());
@@ -58,7 +58,7 @@ public class BlockListButton extends GUIButton {
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.getGUIManager().getGUI(BlockListGUI.class, section, null).openFor(player);
+		parent.getGUIManager().getGUI(BlockListGUI.class, group, null).openFor(player);
 	}
 
 }

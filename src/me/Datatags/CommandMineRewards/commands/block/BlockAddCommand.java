@@ -6,10 +6,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.BlockAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidMaterialException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class BlockAddCommand extends BlockCommand {
@@ -24,7 +24,7 @@ public class BlockAddCommand extends BlockCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Adds a block to the specified reward section block list, and updates the config accordingly. If no block is specified, uses the held block. If growth is true, crops must be fully-grown to harvest. If growth is false, crops must NOT be fully grown. If omitted, growth stage is ignored.";
+		return "Adds a block to the specified reward group block list, and updates the config accordingly. If no block is specified, uses the held block. If growth is true, crops must be fully-grown to harvest. If growth is false, crops must NOT be fully grown. If omitted, growth stage is ignored.";
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public class BlockAddCommand extends BlockCommand {
 				return true;
 			}
 			try {
-				new RewardSection(args[0]).addBlock(item);
-			} catch (InvalidRewardSectionException | BlockAlreadyInListException e) {
+				new RewardGroup(args[0]).addBlock(item);
+			} catch (InvalidRewardGroupException | BlockAlreadyInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -82,11 +82,11 @@ public class BlockAddCommand extends BlockCommand {
 		// args.length == 2 or 3
 		try {
 			if (args.length == 2) {
-				new RewardSection(args[0]).addBlock(args[1].toLowerCase());
+				new RewardGroup(args[0]).addBlock(args[1].toLowerCase());
 			} else { // args.length == 3
-				new RewardSection(args[0]).addBlock(args[1].toLowerCase(), args[2].toLowerCase());
+				new RewardGroup(args[0]).addBlock(args[1].toLowerCase(), args[2].toLowerCase());
 			}
-		} catch (InvalidRewardSectionException | BlockAlreadyInListException | InvalidMaterialException e) {
+		} catch (InvalidRewardGroupException | BlockAlreadyInListException | InvalidMaterialException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
 		}

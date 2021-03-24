@@ -3,6 +3,7 @@ package me.Datatags.CommandMineRewards.commands;
 import java.util.StringJoiner;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.commands.special.SpecialCommand;
@@ -26,9 +27,12 @@ public class RewardCommandEntry {
 			}
 		}
 	}
-	public void execute(Player target) { // target only used if it's an SC
+	public void execute(Player target) {
+		execute(target, Bukkit.getConsoleSender());
+	}
+	public void execute(Player target, CommandSender executor) { // target only used if it's an SC
 		if (sc == null) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), placeholder ? command.replace("%player%", target.getName()) : command);
+			Bukkit.dispatchCommand(executor, placeholder ? command.replace("%player%", target.getName()) : command);
 		} else {
 			String[] args = scArgs.clone();
 			if (this.placeholder) {

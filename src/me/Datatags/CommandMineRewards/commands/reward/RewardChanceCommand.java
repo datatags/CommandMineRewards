@@ -2,10 +2,11 @@ package me.Datatags.CommandMineRewards.commands.reward;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RewardChanceCommand extends RewardCommand {
@@ -22,7 +23,7 @@ public class RewardChanceCommand extends RewardCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Gets or sets the chance of a reward occurring. If only a reward section and reward are specified, gets the chance, if a number is specified as well, sets the chance.";
+		return "Gets or sets the chance of a reward occurring. If only a reward group and reward are specified, gets the chance, if a number is specified as well, sets the chance.";
 	}
 	
 	@Override
@@ -58,7 +59,7 @@ public class RewardChanceCommand extends RewardCommand {
 			double result;
 			try {
 				result = new Reward(rewardSection, reward).getChance();
-			} catch (InvalidRewardSectionException | InvalidRewardException e) {
+			} catch (InvalidRewardGroupException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -74,7 +75,7 @@ public class RewardChanceCommand extends RewardCommand {
 			}
 			try {
 				new Reward(rewardSection, reward).setChance(chance);
-			} catch (InvalidRewardSectionException | InvalidRewardException e) {
+			} catch (InvalidRewardGroupException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

@@ -14,47 +14,47 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
-import me.Datatags.CommandMineRewards.Exceptions.BlockAlreadyInListException;
-import me.Datatags.CommandMineRewards.Exceptions.BlockNotInListException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidMaterialException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
-import me.Datatags.CommandMineRewards.Exceptions.RewardSectionAlreadyExistsException;
+import me.Datatags.CommandMineRewards.Exceptions.BlockAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.BlockNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidMaterialException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
+import me.Datatags.CommandMineRewards.Exceptions.RewardGroupAlreadyExistsException;
 import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
-public class RewardSection {
-	private ConfigurationSection section;
+public class RewardGroup {
+	private ConfigurationSection group;
 	private CommandMineRewards cmr;
 	private GlobalConfigManager gcm;
 	private CMRBlockManager cbm;
 	// purpose of blocksCache is to not pass bad block values (i.e. invalid material, invalid growth state identifier, etc.)
 	private List<String> blocksCache = null;
 	private List<Reward> children = null;
-	public RewardSection(String path, boolean create) {
+	public RewardGroup(String path, boolean create) {
 		init();
 		if (path.contains(".")) {
-			throw new InvalidRewardSectionException("You cannot use periods in the reward section name!");
+			throw new InvalidRewardGroupException("You cannot use periods in the reward group name!");
 		}
 		if (!gcm.getRewardsConfig().isConfigurationSection(path) && !create) { // if we couldn't find it easily and we're not supposed to create it,
 			if (gcm.searchIgnoreCase(path, "") == null) { // search for it
-				throw new InvalidRewardSectionException("Reward section " + path + " does not exist!"); // if we still couldn't find it, throw an exception
+				throw new InvalidRewardGroupException("Reward group " + path + " does not exist!"); // if we still couldn't find it, throw an exception
 			}
 			path = gcm.searchIgnoreCase(path, "");
 		} else if (gcm.getRewardsConfig().isConfigurationSection(path) && create){
-			throw new RewardSectionAlreadyExistsException("Reward section " + path + " already exists!");
+			throw new RewardGroupAlreadyExistsException("Reward group " + path + " already exists!");
 		}
 		if (!gcm.getRewardsConfig().isConfigurationSection(path) && create) {
-			section = gcm.getRewardsConfig().createSection(path);
+			group = gcm.getRewardsConfig().createSection(path);
 			gcm.saveRewardsConfig();
-			cbm.loadSection(getName());
+			cbm.loadGroup(getName());
 		} else {
-			section = gcm.getRewardsConfig().getConfigurationSection(path);
+			group = gcm.getRewardsConfig().getConfigurationSection(path);
 		}
 		postinit();
 	}
-	public RewardSection(String path) {
+	public RewardGroup(String path) {
 		this(path, false);
 	}
 	private void init() {
@@ -65,7 +65,7 @@ public class RewardSection {
 	private void postinit() {
 		blocksCache = this.validateBlocks(); // cache valid blocks
 		// cache children
-		if (this.section.isConfigurationSection("rewards")) {
+		if (this.group.isConfigurationSection("rewards")) {
 			List<Reward> rv = new ArrayList<Reward>();
 			for (String child : getChildrenNames()) {
 				rv.add(new Reward(this, child, false));
@@ -79,7 +79,7 @@ public class RewardSection {
 	private void registerPermissions() {
 		CommandMineRewards cmr = CommandMineRewards.getInstance();
 		for (Reward reward : this.getChildren()) {
-			String permission = "cmr.use." + section.getName() + "." + reward.getName();
+			String permission = "cmr.use." + group.getName() + "." + reward.getName();
 			if (Bukkit.getPluginManager().getPermission(permission) == null) {
 				cmr.debug("Adding permission " + permission);
 				Bukkit.getPluginManager().addPermission(new Permission(permission));
@@ -89,7 +89,7 @@ public class RewardSection {
 	}
 	public List<String> getRawBlocks() {
 		if (blocksCache == null) { // if not cached
-			cmr.warning("Reward section " + this.getName() + "'s block list was not cached.  Was it just created?");
+			cmr.warning("Reward group " + this.getName() + "'s block list was not cached.  Was it just created?");
 			blocksCache = validateBlocks(); // validate it and cache the result.
 		}
 		return blocksCache;
@@ -97,23 +97,23 @@ public class RewardSection {
 	private List<String> validateBlocks() {
 		boolean log = !cmr.isPluginReady(); // don't log it except on the initial run
 		List<String> blocks = new ArrayList<String>();
-		for (String block : this.section.getStringList("blocks")) {
+		for (String block : this.group.getStringList("blocks")) {
 			String[] sections = block.split(":", 2); // item [0] = block; item [1] = data, if applicable
 			if (Material.matchMaterial(sections[0]) == null || !Material.matchMaterial(sections[0]).isBlock()) {
-				if (log) cmr.error("Reward section " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
+				if (log) cmr.error("Reward group " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 				continue;
 			}
 			if (block.contains(":")) {
 				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(sections[0]))) {
-					if (log) cmr.error("Reward section " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
+					if (log) cmr.error("Reward group " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 				if (!sections[1].equalsIgnoreCase("true") && !sections[1].equalsIgnoreCase("false")) {
-					if (log) cmr.error("Reward section " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
+					if (log) cmr.error("Reward group " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 			}
-			debug("Adding block " + block + " to section " + this.getName());
+			debug("Adding block " + block + " to group " + this.getName());
 			blocks.add(block);
 		}
 		if (gcm.removeInvalidValues()) {
@@ -133,7 +133,7 @@ public class RewardSection {
 		for (String block : getRawBlocks()) {
 			if (!block.contains(":")) { // one element
 				if (blocks.containsKey(block)) {
-					cmr.warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + ".");
+					cmr.warning("Duplicate item (maybe different growth values) in blocks list of group " + this.getName() + ":  " + block + ".");
 					String prefix = "";
 					while (blocks.containsKey(prefix + block)) {
 						prefix += "$";
@@ -144,7 +144,7 @@ public class RewardSection {
 				}
 			} else { // two elements
 				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(block.split(":")[0]))) {
-					cmr.error("Reward section " + this.getName() + " has a growth identifier on a non-growable block!");
+					cmr.error("Reward group " + this.getName() + " has a growth identifier on a non-growable block!");
 					continue;
 				}
 				String blockStripped = block.split(":")[0];
@@ -154,11 +154,11 @@ public class RewardSection {
 				} else if (block.split(":")[1].equalsIgnoreCase("false")) {
 					data = false;
 				} else {
-					cmr.error("Reward section " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
+					cmr.error("Reward group " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
 					continue;
 				}
 				if (blocks.containsKey(blockStripped)) {
-					cmr.warning("Duplicate item (maybe different growth values) in blocks list of section " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
+					cmr.warning("Duplicate item (maybe different growth values) in blocks list of group " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
 					String prefix = "";
 					while (blocks.containsKey(prefix + blockStripped)) {
 						prefix += "$";
@@ -206,7 +206,7 @@ public class RewardSection {
 		}
 		List<String> blocks = this.getRawBlocks();
 		if (gcm.containsMatch(blocks, block + "(?::.+)?")) {
-			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
+			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward group " + this.getName() + "!");
 		}
 		blocks.add(block);
 		cbm.addHandler(this, Material.matchMaterial(block));
@@ -226,7 +226,7 @@ public class RewardSection {
 		validateBlock(block + ":" + data); // in case it came from addBlock(Material, String) or a direct call. Plus it's just a command, doesn't hurt to validate twice.
 		List<String> blocks = this.getRawBlocks();
 		if (gcm.containsMatch(blocks, block + "(?::.+)?")) { // "(?:" means just a group, don't save result
-			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward section " + this.getName() + "!");
+			throw new BlockAlreadyInListException("The block " + block + " is already handled by the reward group " + this.getName() + "!");
 		}
 		blocks.add(block + ":" + data);
 		cbm.addCropHandler(this, Material.matchMaterial(block), Boolean.parseBoolean(data));
@@ -243,7 +243,7 @@ public class RewardSection {
 			}
 			this.setBlocks(blocks);
 		} else {
-			throw new BlockNotInListException("The block " + block + " is not handled by the reward section " + this.getName() + "!");
+			throw new BlockNotInListException("The block " + block + " is not handled by the reward group " + this.getName() + "!");
 		}
 	}
 	public void removeBlock(String block, Boolean data) throws BlockNotInListException {
@@ -257,14 +257,14 @@ public class RewardSection {
 		removeBlockRaw(block.toString(), false);
 	}
 	public List<String> getAllowedWorlds() {
-		return this.section.getStringList("allowedWorlds");
+		return this.group.getStringList("allowedWorlds");
 	}
 	public void setAllowedWorlds(List<String> newAllowedWorlds) {
 		set("allowedWorlds", newAllowedWorlds);
 	}
 	public void addAllowedWorld(String world) throws AreaAlreadyInListException, InvalidAreaException {
 		if (gcm.containsIgnoreCase(this.getAllowedWorlds(), world)) {
-			throw new AreaAlreadyInListException("The world " + world + " is already handled by the reward section " + this.getName() + "!");
+			throw new AreaAlreadyInListException("The world " + world + " is already handled by the reward group " + this.getName() + "!");
 		}
 		if (!gcm.isValidWorld(world)) {
 			throw new InvalidAreaException("The world " + world + " does not exist!");
@@ -278,7 +278,7 @@ public class RewardSection {
 		if (gcm.removeIgnoreCase(worlds, world)) {
 			this.setAllowedWorlds(worlds);
 		} else {
-			throw new AreaNotInListException("The world " + world + " is not handled by the reward section " + this.getName() + "!");
+			throw new AreaNotInListException("The world " + world + " is not handled by the reward group " + this.getName() + "!");
 		}
 	}
 	public boolean isWorldAllowed(String world) {
@@ -292,14 +292,14 @@ public class RewardSection {
 		return (worlds.contains("*")) || gcm.containsIgnoreCase(worlds, world);
 	}
 	public List<String> getAllowedRegions() {
-		return this.section.getStringList("allowedRegions");
+		return this.group.getStringList("allowedRegions");
 	}
 	public void setAllowedRegions(List<String> newAllowedRegions) {
 		set("allowedRegions", newAllowedRegions);
 	}
 	public void addAllowedRegion(String region) throws AreaAlreadyInListException {
 		if (gcm.containsIgnoreCase(this.getAllowedRegions(), region)) {
-			throw new AreaAlreadyInListException("The region " + region + " is already handled by the reward section " + this.getName() + "!");
+			throw new AreaAlreadyInListException("The region " + region + " is already handled by the reward group " + this.getName() + "!");
 		}
 		List<String> regions = this.getAllowedRegions();
 		regions.add(region);
@@ -310,18 +310,18 @@ public class RewardSection {
 		if (gcm.removeIgnoreCase(regions, region)) {
 			this.setAllowedRegions(regions);
 		} else {
-			throw new AreaNotInListException("The region " + region + " is not handled by the reward section " + this.getName() + "!");
+			throw new AreaNotInListException("The region " + region + " is not handled by the reward group " + this.getName() + "!");
 		}
 	}
 	public SilkTouchPolicy getSilkTouchPolicy() {
-		SilkTouchPolicy stp = SilkTouchPolicy.getByName(this.section.getString("silkTouch"));
+		SilkTouchPolicy stp = SilkTouchPolicy.getByName(this.group.getString("silkTouch"));
 		return stp == null ? SilkTouchPolicy.INHERIT : stp;
 	}
 	public void setSilkTouchPolicy(SilkTouchPolicy newRequirement) {
 		set("silkTouch", newRequirement.toString());
 	}
 	public int getRewardLimit() {
-		return Math.max(this.section.getInt("rewardLimit", -1), -1);
+		return Math.max(this.group.getInt("rewardLimit", -1), -1);
 	}
 	public void setRewardLimit(int rewardLimit) {
 		set("rewardLimit", Math.max(rewardLimit, -1));
@@ -335,18 +335,18 @@ public class RewardSection {
 		cbm.unloadSection(getName());
 	}
 	public String getName() {
-		return this.section.getName();
+		return this.group.getName();
 	}
 	public String getPath() {
-		return this.section.getCurrentPath();
+		return this.group.getCurrentPath();
 	}
 	public List<String> getChildrenNames() {
-		if (!this.section.isConfigurationSection("rewards")) {
+		if (!this.group.isConfigurationSection("rewards")) {
 			return new ArrayList<String>();
 		}
 		List<String> rv = new ArrayList<String>();
-		for (String child : this.section.getConfigurationSection("rewards").getKeys(false)) {
-			if (!this.section.isConfigurationSection("rewards." + child)) {
+		for (String child : this.group.getConfigurationSection("rewards").getKeys(false)) {
+			if (!this.group.isConfigurationSection("rewards." + child)) {
 				continue;
 			}
 			rv.add(child);
@@ -357,7 +357,7 @@ public class RewardSection {
 		return children;
 	}
 	public String getPrettyChildren() {
-		if (!this.section.isConfigurationSection("rewards")) {
+		if (!this.group.isConfigurationSection("rewards")) {
 			return "";
 		}
 		return gcm.makePretty(getChildrenNames());
@@ -371,12 +371,12 @@ public class RewardSection {
 		return null;
 	}
 	public Reward getNewChild(String child) {
-		if (this.section.isConfigurationSection("rewards")) {
+		if (this.group.isConfigurationSection("rewards")) {
 			for (String childName : getChildrenNames()) {
 				return new Reward(this, childName, false);
 			}
 		}
-		cmr.warning("Section " + this.getName() + " tried to find new child " + child + " but failed.");
+		cmr.warning("group " + this.getName() + " tried to find new child " + child + " but failed.");
 		return null;
 	}
 	protected void debug(String msg) {
@@ -385,18 +385,18 @@ public class RewardSection {
 	public boolean isApplicable(BlockState state, Player player) {
 		// block type is checked by CMRBlockHandler
 		if (!isWorldAllowed(player.getWorld().getName())) {
-			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this world.");
+			debug("Player was denied access to rewards in reward group because the reward group is not allowed in this world.");
 			return false;
 		}
 		WorldGuardManager wgm = cmr.getWGManager();
 		if (wgm.usingWorldGuard() && !wgm.isAllowedInRegions(this, state.getBlock())) {
-			debug("Player was denied access to rewards in reward section because the reward section is not allowed in this region.");
+			debug("Player was denied access to rewards in reward group because the reward group is not allowed in this region.");
 			return false;
 		}
 		return true;
 	}
 	public int execute(BlockState state, Player player, int globalRewardLimit) {
-		debug("Processing section " + this.getName());
+		debug("Processing group " + this.getName());
 		if (!isApplicable(state, player)) return 0;
 		List<Reward> rewards = getChildren();
 		int rewardLimit = -1; // this only carries through when both are -1
@@ -428,14 +428,14 @@ public class RewardSection {
 		set(path, value, false);
 	}
 	protected void set(String path, Object value, boolean noReload) {
-		this.section.set(path, value);
+		this.group.set(path, value);
 		gcm.saveRewardsConfig();
 		if (!noReload) {
 			cbm.reloadSection(this.getName());
 		}
 	}
 	public void unloadChild(String name) {
-		cmr.debug("Section " + this.getName() + " is attempting to reload child " + name);
+		cmr.debug("group " + this.getName() + " is attempting to reload child " + name);
 		Reward reload = null;
 		for (Reward reward : children) {
 			if (reward.getName().equals(name)) {
@@ -443,7 +443,7 @@ public class RewardSection {
 			}
 		}
 		if (reload == null) {
-			cmr.warning("Section " + this.getName() + " attempted to reload child " + name + " but couldn't find it.");
+			cmr.warning("group " + this.getName() + " attempted to reload child " + name + " but couldn't find it.");
 			return;
 		}
 		children.remove(reload);

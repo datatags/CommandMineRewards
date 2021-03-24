@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class CmdInsertCommand extends CmdCommand {
@@ -66,7 +66,7 @@ public class CmdInsertCommand extends CmdCommand {
 		String command = parseCommand(3, args);
 		try {
 			new Reward(rewardSection, reward).insertCommand(command, index);
-		} catch (InvalidRewardSectionException | InvalidRewardException | ArrayIndexOutOfBoundsException e) {
+		} catch (InvalidRewardGroupException | InvalidRewardException | ArrayIndexOutOfBoundsException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
 		}

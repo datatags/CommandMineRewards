@@ -4,8 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RewardListCommand extends RewardCommand {
@@ -21,7 +21,7 @@ public class RewardListCommand extends RewardCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "If no arguments are specified, lists all reward sections. If one argument, lists the rewards in the reward section.";
+		return "If no arguments are specified, lists all reward sections. If one argument, lists the rewards in the reward group.";
 	}
 
 	@Override
@@ -48,19 +48,19 @@ public class RewardListCommand extends RewardCommand {
 	public boolean onCommand(CommandSender sender, String[] args) {
 		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		if (args.length == 0) {
-			if (gcm.getRewardSections().size() == 0) {
+			if (gcm.getRewardGroups().size() == 0) {
 				sender.sendMessage(ChatColor.RED + "There are no defined reward sections.  Add some with /cmr reward add");
 				return true;
 			}
 			sender.sendMessage(ChatColor.GREEN + "The defined reward sections are:  " + gcm.getPrettyRewardSections());
 		} else if (args.length == 1) {
 			try {
-				if (new RewardSection(args[0]).getChildren().size() == 0) {
+				if (new RewardGroup(args[0]).getChildren().size() == 0) {
 					sender.sendMessage(ChatColor.RED + "There are no defined rewards.");
 					return true;
 				}
-				sender.sendMessage(ChatColor.GREEN + "The defined rewards are:  " + new RewardSection(args[0]).getPrettyChildren());
-			} catch (InvalidRewardSectionException e) {
+				sender.sendMessage(ChatColor.GREEN + "The defined rewards are:  " + new RewardGroup(args[0]).getPrettyChildren());
+			} catch (InvalidRewardGroupException e) {
 				sender.sendMessage(e.getMessage());
 				return true;
 			}

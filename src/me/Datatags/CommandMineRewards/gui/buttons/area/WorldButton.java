@@ -7,17 +7,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+
 import me.Datatags.CommandMineRewards.CMRPermission;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 
 public class WorldButton extends AreaButton {
 	
-	public WorldButton(String world, RewardSection section) {
-		super(world, section);
+	public WorldButton(String world, RewardGroup group) {
+		super(world, group);
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -54,7 +55,7 @@ public class WorldButton extends AreaButton {
 	
 	@Override
 	protected List<String> getAreas() {
-		return section == null ? gcm.getGlobalAllowedWorlds() : section.getAllowedWorlds();
+		return group == null ? gcm.getGlobalAllowedWorlds() : group.getAllowedWorlds();
 	}
 	@Override
 	protected void addGlobal() throws InvalidAreaException, AreaAlreadyInListException {
@@ -62,7 +63,7 @@ public class WorldButton extends AreaButton {
 	}
 	@Override
 	protected void addLocal() throws InvalidAreaException, AreaAlreadyInListException {
-		section.addAllowedWorld(area);
+		group.addAllowedWorld(area);
 	}
 	@Override
 	protected void removeGlobal() throws InvalidAreaException, AreaNotInListException {
@@ -70,7 +71,7 @@ public class WorldButton extends AreaButton {
 	}
 	@Override
 	protected void removeLocal() throws InvalidAreaException, AreaNotInListException {
-		section.removeAllowedWorld(area);
+		group.removeAllowedWorld(area);
 	}
 
 }

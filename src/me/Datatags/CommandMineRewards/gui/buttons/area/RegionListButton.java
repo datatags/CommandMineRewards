@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.MapMeta;
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.CommandMineRewards;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 import me.Datatags.CommandMineRewards.gui.guis.RegionListGUI;
@@ -19,8 +19,8 @@ import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class RegionListButton extends AreaListButton {
 	private WorldGuardManager wgm;
-	public RegionListButton(RewardSection section) {
-		super(section);
+	public RegionListButton(RewardGroup group) {
+		super(group);
 		this.wgm = CommandMineRewards.getInstance().getWGManager();
 	}
 
@@ -46,7 +46,7 @@ public class RegionListButton extends AreaListButton {
 	@Override
 	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
 		ItemBuilder base = getBase();
-		for (String region : generateLore(gcm.getGlobalAllowedRegions(), section == null ? null : section.getAllowedRegions())) {
+		for (String region : generateLore(gcm.getGlobalAllowedRegions(), group == null ? null : group.getAllowedRegions())) {
 			base.lore(ChatColor.GREEN + "- " + region);
 		}
 		return base.build();
@@ -54,7 +54,7 @@ public class RegionListButton extends AreaListButton {
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.delayOpenGUI(player, parent.getGUIManager().getGUI(RegionListGUI.class, section, null));
+		parent.delayOpenGUI(player, parent.getGUIManager().getGUI(RegionListGUI.class, group, null));
 	}
 
 }

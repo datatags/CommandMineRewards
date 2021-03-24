@@ -1,5 +1,5 @@
 name: CommandMineRewards
-main: me.Datatags.CommandMineRewards.CommandMineRewards
+main: me.datatags.commandminerewards.CommandMineRewards
 author: Datatags
 version: 7.0
 api-version: 1.13
@@ -20,6 +20,7 @@ permissions:
             cmr.world: true
             cmr.region: true
             cmr.limit: true
+            cmr.gui: true
     cmr.admin:
         description: Allows you to use any CMR commands
         children:
@@ -43,6 +44,8 @@ permissions:
         description: The permission required to see the list of rewards.
     cmr.command.modify:
         description: The permission required to add and remove commands from rewards.
+    cmr.command.execute:
+        description: The permission required to trigger reward commands to run from the console.
     cmr.command:
         description: The permission required to see all commands added to all rewards.
         children:

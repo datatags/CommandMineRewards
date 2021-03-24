@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.commands.RewardCommandEntry;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.buttons.general.SilkTouchButton;
 import me.Datatags.CommandMineRewards.gui.buttons.misc.CommandButton;
 
 public class RewardGUI extends PaginatedGUI {
-	private RewardSection section;
+	private RewardGroup group;
 	private Reward reward;
 	private List<CommandButton> commands = new ArrayList<>();
-	public RewardGUI(RewardSection section, Reward reward) {
-		this.section = section;
+	public RewardGUI(RewardGroup group, Reward reward) {
+		this.group = group;
 		this.reward = reward;
-		gui[0][4] = new SilkTouchButton(section, reward);
+		gui[0][4] = new SilkTouchButton(group, reward);
 		for (RewardCommandEntry entry : reward.getCommands()) {
 			commands.add(new CommandButton(reward, entry));
 		}
@@ -29,7 +29,7 @@ public class RewardGUI extends PaginatedGUI {
 
 	@Override
 	public CMRGUI getPreviousGUI() {
-		return getGUIManager().getGUI(RewardSectionGUI.class, section, null);
+		return getGUIManager().getGUI(RewardSectionGUI.class, group, null);
 	}
 	@Override
 	public int getMaxPages() {

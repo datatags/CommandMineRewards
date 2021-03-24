@@ -6,10 +6,10 @@ import org.bukkit.command.CommandSender;
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.SilkTouchPolicy;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
@@ -24,7 +24,7 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Sets the silk touch policy globally, per reward section, or per reward. This just indicates whether silk touch is required or prohibited on the tool used when receiving rewards.";
+		return "Sets the silk touch policy globally, per reward group, or per reward. This just indicates whether silk touch is required or prohibited on the tool used when receiving rewards.";
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 		String rewardSection = args[1];
 		if (args.length == 2) {
 			try {
-				new RewardSection(rewardSection).setSilkTouchPolicy(req);
-			} catch (InvalidRewardSectionException e) {
+				new RewardGroup(rewardSection).setSilkTouchPolicy(req);
+			} catch (InvalidRewardGroupException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -79,7 +79,7 @@ public class SilkTouchPolicySetCommand extends SilkTouchPolicyCommand {
 			String reward = args[2];
 			try {
 				new Reward(rewardSection, reward).setSilkTouchPolicy(req);
-			} catch (InvalidRewardSectionException | InvalidRewardException e) {
+			} catch (InvalidRewardGroupException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

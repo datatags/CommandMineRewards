@@ -8,13 +8,13 @@ import java.util.Map;
 
 import me.Datatags.CommandMineRewards.CMRBlockManager;
 import me.Datatags.CommandMineRewards.CommandMineRewards;
-import me.Datatags.CommandMineRewards.RSCacheListener;
+import me.Datatags.CommandMineRewards.RGCacheListener;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.buttons.main.RewardSectionButton;
-import me.Datatags.CommandMineRewards.gui.buttons.rewardsection.RewardButton;
+import me.Datatags.CommandMineRewards.gui.buttons.rewardgroup.RewardButton;
 
-public class RewardButtonManager implements RSCacheListener {
+public class RewardButtonManager implements RGCacheListener {
 	private static RewardButtonManager instance;
 	private List<RewardSectionButton> sectionCache = new ArrayList<>();
 	private Map<String,List<RewardButton>> rewardCache = new HashMap<>();
@@ -29,25 +29,25 @@ public class RewardButtonManager implements RSCacheListener {
 		return instance;
 	}
 	private void sort() {
-		sectionCache.sort(Comparator.comparing(b -> b.getRewardSection().getName()));
+		sectionCache.sort(Comparator.comparing(b -> b.getRewardGroup().getName()));
 	}
 	@Override
 	public void reloadCache() {
 		sectionCache.clear();
 		rewardCache.clear();
-		for (RewardSection section : CMRBlockManager.getInstance().getSectionCache()) {
-			sectionCache.add(new RewardSectionButton(section));
-			loadChildren(section);
+		for (RewardGroup group : CMRBlockManager.getInstance().getGroupCache()) {
+			sectionCache.add(new RewardSectionButton(group));
+			loadChildren(group);
 		}
 		sort();
 	}
-	private void loadChildren(RewardSection section) {
+	private void loadChildren(RewardGroup group) {
 		List<RewardButton> buttons = new ArrayList<>();
-		for (Reward reward : section.getChildren()) {
+		for (Reward reward : group.getChildren()) {
 			buttons.add(new RewardButton(reward));
 		}
 		buttons.sort(Comparator.comparing(r -> r.getReward().getName()));
-		rewardCache.put(section.getName(), buttons);
+		rewardCache.put(group.getName(), buttons);
 	}
 	@Override
 	public void unloadSection(String remove) {
@@ -56,7 +56,7 @@ public class RewardButtonManager implements RSCacheListener {
 		sectionCache.remove(removeButton); // removing something does not unsort the list
 	}
 	@Override
-	public void reloadSection(RewardSection reload) {
+	public void reloadGroup(RewardGroup reload) {
 		RewardSectionButton reloadButton = findSectionButton(reload.getName());
 		if (reloadButton == null) return;
 		reloadButton.resetBase();
@@ -64,48 +64,48 @@ public class RewardButtonManager implements RSCacheListener {
 	private RewardSectionButton findSectionButton(String sectionName) {
 		RewardSectionButton rsb = null;
 		for (RewardSectionButton button : sectionCache) {
-			if (button.getRewardSection().getName().equals(sectionName)) {
+			if (button.getRewardGroup().getName().equals(sectionName)) {
 				rsb = button;
 				break;
 			}
 		}
 		if (rsb == null) {
-			CommandMineRewards.getInstance().getLogger().warning("Asked to adjust nonexistent item in GUI RS cache!");
+			CommandMineRewards.getInstance().getLogger().warning("Asked to adjust nonexistent item in GUI rg cache!");
 		}
 		return rsb;
 	}
 	@Override
-	public void loadSection(RewardSection section) {
-		sectionCache.add(new RewardSectionButton(section));
+	public void loadGroup(RewardGroup group) {
+		sectionCache.add(new RewardSectionButton(group));
 		sort();
 	}
 	public List<RewardSectionButton> getSectionCache() {
 		return sectionCache;
 	}
-	public List<RewardButton> getRewardCache(RewardSection section) {
-		return rewardCache.computeIfAbsent(section.getName(), k -> new ArrayList<>());
+	public List<RewardButton> getRewardCache(RewardGroup group) {
+		return rewardCache.computeIfAbsent(group.getName(), k -> new ArrayList<>());
 	}
 	@Override
-	public void loadReward(RewardSection section, Reward reward) {
-		List<RewardButton> buttons = rewardCache.computeIfAbsent(section.getName(), k -> new ArrayList<>());
+	public void loadReward(RewardGroup group, Reward reward) {
+		List<RewardButton> buttons = rewardCache.computeIfAbsent(group.getName(), k -> new ArrayList<>());
 		buttons.add(new RewardButton(reward));
 		buttons.sort(Comparator.comparing(r -> r.getReward().getName()));
 	}
 	@Override
-	public void unloadReward(RewardSection section, String rewardName) {
-		RewardButton toRemove = findRewardButton(section, rewardName);
+	public void unloadReward(RewardGroup group, String rewardName) {
+		RewardButton toRemove = findRewardButton(group, rewardName);
 		if (toRemove == null) return;
-		rewardCache.get(section.getName()).remove(toRemove);
+		rewardCache.get(group.getName()).remove(toRemove);
 	}
 	@Override
-	public void reloadReward(RewardSection section, Reward reward) {
-		RewardButton toReload = findRewardButton(section, reward.getName());
+	public void reloadReward(RewardGroup group, Reward reward) {
+		RewardButton toReload = findRewardButton(group, reward.getName());
 		if (toReload == null) return;
 		toReload.resetBase();
 	}
-	private RewardButton findRewardButton(RewardSection section, String rewardName) {
+	private RewardButton findRewardButton(RewardGroup group, String rewardName) {
 		RewardButton foundButton = null;
-		for (RewardButton rb : rewardCache.get(section.getName())) {
+		for (RewardButton rb : rewardCache.get(group.getName())) {
 			if (rb.getReward().getName().equals(rewardName)) {
 				foundButton = rb;
 				break;

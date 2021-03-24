@@ -7,25 +7,25 @@ import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.Exceptions.RewardAlreadyExistsException;
-import me.Datatags.CommandMineRewards.Exceptions.RewardSectionAlreadyExistsException;
+import me.Datatags.CommandMineRewards.Exceptions.RewardGroupAlreadyExistsException;
 import me.Datatags.CommandMineRewards.gui.GUIManager;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 import me.Datatags.CommandMineRewards.gui.guis.RewardGUI;
 import me.Datatags.CommandMineRewards.gui.guis.RewardSectionGUI;
 
 public class RewardNamePrompt extends CMRPrompt {
-	private RewardSection section;
-	public RewardNamePrompt(RewardSection section) {
+	private RewardGroup group;
+	public RewardNamePrompt(RewardGroup group) {
 		super(String.class);
-		this.section = section;
+		this.group = group;
 	}
 	@Override
 	public String getPromptText(ConversationContext cc) {
-		return "Please enter new reward " + (section == null ? "section " : "") + "name or 'cancel' to abort";
+		return "Please enter new reward " + (group == null ? "group " : "") + "name or 'cancel' to abort";
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -38,16 +38,16 @@ public class RewardNamePrompt extends CMRPrompt {
 			player.sendMessage("Aborting");
 			return Prompt.END_OF_CONVERSATION;
 		}
-		if (section == null) {
+		if (group == null) {
 			try {
-				cc.setSessionData("section", new RewardSection(input, true));
-			} catch (InvalidRewardSectionException | RewardSectionAlreadyExistsException e) {
+				cc.setSessionData("group", new RewardGroup(input, true));
+			} catch (InvalidRewardGroupException | RewardGroupAlreadyExistsException e) {
 				player.sendMessage(ChatColor.RED + e.getMessage());
 				return this;
 			}
 		} else {
 			try {
-				cc.setSessionData("reward", new Reward(section, input, true));
+				cc.setSessionData("reward", new Reward(group, input, true));
 			} catch (InvalidRewardException | RewardAlreadyExistsException e) {
 				player.sendMessage(ChatColor.RED + e.getMessage());
 				return this;
@@ -58,10 +58,10 @@ public class RewardNamePrompt extends CMRPrompt {
 	@Override
 	public CMRGUI getNextGUI(ConversationContext cc) {
 		GUIManager gm = getGUIManager();
-		if (section == null) {
-			return gm.getGUI(RewardSectionGUI.class, (RewardSection) cc.getSessionData("section"), null);
+		if (group == null) {
+			return gm.getGUI(RewardSectionGUI.class, (RewardGroup) cc.getSessionData("group"), null);
 		} else {
-			return gm.getGUI(RewardGUI.class, section, (Reward) cc.getSessionData("reward"));
+			return gm.getGUI(RewardGUI.class, group, (Reward) cc.getSessionData("reward"));
 		}
 	}
 

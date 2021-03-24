@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class CmdAddCommand extends CmdCommand {
@@ -21,7 +21,7 @@ public class CmdAddCommand extends CmdCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Adds a command to a reward section that is executed when the reward is triggered. (don't put a slash before the command.) Placeholder %player% is the player's name. You can also use a few special commands, see more info with /cmr help title, /cmr help sound, and /cmr help msg.";
+		return "Adds a command to a reward group that is executed when the reward is triggered. (don't put a slash before the command.) Placeholder %player% is the player's name. You can also use a few special commands, see more info with /cmr help title, /cmr help sound, and /cmr help msg.";
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class CmdAddCommand extends CmdCommand {
 		String command = parseCommand(2, args);
 		try {
 			new Reward(rewardSection, reward).addCommand(command);
-		} catch (InvalidRewardSectionException | InvalidRewardException e) {
+		} catch (InvalidRewardGroupException | InvalidRewardException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
 		}

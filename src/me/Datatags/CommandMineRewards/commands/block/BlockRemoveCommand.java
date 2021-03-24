@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.BlockNotInListException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class BlockRemoveCommand extends BlockCommand {
@@ -23,7 +23,7 @@ public class BlockRemoveCommand extends BlockCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Removes a reward-triggering block from the specified section. Similar parameters to '/cmr block add' apply.";
+		return "Removes a reward-triggering block from the specified group. Similar parameters to '/cmr block add' apply.";
 	}
 
 	@Override
@@ -68,8 +68,8 @@ public class BlockRemoveCommand extends BlockCommand {
 				return true;
 			}
 			try {
-				new RewardSection(args[0]).removeBlock(item);
-			} catch (InvalidRewardSectionException | BlockNotInListException e) {
+				new RewardGroup(args[0]).removeBlock(item);
+			} catch (InvalidRewardGroupException | BlockNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -78,8 +78,8 @@ public class BlockRemoveCommand extends BlockCommand {
 		}
 		if (args.length == 2) {
 			try {
-				new RewardSection(args[0]).removeBlockRaw(args[1], args[1].contains(":") ? true : false);
-			} catch (InvalidRewardSectionException | BlockNotInListException e) {
+				new RewardGroup(args[0]).removeBlockRaw(args[1], args[1].contains(":") ? true : false);
+			} catch (InvalidRewardGroupException | BlockNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
@@ -99,8 +99,8 @@ public class BlockRemoveCommand extends BlockCommand {
 				}
 			}
 			try {
-				new RewardSection(args[0]).removeBlock(args[1].toLowerCase(), data);
-			} catch (InvalidRewardSectionException | BlockNotInListException e) {
+				new RewardGroup(args[0]).removeBlock(args[1].toLowerCase(), data);
+			} catch (InvalidRewardGroupException | BlockNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 			}
 		}

@@ -5,8 +5,8 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 
 public class LimitCommand extends CMRCommand {
 	@Override
@@ -21,7 +21,7 @@ public class LimitCommand extends CMRCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Sets the maximum amount of rewards received per block broken, globally or per-section. Set to -1 to disable.";
+		return "Sets the maximum amount of rewards received per block broken, globally or per-group. Set to -1 to disable.";
 	}
 	
 	@Override
@@ -71,19 +71,19 @@ public class LimitCommand extends CMRCommand {
 				
 			}
 		}
-		RewardSection section;
+		RewardGroup group;
 		try {
-			section = new RewardSection(args[0]);
-		} catch (InvalidRewardSectionException ex) {
+			group = new RewardGroup(args[0]);
+		} catch (InvalidRewardGroupException ex) {
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
 			return true;
 		}
 		if (args.length == 1) {
-			sender.sendMessage(ChatColor.GREEN + "The reward limit for section " + section.getName() + " is currently " + section.getRewardLimit());
+			sender.sendMessage(ChatColor.GREEN + "The reward limit for group " + group.getName() + " is currently " + group.getRewardLimit());
 		} else { // args.length == 2
 			if (!CMRPermission.LIMIT_MODIFY.attempt(sender)) return true;
 			try {
-				section.setRewardLimit(Integer.parseInt(args[1]));
+				group.setRewardLimit(Integer.parseInt(args[1]));
 				sender.sendMessage(ChatColor.GREEN + "Success!");
 			} catch (NumberFormatException e) {
 				sender.sendMessage(ChatColor.RED + "Invalid number");

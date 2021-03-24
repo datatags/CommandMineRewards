@@ -19,12 +19,12 @@ public class CMRBlockHandler {
 	private long uses = 0;
 	private GlobalConfigManager gcm;
 	private StateManager sm;
-	protected CMRBlockHandler(RewardSection rs, Material type, StateManager sm) {
-		this(rs, type, sm, null);
+	protected CMRBlockHandler(RewardGroup rg, Material type, StateManager sm) {
+		this(rg, type, sm, null);
 	}
-	protected CMRBlockHandler(RewardSection rs, Material type, StateManager sm, Boolean growth) {
+	protected CMRBlockHandler(RewardGroup rg, Material type, StateManager sm, Boolean growth) {
 		this.type = type;
-		this.rewardSections.add(rs.getName());
+		this.rewardSections.add(rg.getName());
 		this.gcm = GlobalConfigManager.getInstance();
 		this.sm = sm;
 		this.growth = growth;
@@ -33,15 +33,15 @@ public class CMRBlockHandler {
 		CommandMineRewards cmr = CommandMineRewards.getInstance();
 		cmr.debug("Processing block " + block.getType().toString());
 		int rewardsExecuted = 0;
-		List<RewardSection> sectionCache = new ArrayList<>(CMRBlockManager.getInstance().getSectionCache());
+		List<RewardGroup> groupCache = new ArrayList<>(CMRBlockManager.getInstance().getGroupCache());
 		if (gcm.isRandomizingRewardOrder()) {
-			Collections.shuffle(sectionCache);
+			Collections.shuffle(groupCache);
 		}
-		for (RewardSection section : sectionCache) {
-			cmr.debug("Processing section from cache: " + section.getName());
-			if (rewardSections.contains(section.getName())) {
-				cmr.debug("Found section from cache: " + section.getName());
-				rewardsExecuted += section.execute(block, player, globalRewardLimit - rewardsExecuted);
+		for (RewardGroup group : groupCache) {
+			cmr.debug("Processing group from cache: " + group.getName());
+			if (rewardSections.contains(group.getName())) {
+				cmr.debug("Found group from cache: " + group.getName());
+				rewardsExecuted += group.execute(block, player, globalRewardLimit - rewardsExecuted);
 				if (globalRewardLimit > -1 && globalRewardLimit - rewardsExecuted < 1) break;
 			}
 		}
@@ -64,11 +64,11 @@ public class CMRBlockHandler {
 	protected Set<String> getSections() {
 		return rewardSections;
 	}
-	protected void addSection(RewardSection rs) {
-		rewardSections.add(rs.getName());
+	protected void addGroup(RewardGroup rg) {
+		rewardSections.add(rg.getName());
 	}
-	protected void removeSection(RewardSection rs) {
-		rewardSections.remove(rs.getName());
+	protected void removeGroup(RewardGroup rg) {
+		rewardSections.remove(rg.getName());
 	}
 	public long getUses() {
 		return uses;

@@ -4,8 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RegionListCommand extends RegionCommand {
@@ -20,7 +20,7 @@ public class RegionListCommand extends RegionCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Lists regions in which rewards under a reward section, or globally, are allowed to occur. See '/cmr help region add' for more details.";
+		return "Lists regions in which rewards under a reward group, or globally, are allowed to occur. See '/cmr help region add' for more details.";
 	}
 
 	@Override
@@ -62,17 +62,17 @@ public class RegionListCommand extends RegionCommand {
 				sender.sendMessage(ChatColor.GREEN + "The globally allowed regions are:  " + gcm.makePretty(gcm.getGlobalAllowedRegions()));
 			}
 		} else if (args.length == 1) {
-			RewardSection rs;
+			RewardGroup rg;
 			try {
-				rs = new RewardSection(args[0]);
-			} catch (InvalidRewardSectionException e) {
+				rg = new RewardGroup(args[0]);
+			} catch (InvalidRewardGroupException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
-			if (rs.getAllowedRegions().size() == 0) {
-				sender.sendMessage(ChatColor.YELLOW + "There are no defined allowed regions in this reward section.  The rewards region checker will use the global ones.");
+			if (rg.getAllowedRegions().size() == 0) {
+				sender.sendMessage(ChatColor.YELLOW + "There are no defined allowed regions in this reward group.  The rewards region checker will use the global ones.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The allowed regions are:  " + gcm.makePretty(rs.getAllowedRegions()));
+				sender.sendMessage(ChatColor.GREEN + "The allowed regions are:  " + gcm.makePretty(rg.getAllowedRegions()));
 			}
 		}
 		return true;

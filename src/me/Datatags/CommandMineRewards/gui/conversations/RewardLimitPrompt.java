@@ -5,28 +5,28 @@ import org.bukkit.conversations.Prompt;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.GUIManager;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 import me.Datatags.CommandMineRewards.gui.guis.MainGUI;
 import me.Datatags.CommandMineRewards.gui.guis.RewardSectionGUI;
 
 public class RewardLimitPrompt extends CMRPrompt {
-	private RewardSection section;
-	public RewardLimitPrompt(RewardSection section) {
+	private RewardGroup group;
+	public RewardLimitPrompt(RewardGroup group) {
 		super(Integer.class);
-		this.section = section;
+		this.group = group;
 	}
 
 	@Override
 	public String getPromptText(ConversationContext cc) {
 		int value;
-		if (section == null) {
+		if (group == null) {
 			value = ((GlobalConfigManager)cc.getSessionData("gcm")).getGlobalRewardLimit();
 		} else {
-			value = section.getRewardLimit();
+			value = group.getRewardLimit();
 		}
-		return "Please enter new reward limit for " + (section == null ? "global" : section.getName()) + ", current value: " + value;
+		return "Please enter new reward limit for " + (group == null ? "global" : group.getName()) + ", current value: " + value;
 	}
 
 	@Override
@@ -37,10 +37,10 @@ public class RewardLimitPrompt extends CMRPrompt {
 	@Override
 	protected Prompt acceptValidatedInput(ConversationContext cc, String input) {
 		int value = Integer.parseInt(input);
-		if (section == null) {
+		if (group == null) {
 			((GlobalConfigManager)cc.getSessionData("gcm")).setGlobalRewardLimit(value);
 		} else {
-			section.setRewardLimit(value);
+			group.setRewardLimit(value);
 		}
 		return Prompt.END_OF_CONVERSATION;
 	}
@@ -48,10 +48,10 @@ public class RewardLimitPrompt extends CMRPrompt {
 	@Override
 	public CMRGUI getNextGUI(ConversationContext cc) {
 		GUIManager gm = getGUIManager();
-		if (section == null) {
+		if (group == null) {
 			return gm.getGUI(MainGUI.class, null, null);
 		} else {
-			return gm.getGUI(RewardSectionGUI.class, section, null);
+			return gm.getGUI(RewardSectionGUI.class, group, null);
 		}
 	}
 }

@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.GUIManager;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.buttons.area.AreaButton;
 import me.Datatags.CommandMineRewards.gui.buttons.general.FillerButton;
 
 public abstract class AreaListGUI extends PaginatedGUI {
-	protected RewardSection section;
+	protected RewardGroup group;
 	protected List<AreaButton> buttons = new ArrayList<>();
-	public AreaListGUI(RewardSection section) {
-		this.section = section;
+	public AreaListGUI(RewardGroup group) {
+		this.group = group;
 		for (int i = 0; i < gui[0].length; i++) {
 			gui[2][i] = new FillerButton();
 			if (i % 4 != 0) { // silly way of skipping first, middle, and last slot 
@@ -26,10 +26,10 @@ public abstract class AreaListGUI extends PaginatedGUI {
 	@Override
 	public CMRGUI getPreviousGUI() {
 		GUIManager gm = getGUIManager();
-		if (section == null) {
+		if (group == null) {
 			return gm.getGUI(MainGUI.class, null, null);
 		} else {
-			return gm.getGUI(RewardSectionGUI.class, section, null);
+			return gm.getGUI(RewardSectionGUI.class, group, null);
 		}
 	}
 	@Override
@@ -71,10 +71,10 @@ public abstract class AreaListGUI extends PaginatedGUI {
 	@Override
 	public String getTitle() {
 		String title = "Allowed " + getAreaType() + " - ";
-		if (section == null) {
+		if (group == null) {
 			title += "Global";
 		} else {
-			title += "Section: " + section.getName();
+			title += "group: " + group.getName();
 		}
 		return title;
 	}

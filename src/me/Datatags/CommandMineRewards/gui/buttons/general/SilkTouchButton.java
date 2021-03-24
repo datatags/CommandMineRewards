@@ -5,20 +5,21 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.SilkTouchPolicy;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 
 public class SilkTouchButton extends GUIButton {
-	private RewardSection rewardSection;
+	private RewardGroup rewardGroup;
 	private Reward reward;
-	public SilkTouchButton(RewardSection rewardSection, Reward reward) {
-		this.rewardSection = rewardSection;
+	public SilkTouchButton(RewardGroup rewardGroup, Reward reward) {
+		this.rewardGroup = rewardGroup;
 		this.reward = reward;
 	}
 		
@@ -34,20 +35,20 @@ public class SilkTouchButton extends GUIButton {
 	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
 		SilkTouchPolicy local = getLocalPolicy(gcm);
 		SilkTouchPolicy inherits;
-		if (rewardSection == null) {
+		if (rewardGroup == null) {
 			inherits = SilkTouchPolicy.IGNORED;
 		} else {
-			inherits = gcm.getSilkTouchPolicy(rewardSection, reward);
+			inherits = gcm.getSilkTouchPolicy(rewardGroup, reward);
 		}
 		return getBase().lore("Local value: " + local.getFriendlyName()).lore("Can inherit: " + inherits.getFriendlyName()).build();
 	}
 	
 	private SilkTouchPolicy getLocalPolicy(GlobalConfigManager gcm) {
-		if (rewardSection == null) {
+		if (rewardGroup == null) {
 			return gcm.getGlobalSilkTouchPolicy();
 		} else {
 			if (reward == null) {
-				return rewardSection.getSilkTouchPolicy();
+				return rewardGroup.getSilkTouchPolicy();
 			} else {
 				return reward.getSilkTouchPolicy();
 			}
@@ -55,11 +56,11 @@ public class SilkTouchButton extends GUIButton {
 	}
 	
 	private void setLocalPolicy(SilkTouchPolicy stp, GlobalConfigManager gcm) {
-		if (rewardSection == null) {
+		if (rewardGroup == null) {
 			gcm.setGlobalSilkTouchPolicy(stp);
 		} else {
 			if (reward == null) {
-				rewardSection.setSilkTouchPolicy(stp);
+				rewardGroup.setSilkTouchPolicy(stp);
 			} else {
 				reward.setSilkTouchPolicy(stp);
 			}

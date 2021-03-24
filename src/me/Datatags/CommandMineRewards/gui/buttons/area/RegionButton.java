@@ -7,7 +7,7 @@ import org.bukkit.Material;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.CommandMineRewards;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
@@ -16,8 +16,8 @@ import me.Datatags.CommandMineRewards.worldguard.WorldGuardManager;
 
 public class RegionButton extends AreaButton {
 	private WorldGuardManager wgm;
-	public RegionButton(String area, RewardSection section) {
-		super(area, section);
+	public RegionButton(String area, RewardGroup group) {
+		super(area, group);
 		this.wgm = CommandMineRewards.getInstance().getWGManager();
 	}
 
@@ -33,7 +33,7 @@ public class RegionButton extends AreaButton {
 
 	@Override
 	protected void addLocal() throws InvalidAreaException, AreaAlreadyInListException {
-		section.addAllowedRegion(area);
+		group.addAllowedRegion(area);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class RegionButton extends AreaButton {
 
 	@Override
 	protected void removeLocal() throws InvalidAreaException, AreaNotInListException {
-		section.removeAllowedRegion(area);
+		group.removeAllowedRegion(area);
 	}
 
 	@Override

@@ -8,20 +8,20 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Datatags.CommandMineRewards.CommandMineRewards;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 
 public abstract class AreaButton extends GUIButton implements Comparable<AreaButton> {
 	protected String area;
-	protected RewardSection section;
+	protected RewardGroup group;
 	protected GlobalConfigManager gcm;
-	public AreaButton(String area, RewardSection section) {
+	public AreaButton(String area, RewardGroup group) {
 		this.area = area;
-		this.section = section;
+		this.group = group;
 		this.gcm = GlobalConfigManager.getInstance();
 	}
 	
@@ -43,7 +43,7 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 	
 	protected void addArea() {
 		try {
-			if (section == null) {
+			if (group == null) {
 				addGlobal();
 			} else {
 				addLocal();
@@ -54,7 +54,7 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 	}
 	protected void removeArea() {
 		try {
-			if (section == null) {
+			if (group == null) {
 				removeGlobal();
 			} else {
 				removeLocal();

@@ -5,9 +5,9 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RegionRemoveCommand extends RegionCommand {
@@ -22,7 +22,7 @@ public class RegionRemoveCommand extends RegionCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Removes a region in which rewards under a reward section, or globally, are allowed to occur. See '/cmr help region add' for more details";
+		return "Removes a region in which rewards under a reward group, or globally, are allowed to occur. See '/cmr help region add' for more details";
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class RegionRemoveCommand extends RegionCommand {
 		} else if (args.length == 2) {
 			String rewardSection = args[1];
 			try {
-				new RewardSection(rewardSection).removeAllowedRegion(region);
-			} catch (InvalidRewardSectionException | AreaNotInListException e) {
+				new RewardGroup(rewardSection).removeAllowedRegion(region);
+			} catch (InvalidRewardGroupException | AreaNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

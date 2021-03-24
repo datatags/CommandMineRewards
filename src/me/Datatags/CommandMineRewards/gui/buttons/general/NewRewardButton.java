@@ -8,16 +8,16 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.conversations.RewardNamePrompt;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 
 public class NewRewardButton extends GUIButton {
-	private RewardSection section;
-	public NewRewardButton(RewardSection section) {
-		this.section = section;
+	private RewardGroup group;
+	public NewRewardButton(RewardGroup group) {
+		this.group = group;
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -31,7 +31,7 @@ public class NewRewardButton extends GUIButton {
 
 	@Override
 	protected ItemBuilder buildBase() {
-		return new ItemBuilder(Material.EMERALD_BLOCK).name(ChatColor.GREEN + "New reward" + (section == null ? " section" : ""));
+		return new ItemBuilder(Material.EMERALD_BLOCK).name(ChatColor.GREEN + "New reward" + (group == null ? " group" : ""));
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class NewRewardButton extends GUIButton {
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.getGUIManager().startConversation(player, new RewardNamePrompt(section));
+		parent.getGUIManager().startConversation(player, new RewardNamePrompt(group));
 	}
 
 }

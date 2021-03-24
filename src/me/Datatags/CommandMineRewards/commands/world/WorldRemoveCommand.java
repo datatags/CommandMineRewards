@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class WorldRemoveCommand extends WorldCommand {
@@ -23,7 +23,7 @@ public class WorldRemoveCommand extends WorldCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Removes a world in which rewards under a reward section, or globally, are allowed to occur. Adding no arguments will remove your current world from the global list if you are a player.";
+		return "Removes a world in which rewards under a reward group, or globally, are allowed to occur. Adding no arguments will remove your current world from the global list if you are a player.";
 	}
 
 	@Override
@@ -82,8 +82,8 @@ public class WorldRemoveCommand extends WorldCommand {
 		} else if (args.length == 2) {
 			String rewardSection = args[1];
 			try {
-				new RewardSection(rewardSection).removeAllowedWorld(world);
-			} catch (InvalidRewardSectionException | AreaNotInListException e) {
+				new RewardGroup(rewardSection).removeAllowedWorld(world);
+			} catch (InvalidRewardGroupException | AreaNotInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

@@ -11,9 +11,9 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
 import me.Datatags.CommandMineRewards.Exceptions.AreaNotInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
 
 public class GlobalConfigManager {
 	private static GlobalConfigManager instance = null;
@@ -177,19 +177,19 @@ public class GlobalConfigManager {
 		getConfig().set("globalSilkTouch", newRequirement.toString());
 		cmr.saveConfig();
 	}
-	public SilkTouchPolicy getSilkTouchPolicy(RewardSection rewardSection, Reward reward) {
+	public SilkTouchPolicy getSilkTouchPolicy(RewardGroup rewardGroup, Reward reward) {
 		if (reward != null && reward.getSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
 			return reward.getSilkTouchPolicy();
-		} else if (rewardSection != null && rewardSection.getSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
-			return rewardSection.getSilkTouchPolicy();
+		} else if (rewardGroup != null && rewardGroup.getSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
+			return rewardGroup.getSilkTouchPolicy();
 		} else if (getGlobalSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
 			return getGlobalSilkTouchPolicy();
 		} else {
 			return SilkTouchPolicy.IGNORED;
 		}
 	}
-	public boolean silkStatusAllowed(RewardSection rewardSection, Reward reward, boolean silkTouch) {
-		SilkTouchPolicy current = getSilkTouchPolicy(rewardSection, reward);
+	public boolean silkStatusAllowed(RewardGroup rewardGroup, Reward reward, boolean silkTouch) {
+		SilkTouchPolicy current = getSilkTouchPolicy(rewardGroup, reward);
 		if (current == SilkTouchPolicy.IGNORED) {
 			return true;
 		} else if (current == SilkTouchPolicy.REQUIRED && silkTouch) {
@@ -247,10 +247,10 @@ public class GlobalConfigManager {
 		}
 		return names;
 	}
-	public List<RewardSection> getRewardSections() {
-		List<RewardSection> rv = new ArrayList<RewardSection>();
+	public List<RewardGroup> getRewardGroups() {
+		List<RewardGroup> rv = new ArrayList<RewardGroup>();
 		for (String name : getRewardSectionNames()) {
-			rv.add(new RewardSection(name));
+			rv.add(new RewardGroup(name));
 		}
 		return rv;
 	}

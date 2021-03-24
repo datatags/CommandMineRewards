@@ -10,14 +10,14 @@ import org.bukkit.inventory.meta.MapMeta;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 import me.Datatags.CommandMineRewards.gui.guis.WorldListGUI;
 
 public class WorldListButton extends AreaListButton {
-	public WorldListButton(RewardSection section) {
-		super(section);
+	public WorldListButton(RewardGroup group) {
+		super(group);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class WorldListButton extends AreaListButton {
 	@Override
 	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
 		ItemBuilder base = getBase();
-		for (String world : generateLore(gcm.getGlobalAllowedWorlds(), section == null ? null : section.getAllowedWorlds())) {
+		for (String world : generateLore(gcm.getGlobalAllowedWorlds(), group == null ? null : group.getAllowedWorlds())) {
 			base.lore(ChatColor.BLUE + "- " + world);
 		}
 		return base.build();
@@ -50,7 +50,7 @@ public class WorldListButton extends AreaListButton {
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.delayOpenGUI(player, parent.getGUIManager().getGUI(WorldListGUI.class, section, null));
+		parent.delayOpenGUI(player, parent.getGUIManager().getGUI(WorldListGUI.class, group, null));
 	}
 	
 }

@@ -44,7 +44,7 @@ public abstract class PaginatedGUI extends CMRGUI {
 	}
 	protected GUIButton[][] generatePage(int pageN, int startRow, int itemsPerPage, List<? extends GUIButton> buttons) {
 		GUIButton[][] page = gui.clone();
-		for (int i = (pageN - 1) * itemsPerPage; i < pageN * itemsPerPage && i < buttons.size(); i++) { // don't go over page limit or section cache size
+		for (int i = (pageN - 1) * itemsPerPage; i < pageN * itemsPerPage && i < buttons.size(); i++) { // don't go over page limit or group cache size
 			page[(i / 9) + startRow][i % 9] = buttons.get(i);
 		}
 		return page;

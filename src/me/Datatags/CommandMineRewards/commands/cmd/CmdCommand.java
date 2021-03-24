@@ -29,7 +29,7 @@ public class CmdCommand extends CompoundCommand {
 	}
 	@Override
 	public void init() {
-		registerChildren(new CmdAddCommand(), new CmdInsertCommand(), new CmdListCommand(), new CmdRemoveCommand(), new CmdReplaceCommand());
+		registerChildren(new CmdAddCommand(), new CmdInsertCommand(), new CmdListCommand(), new CmdRemoveCommand(), new CmdReplaceCommand(), new CmdTestCommand(), new CmdRunAsMeCommand());
 	}
 	@Override
 	public CMRPermission getPermission() {

@@ -7,7 +7,7 @@ import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.CommandNotInListException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class CmdRemoveCommand extends CmdCommand {
@@ -60,7 +60,7 @@ public class CmdRemoveCommand extends CmdCommand {
 		Reward reward;
 		try {
 			reward = new Reward(rewardSection, rewardName);
-		} catch (InvalidRewardSectionException | InvalidRewardException ex) {
+		} catch (InvalidRewardGroupException | InvalidRewardException ex) {
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
 			return true;
 		}

@@ -2,6 +2,7 @@ package me.Datatags.CommandMineRewards.commands.cmd;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
@@ -9,43 +10,43 @@ import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
-public class CmdReplaceCommand extends CmdCommand {
+public class CmdTestCommand extends CmdCommand {
 	@Override
 	public String getName() {
-		return "replace";
+		return "test";
 	}
 	@Override
 	public String getBasicDescription() {
-		return "Replaces a command to be executed as a reward.";
+		return "Runs all commands in the reward.";
 	}
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Replaces an existing index in a reward command list, in case you didn't get it quite right the first time.  Same as cmd remove X and cmd insert X.";
+		return "All commands in the reward are executed from the console just as they would be if the reward triggered by a block break. All prerequisites (world whitelist, etc.) are ignored. Specify an index to only run the command with that index.";
 	}
 
 	@Override
 	public String getUsage() {
-		return "<rewardSection> <reward> <index> <command>";
+		return "<rewardSection> <reward> [index]";
 	}
 	
 	@Override
 	public String[] getExamples() {
-		return new String[] {"genericRewards bigReward 1 eco take %player% 150"};
+		return new String[] {"genericRewards bigReward 0", "genericRewards smallReward"};
 	}
 
 	@Override
 	public int getMinArgs() {
-		return 4;
+		return 2;
 	}
 
 	@Override
 	public int getMaxArgs() {
-		return -1;
+		return 3;
 	}
 	@Override
 	public CMRPermission getPermission() {
-		return CMRPermission.COMMAND_MODIFY;
+		return CMRPermission.COMMAND_EXECUTE;
 	}
 	@Override
 	public ArgType[] getArgs() {
@@ -55,21 +56,34 @@ public class CmdReplaceCommand extends CmdCommand {
 	public boolean onCommand(CommandSender sender, String[] args) {
 		String rewardSection = args[0];
 		String rewardName = args[1];
-		int index;
-		try {
-			index = Integer.parseInt(args[2]);
-		} catch (NumberFormatException e) {
-			sender.sendMessage(ChatColor.RED + args[2] + " is not a valid number!");
+		int index = -1;
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "This command can only be used as a player!");
 			return true;
 		}
-		String command = parseCommand(3, args);
+		Player player = (Player) sender;
+		if (args.length > 2) {
+			try {
+				index = Integer.parseInt(args[2]);
+			} catch (NumberFormatException e) {
+				sender.sendMessage(ChatColor.RED + "Invalid index: " + args[2]);
+			}
+		}
+		Reward reward;
 		try {
-			Reward reward = new Reward(rewardSection, rewardName);
-			reward.removeCommand(index);
-			reward.insertCommand(command, index);
+			reward = new Reward(rewardSection, rewardName);
 		} catch (InvalidRewardGroupException | InvalidRewardException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
+		}
+		if (index >= reward.getCommands().size()) {
+			sender.sendMessage(ChatColor.RED + "No command with index " + index);
+			return true;
+		}
+		if (index == -1) {
+			reward.execute(player, true);
+		} else {
+			reward.getCommands().get(index).execute(player);
 		}
 		sender.sendMessage(SUCCESS);
 		return true;

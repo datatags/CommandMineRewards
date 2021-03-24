@@ -10,16 +10,16 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 import me.Datatags.CommandMineRewards.gui.guis.RewardSectionGUI;
 
 public class RewardSectionButton extends GUIButton {
-	private RewardSection section;
-	public RewardSectionButton(RewardSection section) {
-		this.section = section;
+	private RewardGroup group;
+	public RewardSectionButton(RewardGroup group) {
+		this.group = group;
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -27,43 +27,43 @@ public class RewardSectionButton extends GUIButton {
 	}
 	@Override
 	public CMRPermission getClickPermission() {
-		return CMRPermission.REWARD; // not REWARD_MODIFY because clicking the button does not modify the reward section
+		return CMRPermission.REWARD; // not REWARD_MODIFY because clicking the button does not modify the reward group
 	}
 	@Override
 	protected ItemBuilder buildBase() {
-		// TODO: reward section icon is first block in list
-		ItemBuilder ib = new ItemBuilder(Material.BOOKSHELF).name(ChatColor.YELLOW + section.getName());
+		// TODO: reward group icon is first block in list
+		ItemBuilder ib = new ItemBuilder(Material.BOOKSHELF).name(ChatColor.YELLOW + group.getName());
 		ib.lore(ChatColor.GREEN + "Rewards:");
-		if (section.getChildren().size() == 0) {
+		if (group.getChildren().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
 		} else {
-			for (String child : section.getChildrenNames()) {
+			for (String child : group.getChildrenNames()) {
 				ib.lore(ChatColor.DARK_GREEN + "- " + child);
 			}
 		}
 		ib.lore("");
 		ib.lore(ChatColor.BLUE + "Blocks:");
 		int i = 0;
-		if (section.getBlocks().size() == 0) {
+		if (group.getBlocks().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
 		} else {
-			for (Entry<String,Boolean> entry : section.getBlocksWithData().entrySet()) {
+			for (Entry<String,Boolean> entry : group.getBlocksWithData().entrySet()) {
 				if (entry.getValue() == null) {
 					ib.lore(ChatColor.DARK_BLUE + "- " + entry.getKey());
 				} else {
 					ib.lore(ChatColor.DARK_BLUE + "- " + entry.getKey() + ":" + entry.getValue());
 				}
-				if (++i >= 10 && section.getBlocksWithData().size() > 10) { // loop breaks anyway if second condition fails
-					ib.lore(ChatColor.BLUE + "... and " + (section.getBlocksWithData().size() - 10) + " more ...");
+				if (++i >= 10 && group.getBlocksWithData().size() > 10) { // loop breaks anyway if second condition fails
+					ib.lore(ChatColor.BLUE + "... and " + (group.getBlocksWithData().size() - 10) + " more ...");
 					break;
 				}
 			}
 		}
-		if (section.getChildrenNames().size() == 0) {
+		if (group.getChildrenNames().size() == 0) {
 			ib.lore(ChatColor.RED + "Right-click to delete");
 		} else {
 			ib.lore(ChatColor.YELLOW + "You must delete all rewards under");
-			ib.lore(ChatColor.YELLOW + "this section before deleting.");
+			ib.lore(ChatColor.YELLOW + "this group before deleting.");
 		}
 		return ib;
 	}
@@ -74,13 +74,13 @@ public class RewardSectionButton extends GUIButton {
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
-			parent.getGUIManager().getGUI(RewardSectionGUI.class, section, null).openFor(player);
-		} else if (clickType.isRightClick() && section.getChildrenNames().size() == 0) {
-			section.delete();
+			parent.getGUIManager().getGUI(RewardSectionGUI.class, group, null).openFor(player);
+		} else if (clickType.isRightClick() && group.getChildrenNames().size() == 0) {
+			group.delete();
 		}
 	}
-	public RewardSection getRewardSection() {
-		return section;
+	public RewardGroup getRewardGroup() {
+		return group;
 	}
 	
 }

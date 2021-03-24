@@ -1,4 +1,4 @@
-package me.Datatags.CommandMineRewards.gui.buttons.rewardsection;
+package me.Datatags.CommandMineRewards.gui.buttons.rewardgroup;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

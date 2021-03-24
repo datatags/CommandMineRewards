@@ -6,7 +6,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 
 import me.Datatags.CommandMineRewards.CommandMineRewards;
-import me.Datatags.CommandMineRewards.RSCacheListener;
+import me.Datatags.CommandMineRewards.RGCacheListener;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.buttons.RewardButtonManager;
 import me.Datatags.CommandMineRewards.gui.buttons.area.RegionListButton;
@@ -19,7 +19,7 @@ import me.Datatags.CommandMineRewards.gui.buttons.main.MultiplierButton;
 import me.Datatags.CommandMineRewards.gui.buttons.paginated.NextPageButton;
 import me.Datatags.CommandMineRewards.gui.buttons.paginated.PreviousPageButton;
 
-public class MainGUI extends PaginatedGUI implements RSCacheListener {
+public class MainGUI extends PaginatedGUI implements RGCacheListener {
 	private RewardButtonManager rbm;
 	private NewRewardButton newSectionButton;
 	public MainGUI() {
@@ -43,7 +43,7 @@ public class MainGUI extends PaginatedGUI implements RSCacheListener {
 	@Override
 	public int getMaxPages() {
 		// 27 items to a page. 27d because we don't want integer division.
-		return (int)Math.ceil((rbm.getSectionCache().size() + 1) / 27d); // add one for the new section button
+		return (int)Math.ceil((rbm.getSectionCache().size() + 1) / 27d); // add one for the new group button
 	}
 	@Override
 	public GUIButton[][] getPage(int pageN) {

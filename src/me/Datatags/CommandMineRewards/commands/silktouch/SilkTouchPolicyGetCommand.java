@@ -5,9 +5,9 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
@@ -22,7 +22,7 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Gets the silk touch policy globally, per reward section, or per reward. See '/cmr help silktouchpolicy set' for more details.";
+		return "Gets the silk touch policy globally, per reward group, or per reward. See '/cmr help silktouchpolicy set' for more details.";
 	}
 
 	@Override
@@ -64,18 +64,18 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 		if (args.length == 1) {
 			String result = null;
 			try {
-				RewardSection rs = new RewardSection(rewardSection); 
-				if (rs.getSilkTouchPolicy() != null) {
-					result = rs.getSilkTouchPolicy().getFriendlyName();
+				RewardGroup rg = new RewardGroup(rewardSection); 
+				if (rg.getSilkTouchPolicy() != null) {
+					result = rg.getSilkTouchPolicy().getFriendlyName();
 				}
-			} catch (InvalidRewardSectionException e) {
+			} catch (InvalidRewardGroupException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
 			if (result == null) {
-				sender.sendMessage(ChatColor.RED + "This reward section has no defined silk touch requirement, it will be inherited from the global setting.");
+				sender.sendMessage(ChatColor.RED + "This reward group has no defined silk touch requirement, it will be inherited from the global setting.");
 			} else {
-				sender.sendMessage(ChatColor.GREEN + "The silk touch policy for this reward section is " + result + ".");
+				sender.sendMessage(ChatColor.GREEN + "The silk touch policy for this reward group is " + result + ".");
 			}
 		} else if (args.length == 2) {
 			String rewardName = args[1];
@@ -85,12 +85,12 @@ public class SilkTouchPolicyGetCommand extends SilkTouchPolicyCommand {
 				if (reward.getSilkTouchPolicy() != null) {
 					result = reward.getSilkTouchPolicy().getFriendlyName();
 				}
-			} catch (InvalidRewardSectionException | InvalidRewardException e) {
+			} catch (InvalidRewardGroupException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
 			if (result == null) {
-				sender.sendMessage(ChatColor.RED + "This reward has no defined silk touch requirement, it will be inherited from the parent reward section or the global setting.");
+				sender.sendMessage(ChatColor.RED + "This reward has no defined silk touch requirement, it will be inherited from the parent reward group or the global setting.");
 			} else {
 				sender.sendMessage(ChatColor.GREEN + "The silk touch policy for this reward is " + result + ".");
 			}

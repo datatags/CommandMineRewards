@@ -18,11 +18,11 @@ import me.Datatags.CommandMineRewards.state.StateManager;
 public class CMRBlockManager {
 	private List<CMRBlockHandler> handlers = new ArrayList<>();
 	private CommandMineRewards cmr;
-	private Set<RewardSection> rewardSectionCache = new HashSet<RewardSection>();
+	private Set<RewardGroup> rewardGroupCache = new HashSet<RewardGroup>();
 	private static CMRBlockManager instance;
 	private static final int sortDelayTicks = 300*20;
 	private GlobalConfigManager gcm;
-	private Set<RSCacheListener> listeners = new HashSet<>();
+	private Set<RGCacheListener> listeners = new HashSet<>();
 	private StateManager sm;
 	private CMRBlockManager(CommandMineRewards cmr) {
 		this.cmr = cmr;
@@ -51,8 +51,8 @@ public class CMRBlockManager {
 	}
 	private void reloadHandlers() {
 		handlers.clear();
-		for (RewardSection rs : rewardSectionCache) {
-			for (String blockName : rs.getRawBlocks()) {
+		for (RewardGroup rg : rewardGroupCache) {
+			for (String blockName : rg.getRawBlocks()) {
 				String[] segments = blockName.split(":", 2);
 				Material mat = Material.matchMaterial(segments[0]);
 				if (mat == null) {
@@ -60,50 +60,50 @@ public class CMRBlockManager {
 					continue;
 				}
 				if (segments.length == 1) {
-					addHandler(rs, mat);
+					addHandler(rg, mat);
 				} else { // must have two elements
 					if (!sm.canHaveData(mat)) {
 						cmr.error("Type " + mat.toString() + " does not grow!");
 					}
 					if (segments[1].equalsIgnoreCase("true")) { // using if statements instead of Boolean.parse because if the user puts in garbage, Boolean.parse assumes false when we should notify the user and move on
-						addCropHandler(rs, mat, true);
+						addCropHandler(rg, mat, true);
 					} else if (segments[1].equalsIgnoreCase("false")) {
-						addCropHandler(rs, mat, false);
+						addCropHandler(rg, mat, false);
 					} else {
 						cmr.error("Invalid growth identifier for material " + mat.toString() + ": " + segments[1]);
-						cmr.error("Defaulting to any growth stage for " + mat.toString() + " in " + rs.getName());
-						addHandler(rs, mat);
+						cmr.error("Defaulting to any growth stage for " + mat.toString() + " in " + rg.getName());
+						addHandler(rg, mat);
 					}
 				}
 			}
 		}
 	}
-	public void addHandler(RewardSection rs, Material type) {
-		addCropHandler(rs, type, null);
+	public void addHandler(RewardGroup rg, Material type) {
+		addCropHandler(rg, type, null);
 	}
-	public void removeHandler(RewardSection rs, Material type) {
-		removeCropHandler(rs, type, null);
+	public void removeHandler(RewardGroup rg, Material type) {
+		removeCropHandler(rg, type, null);
 	}
-	public void addCropHandler(RewardSection rs, Material type, Boolean growth) {
+	public void addCropHandler(RewardGroup rg, Material type, Boolean growth) {
 		debug("Adding handler for " + type);
 		CMRBlockState state = new CMRBlockState(type, growth);
 		CMRBlockHandler handler = getHandler(state);
 		if (handler == null) {
-			handlers.add(new CMRBlockHandler(rs, type, sm, growth));
+			handlers.add(new CMRBlockHandler(rg, type, sm, growth));
 		} else {
-			handler.addSection(rs);
+			handler.addGroup(rg);
 		}
 	}
-	public void removeCropHandler(RewardSection rs, Material type, Boolean growth) {
+	public void removeCropHandler(RewardGroup rg, Material type, Boolean growth) {
 		debug("Removing handler for " + type);
 		CMRBlockState state = new CMRBlockState(type, growth);
 		CMRBlockHandler handler = getHandler(state);
 		if (handler == null) {
-			cmr.warning("Attempted to remove an non-existant handler for " + type + ", " + growth + " in " + rs.getName());
+			cmr.warning("Attempted to remove an non-existant handler for " + type + ", " + growth + " in " + rg.getName());
 			return;
 		}
 		if (handler.getSections().size() > 1) {
-			handler.removeSection(rs);
+			handler.removeGroup(rg);
 		} else {
 			handlers.remove(handler);
 		}
@@ -140,64 +140,64 @@ public class CMRBlockManager {
 		return null;
 	}
 	public void reloadCache() {
-		rewardSectionCache.clear();
-		for (RewardSection section : GlobalConfigManager.getInstance().getRewardSections()) {
-			rewardSectionCache.add(section);
+		rewardGroupCache.clear();
+		for (RewardGroup group : GlobalConfigManager.getInstance().getRewardGroups()) {
+			rewardGroupCache.add(group);
 		}
 		reloadHandlers();
-		for (RSCacheListener listener : listeners) {
+		for (RGCacheListener listener : listeners) {
 			listener.reloadCache();
 		}
 	}
 	public void reloadSection(String name) {
 		unloadSection(name, true);
-		RewardSection section = loadSection(name, true);
-		for (RSCacheListener listener : listeners) {
-			listener.reloadSection(section);
+		RewardGroup group = loadGroup(name, true);
+		for (RGCacheListener listener : listeners) {
+			listener.reloadGroup(group);
 		}
 	}
-	public RewardSection loadSection(String name) {
-		return loadSection(name, false);
+	public RewardGroup loadGroup(String name) {
+		return loadGroup(name, false);
 	}
-	public RewardSection loadSection(String name, boolean reload) {
-		RewardSection section = new RewardSection(name, false);
-		rewardSectionCache.add(section);
+	public RewardGroup loadGroup(String name, boolean reload) {
+		RewardGroup group = new RewardGroup(name, false);
+		rewardGroupCache.add(group);
 		if (!reload) {
-			for (RSCacheListener listener : listeners) {
-				listener.loadSection(section);
+			for (RGCacheListener listener : listeners) {
+				listener.loadGroup(group);
 			}
 		}
-		return section;
+		return group;
 	}
 	public void unloadSection(String name) {
 		unloadSection(name, false);
 	}
 	public void unloadSection(String name, boolean reload) {
-		cmr.debug("Reloading section " + name);
-		RewardSection reloading = null;
-		for (RewardSection section : rewardSectionCache) {
-			if (section.getName().equals(name)) {
-				reloading = section;
+		cmr.debug("Reloading group " + name);
+		RewardGroup reloading = null;
+		for (RewardGroup group : rewardGroupCache) {
+			if (group.getName().equals(name)) {
+				reloading = group;
 			}
 		}
 		if (reloading != null) {
-			rewardSectionCache.remove(reloading);
+			rewardGroupCache.remove(reloading);
 		} else {
-			cmr.warning("A section reload was requested but the section in question was not found!");
+			cmr.warning("A group reload was requested but the group in question was not found!");
 		}
 		if (!reload) {
-			for (RSCacheListener listener : listeners) {
+			for (RGCacheListener listener : listeners) {
 				listener.unloadSection(name);
 			}
 		}
 	}
-	public Set<RewardSection> getSectionCache() {
-		return rewardSectionCache;
+	public Set<RewardGroup> getGroupCache() {
+		return rewardGroupCache;
 	}
-	public void registerListener(RSCacheListener listener) {
+	public void registerListener(RGCacheListener listener) {
 		listeners.add(listener);
 	}
-	public void unregisterListener(RSCacheListener listener) {
+	public void unregisterListener(RGCacheListener listener) {
 		listeners.remove(listener);
 	}
 	public StateManager getStateManager() {

@@ -8,18 +8,18 @@ import org.bukkit.inventory.ItemStack;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.BlockNotInListException;
 import me.Datatags.CommandMineRewards.gui.ItemBuilder;
 import me.Datatags.CommandMineRewards.gui.buttons.GUIButton;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 
 public class BlockButton extends GUIButton {
-	private RewardSection section;
+	private RewardGroup group;
 	private Material block;
 	private Boolean data;
-	public BlockButton(RewardSection section, Material block, Boolean data) {
-		this.section = section;
+	public BlockButton(RewardGroup group, Material block, Boolean data) {
+		this.group = group;
 		this.block = block;
 		this.data = data;
 	}
@@ -52,7 +52,7 @@ public class BlockButton extends GUIButton {
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isRightClick()) {
 			try {
-				section.removeBlock(block.toString(), data);
+				group.removeBlock(block.toString(), data);
 			} catch (BlockNotInListException e) {
 				e.printStackTrace();
 			}

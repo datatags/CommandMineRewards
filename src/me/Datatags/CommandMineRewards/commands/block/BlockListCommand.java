@@ -6,8 +6,8 @@ import java.util.Map.Entry;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class BlockListCommand extends BlockCommand {
@@ -23,7 +23,7 @@ public class BlockListCommand extends BlockCommand {
 	
 	@Override
 	public String getExtensiveDescription() {
-		return "Lists all blocks (including block data) that trigger rewards in a specified reward section.";
+		return "Lists all blocks (including block data) that trigger rewards in a specified reward group.";
 	}
 	
 	@Override
@@ -55,13 +55,13 @@ public class BlockListCommand extends BlockCommand {
 	public boolean onCommand(CommandSender sender, String[] args) {
 		Map<String,Boolean> blocks;
 		try {
-			blocks = new RewardSection(args[0]).getBlocksWithData();
-		} catch (InvalidRewardSectionException e) {
+			blocks = new RewardGroup(args[0]).getBlocksWithData();
+		} catch (InvalidRewardGroupException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
 		}
 		if (blocks.size() < 1) {
-			sender.sendMessage(ChatColor.RED + "There are no blocks in that section.");
+			sender.sendMessage(ChatColor.RED + "There are no blocks in that group.");
 		} else {
 			sender.sendMessage(ChatColor.GREEN + "The blocks that trigger rewards are:  ");
 			boolean duplicates = false;

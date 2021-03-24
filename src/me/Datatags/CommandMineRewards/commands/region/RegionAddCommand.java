@@ -5,10 +5,10 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.AreaAlreadyInListException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidAreaException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RegionAddCommand extends RegionCommand {
@@ -23,7 +23,7 @@ public class RegionAddCommand extends RegionCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Adds a region in which rewards under a reward section, or globally, are allowed to occur. If an allowed region list is specified in a reward section it overrides the global one.";
+		return "Adds a region in which rewards under a reward group, or globally, are allowed to occur. If an allowed region list is specified in a reward group it overrides the global one.";
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public class RegionAddCommand extends RegionCommand {
 		} else if (args.length == 2) {
 			String rewardSection = args[1];
 			try {
-				new RewardSection(rewardSection).addAllowedRegion(region);
-			} catch (InvalidRewardSectionException | AreaAlreadyInListException e) {
+				new RewardGroup(rewardSection).addAllowedRegion(region);
+			} catch (InvalidRewardGroupException | AreaAlreadyInListException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

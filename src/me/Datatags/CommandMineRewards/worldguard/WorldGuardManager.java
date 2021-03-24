@@ -8,7 +8,7 @@ import org.bukkit.plugin.Plugin;
 
 import me.Datatags.CommandMineRewards.CommandMineRewards;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 
 public class WorldGuardManager {
 	private RegionChecker checker = null;
@@ -29,11 +29,11 @@ public class WorldGuardManager {
 			cmr.info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
 		}
 	}
-	public boolean isAllowedInRegions(RewardSection rewardSection, Block block) {
+	public boolean isAllowedInRegions(RewardGroup rewardGroup, Block block) {
 		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		List<String> allowedRegions;
-		if (rewardSection.getAllowedRegions().size() > 0) {
-			allowedRegions = rewardSection.getAllowedRegions();
+		if (rewardGroup.getAllowedRegions().size() > 0) {
+			allowedRegions = rewardGroup.getAllowedRegions();
 		} else if (gcm.getGlobalAllowedRegions().size() > 0) {
 			allowedRegions = gcm.getGlobalAllowedRegions();
 		} else {

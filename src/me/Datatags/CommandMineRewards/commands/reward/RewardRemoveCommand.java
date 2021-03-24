@@ -5,9 +5,9 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.CMRPermission;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class RewardRemoveCommand extends RewardCommand {
@@ -17,12 +17,12 @@ public class RewardRemoveCommand extends RewardCommand {
 	}
 	@Override
 	public String getBasicDescription() {
-		return "Deletes a reward or reward section";
+		return "Deletes a reward or reward group";
 	}
 
 	@Override
 	public String getExtensiveDescription() {
-		return "If one argument is specified, deletes an entire reward section. If two, deletes a reward in the specified reward section.";
+		return "If one argument is specified, deletes an entire reward group. If two, deletes a reward in the specified reward group.";
 	}
 
 	@Override
@@ -56,16 +56,16 @@ public class RewardRemoveCommand extends RewardCommand {
 	public boolean onCommand(CommandSender sender, String[] args) {
 		if (args.length == 1) {
 			try {
-				new RewardSection(args[0]).delete();
-			} catch (InvalidRewardSectionException e) {
+				new RewardGroup(args[0]).delete();
+			} catch (InvalidRewardGroupException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
-			sender.sendMessage(ChatColor.GREEN + "Reward section successfully removed.");
+			sender.sendMessage(ChatColor.GREEN + "Reward group successfully removed.");
 		} else if (args.length == 2) {
 			try {
 				new Reward(args[0], args[1]).delete();
-			} catch (InvalidRewardSectionException | InvalidRewardException e) {
+			} catch (InvalidRewardGroupException | InvalidRewardException e) {
 				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}

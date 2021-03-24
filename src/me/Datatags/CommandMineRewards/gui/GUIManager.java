@@ -13,16 +13,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.Datatags.CommandMineRewards.CommandMineRewards;
 import me.Datatags.CommandMineRewards.GlobalConfigManager;
-import me.Datatags.CommandMineRewards.RSCacheListener;
+import me.Datatags.CommandMineRewards.RGCacheListener;
 import me.Datatags.CommandMineRewards.Reward;
-import me.Datatags.CommandMineRewards.RewardSection;
+import me.Datatags.CommandMineRewards.RewardGroup;
 import me.Datatags.CommandMineRewards.gui.conversations.AbandonListener;
 import me.Datatags.CommandMineRewards.gui.conversations.CMRPrompt;
 import me.Datatags.CommandMineRewards.gui.guis.CMRGUI;
 
-public class GUIManager implements RSCacheListener {
+public class GUIManager implements RGCacheListener {
 	private static GUIManager instance;
-	private Map<Class<? extends CMRGUI>, Map<String /* RewardSection */,Map<String /* Reward */,CMRGUI>>> guiCache = new HashMap<>();
+	private Map<Class<? extends CMRGUI>, Map<String /* RewardGroup */,Map<String /* Reward */,CMRGUI>>> guiCache = new HashMap<>();
 	private ConversationFactory cf;
 	private GUIManager() {
 		this.cf = new ConversationFactory(CommandMineRewards.getInstance());
@@ -37,9 +37,9 @@ public class GUIManager implements RSCacheListener {
 		}
 		return instance;
 	}
-	public CMRGUI getGUI(Class<? extends CMRGUI> cls, RewardSection section, Reward reward) {
+	public CMRGUI getGUI(Class<? extends CMRGUI> cls, RewardGroup group, Reward reward) {
 		Map<String,Map<String,CMRGUI>> sectionLevel = guiCache.computeIfAbsent(cls, k -> new HashMap<>());
-		Map<String,CMRGUI> rewardLevel = sectionLevel.computeIfAbsent(section == null ? null :section.getName(), k -> new HashMap<>());
+		Map<String,CMRGUI> rewardLevel = sectionLevel.computeIfAbsent(group == null ? null :group.getName(), k -> new HashMap<>());
 		return rewardLevel.computeIfAbsent(reward == null ? null : reward.getName(), k -> {
 			@SuppressWarnings("unchecked")
 			Constructor<? extends CMRGUI> con = (Constructor<? extends CMRGUI>) cls.getConstructors()[0];
@@ -48,9 +48,9 @@ public class GUIManager implements RSCacheListener {
 				if (con.getParameterCount() == 0) {
 					gui = con.newInstance();
 				} else if (con.getParameterCount() == 1) {
-					gui = con.newInstance(section);
+					gui = con.newInstance(group);
 				} else if (con.getParameterCount() == 2) {
-					gui = con.newInstance(section, reward);
+					gui = con.newInstance(group, reward);
 				} else {
 					CommandMineRewards.getInstance().getLogger().severe("Couldn't understand constructor for " + cls.getName());
 					return null;
@@ -82,17 +82,17 @@ public class GUIManager implements RSCacheListener {
 	public void reloadCache() {
 		guiCache.clear();
 	}
-	public void unloadSection(String section) {
-		guiCache.values().forEach(r -> r.remove(section));
+	public void unloadSection(String group) {
+		guiCache.values().forEach(r -> r.remove(group));
 	}
-	public void reloadSection(RewardSection section) {
-		unloadSection(section.getName());
+	public void reloadGroup(RewardGroup group) {
+		unloadSection(group.getName());
 	}
 	
-	public void unloadReward(RewardSection section, String rewardName) {
-		guiCache.values().forEach(r -> r.get(section.getName()).remove(rewardName));
+	public void unloadReward(RewardGroup group, String rewardName) {
+		guiCache.values().forEach(r -> r.get(group.getName()).remove(rewardName));
 	}
-	public void reloadReward(RewardSection section, Reward reward) {
-		unloadReward(section, reward.getName());
+	public void reloadReward(RewardGroup group, Reward reward) {
+		unloadReward(group, reward.getName());
 	}
 }

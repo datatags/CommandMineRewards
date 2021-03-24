@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 
 import me.Datatags.CommandMineRewards.Reward;
 import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardException;
-import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardSectionException;
+import me.Datatags.CommandMineRewards.Exceptions.InvalidRewardGroupException;
 import me.Datatags.CommandMineRewards.commands.ArgType;
 
 public class CmdListCommand extends CmdCommand {
@@ -54,7 +54,7 @@ public class CmdListCommand extends CmdCommand {
 		Reward reward;
 		try {
 			reward = new Reward(rewardSection, rewardName);
-		} catch (InvalidRewardSectionException | InvalidRewardException e) {
+		} catch (InvalidRewardGroupException | InvalidRewardException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 			return true;
 		}
