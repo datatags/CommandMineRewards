@@ -15,7 +15,7 @@ import me.datatags.commandminerewards.Exceptions.RewardGroupAlreadyExistsExcepti
 import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.RewardGUI;
-import me.datatags.commandminerewards.gui.guis.RewardSectionGUI;
+import me.datatags.commandminerewards.gui.guis.RewardGroupGUI;
 
 public class RewardNamePrompt extends CMRPrompt {
 	private RewardGroup group;
@@ -59,7 +59,7 @@ public class RewardNamePrompt extends CMRPrompt {
 	public CMRGUI getNextGUI(ConversationContext cc) {
 		GUIManager gm = getGUIManager();
 		if (group == null) {
-			return gm.getGUI(RewardSectionGUI.class, (RewardGroup) cc.getSessionData("group"), null);
+			return gm.getGUI(RewardGroupGUI.class, (RewardGroup) cc.getSessionData("group"), null);
 		} else {
 			return gm.getGUI(RewardGUI.class, group, (Reward) cc.getSessionData("reward"));
 		}

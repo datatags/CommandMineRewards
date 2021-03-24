@@ -29,7 +29,7 @@ public class RewardGUI extends PaginatedGUI {
 
 	@Override
 	public CMRGUI getPreviousGUI() {
-		return getGUIManager().getGUI(RewardSectionGUI.class, group, null);
+		return getGUIManager().getGUI(RewardGroupGUI.class, group, null);
 	}
 	@Override
 	public int getMaxPages() {

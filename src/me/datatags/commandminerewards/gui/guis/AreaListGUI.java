@@ -29,7 +29,7 @@ public abstract class AreaListGUI extends PaginatedGUI {
 		if (group == null) {
 			return gm.getGUI(MainGUI.class, null, null);
 		} else {
-			return gm.getGUI(RewardSectionGUI.class, group, null);
+			return gm.getGUI(RewardGroupGUI.class, group, null);
 		}
 	}
 	@Override

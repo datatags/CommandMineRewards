@@ -16,11 +16,11 @@ import me.datatags.commandminerewards.gui.buttons.general.RewardLimitButton;
 import me.datatags.commandminerewards.gui.buttons.general.SilkTouchButton;
 import me.datatags.commandminerewards.gui.buttons.rewardgroup.BlockListButton;
 
-public class RewardSectionGUI extends PaginatedGUI implements RGCacheListener {
+public class RewardGroupGUI extends PaginatedGUI implements RGCacheListener {
 	private RewardGroup group;
 	private RewardButtonManager rbm;
 	private NewRewardButton newRewardButton;
-	public RewardSectionGUI(RewardGroup group) {
+	public RewardGroupGUI(RewardGroup group) {
 		this.group = group;
 		this.rbm = RewardButtonManager.getInstance();
 		gui[0][0] = new BlockListButton(group);
@@ -41,7 +41,7 @@ public class RewardSectionGUI extends PaginatedGUI implements RGCacheListener {
 	@Override
 	public GUIButton[][] getPage(int pageN) {
 		List<GUIButton> buttonCache = new ArrayList<>(rbm.getRewardCache(group));
-		buttonCache.add(newRewardButton);
+		buttonCache.add(0, newRewardButton);
 		return generatePage(pageN, 2, 27, buttonCache);
 	}
 

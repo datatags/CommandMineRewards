@@ -11,12 +11,12 @@ import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.RGCacheListener;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
-import me.datatags.commandminerewards.gui.buttons.main.RewardSectionButton;
+import me.datatags.commandminerewards.gui.buttons.main.RewardGroupButton;
 import me.datatags.commandminerewards.gui.buttons.rewardgroup.RewardButton;
 
 public class RewardButtonManager implements RGCacheListener {
 	private static RewardButtonManager instance;
-	private List<RewardSectionButton> sectionCache = new ArrayList<>();
+	private List<RewardGroupButton> sectionCache = new ArrayList<>();
 	private Map<String,List<RewardButton>> rewardCache = new HashMap<>();
 	private RewardButtonManager() {
 		reloadCache();
@@ -36,7 +36,7 @@ public class RewardButtonManager implements RGCacheListener {
 		sectionCache.clear();
 		rewardCache.clear();
 		for (RewardGroup group : CMRBlockManager.getInstance().getGroupCache()) {
-			sectionCache.add(new RewardSectionButton(group));
+			sectionCache.add(new RewardGroupButton(group));
 			loadChildren(group);
 		}
 		sort();
@@ -51,19 +51,19 @@ public class RewardButtonManager implements RGCacheListener {
 	}
 	@Override
 	public void unloadSection(String remove) {
-		RewardSectionButton removeButton = findSectionButton(remove);
+		RewardGroupButton removeButton = findSectionButton(remove);
 		if (removeButton == null) return;
 		sectionCache.remove(removeButton); // removing something does not unsort the list
 	}
 	@Override
 	public void reloadGroup(RewardGroup reload) {
-		RewardSectionButton reloadButton = findSectionButton(reload.getName());
+		RewardGroupButton reloadButton = findSectionButton(reload.getName());
 		if (reloadButton == null) return;
 		reloadButton.resetBase();
 	}
-	private RewardSectionButton findSectionButton(String sectionName) {
-		RewardSectionButton rsb = null;
-		for (RewardSectionButton button : sectionCache) {
+	private RewardGroupButton findSectionButton(String sectionName) {
+		RewardGroupButton rsb = null;
+		for (RewardGroupButton button : sectionCache) {
 			if (button.getRewardGroup().getName().equals(sectionName)) {
 				rsb = button;
 				break;
@@ -76,10 +76,10 @@ public class RewardButtonManager implements RGCacheListener {
 	}
 	@Override
 	public void loadGroup(RewardGroup group) {
-		sectionCache.add(new RewardSectionButton(group));
+		sectionCache.add(new RewardGroupButton(group));
 		sort();
 	}
-	public List<RewardSectionButton> getSectionCache() {
+	public List<RewardGroupButton> getSectionCache() {
 		return sectionCache;
 	}
 	public List<RewardButton> getRewardCache(RewardGroup group) {

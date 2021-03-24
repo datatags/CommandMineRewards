@@ -9,7 +9,7 @@ import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.MainGUI;
-import me.datatags.commandminerewards.gui.guis.RewardSectionGUI;
+import me.datatags.commandminerewards.gui.guis.RewardGroupGUI;
 
 public class RewardLimitPrompt extends CMRPrompt {
 	private RewardGroup group;
@@ -51,7 +51,7 @@ public class RewardLimitPrompt extends CMRPrompt {
 		if (group == null) {
 			return gm.getGUI(MainGUI.class, null, null);
 		} else {
-			return gm.getGUI(RewardSectionGUI.class, group, null);
+			return gm.getGUI(RewardGroupGUI.class, group, null);
 		}
 	}
 }

@@ -14,11 +14,11 @@ import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
-import me.datatags.commandminerewards.gui.guis.RewardSectionGUI;
+import me.datatags.commandminerewards.gui.guis.RewardGroupGUI;
 
-public class RewardSectionButton extends GUIButton {
+public class RewardGroupButton extends GUIButton {
 	private RewardGroup group;
-	public RewardSectionButton(RewardGroup group) {
+	public RewardGroupButton(RewardGroup group) {
 		this.group = group;
 	}
 	@Override
@@ -74,7 +74,7 @@ public class RewardSectionButton extends GUIButton {
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
-			parent.getGUIManager().getGUI(RewardSectionGUI.class, group, null).openFor(player);
+			parent.getGUIManager().getGUI(RewardGroupGUI.class, group, null).openFor(player);
 		} else if (clickType.isRightClick() && group.getChildrenNames().size() == 0) {
 			group.delete();
 		}
