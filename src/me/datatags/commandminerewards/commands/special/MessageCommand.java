@@ -5,6 +5,8 @@ import java.util.StringJoiner;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import me.datatags.commandminerewards.CMRLogger;
+
 public class MessageCommand extends SpecialCommand {
 	// special commands are commands that aren't designed to be used in-game except for testing purposes
 	@Override
@@ -45,7 +47,7 @@ public class MessageCommand extends SpecialCommand {
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
 		if (args.length == 0) {
-			this.getPlugin().warning(ChatColor.RED + "Command error: Not enough args in /cmr " + getName() + " " + args);
+			CMRLogger.warning(ChatColor.RED + "Command error: Not enough args in /cmr " + getName() + " " + args);
 			return true;
 		}
 		StringJoiner message = new StringJoiner(" ");

@@ -10,13 +10,14 @@ import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
+import me.datatags.commandminerewards.gui.conversations.CMRConversationFactory;
 import me.datatags.commandminerewards.gui.conversations.MultiplierPrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class MultiplierButton extends GUIButton {
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.getGUIManager().startConversation(player, new MultiplierPrompt());
+		CMRConversationFactory.startConversation(player, new MultiplierPrompt());
 	}
 
 	@Override
@@ -30,12 +31,8 @@ public class MultiplierButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
-		return new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.YELLOW + "Multiplier");
-	}
-
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().lore(ChatColor.YELLOW + "Current multiplier: " + gcm.getMultiplier()).build();
+	protected ItemBuilder build() {
+		return new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.YELLOW + "Multiplier")
+				.lore(ChatColor.YELLOW + "Current multiplier: " + GlobalConfigManager.getInstance().getMultiplier());
 	}
 }

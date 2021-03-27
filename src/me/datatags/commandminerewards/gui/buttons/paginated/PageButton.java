@@ -7,10 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.CommandMineRewards;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
@@ -29,13 +29,8 @@ public abstract class PageButton extends GUIButton {
 	}
 	
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		return new ItemBuilder(Material.ARROW).name(ChatColor.RESET + this.getItemName() + " Page");
-	}
-
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
 	}
 	
 	public Integer getPageTag(ItemStack is) {
@@ -43,6 +38,7 @@ public abstract class PageButton extends GUIButton {
 	}
 	
 	public void setPageTag(int page) {
+		if (base == null) resetBase();
 		base.getItemMeta().getPersistentDataContainer().set(pageTag, PersistentDataType.INTEGER, page + getPageOffset());
 	}
 	
@@ -53,6 +49,12 @@ public abstract class PageButton extends GUIButton {
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		PaginatedGUI pageParent = (PaginatedGUI) parent;
 		Integer page = getPageTag(is);
-		pageParent.openFor(player, page);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				((PaginatedGUI)pageParent.clone()).openFor(player, page);
+			}
+		}.runTaskLater(CommandMineRewards.getInstance(), 1);
 	}
+	
 }

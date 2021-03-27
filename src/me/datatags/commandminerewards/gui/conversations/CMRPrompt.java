@@ -6,16 +6,13 @@ import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.entity.Player;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public abstract class CMRPrompt extends ValidatingPrompt {
 	public abstract CMRPermission getPermission();
 	private Class<?> inputClass;
-	private GUIManager gm;
 	public CMRPrompt(Class<?> inputClass) {
 		this.inputClass = inputClass;
-		this.gm = GUIManager.getInstance();
 	}
 	@Override
 	protected boolean isInputValid(ConversationContext cc, String input) {
@@ -44,7 +41,4 @@ public abstract class CMRPrompt extends ValidatingPrompt {
 		return true;
 	}
 	public abstract CMRGUI getNextGUI(ConversationContext cc);
-	protected GUIManager getGUIManager() {
-		return gm;
-	}
 }

@@ -1,36 +1,45 @@
 package me.datatags.commandminerewards.gui.guis;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.bukkit.ChatColor;
 
-import me.datatags.commandminerewards.RGCacheListener;
+import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
-import me.datatags.commandminerewards.gui.buttons.RewardButtonManager;
 import me.datatags.commandminerewards.gui.buttons.area.RegionListButton;
 import me.datatags.commandminerewards.gui.buttons.area.WorldListButton;
 import me.datatags.commandminerewards.gui.buttons.general.NewRewardButton;
 import me.datatags.commandminerewards.gui.buttons.general.RewardLimitButton;
 import me.datatags.commandminerewards.gui.buttons.general.SilkTouchButton;
 import me.datatags.commandminerewards.gui.buttons.rewardgroup.BlockListButton;
+import me.datatags.commandminerewards.gui.buttons.rewardgroup.RewardButton;
 
-public class RewardGroupGUI extends PaginatedGUI implements RGCacheListener {
+public class RewardGroupGUI extends PaginatedGUI {
 	private RewardGroup group;
-	private RewardButtonManager rbm;
-	private NewRewardButton newRewardButton;
+	private List<GUIButton> rewardButtons;
 	public RewardGroupGUI(RewardGroup group) {
 		this.group = group;
-		this.rbm = RewardButtonManager.getInstance();
 		gui[0][0] = new BlockListButton(group);
 		gui[0][2] = new RewardLimitButton(group);
 		gui[0][4] = new SilkTouchButton(group, null);
 		gui[0][6] = new WorldListButton(group);
 		gui[0][8] = new RegionListButton(group);
-		this.newRewardButton = new NewRewardButton(group);
 		addPageButtons();
-		registerCacheListener();
+		List<RewardButton> buttons = new ArrayList<>();
+		for (Reward reward : group.getChildren()) {
+			buttons.add(new RewardButton(reward));
+		}
+		buttons.sort(Comparator.comparing(r -> r.getReward().getName()));
+		rewardButtons = new ArrayList<>(buttons);
+		rewardButtons.add(0, new NewRewardButton(group));
+	}
+	
+	@Override
+	public RewardGroupGUI clone() {
+		return new RewardGroupGUI(group);
 	}
 	
 	@Override
@@ -39,10 +48,8 @@ public class RewardGroupGUI extends PaginatedGUI implements RGCacheListener {
 	}
 
 	@Override
-	public GUIButton[][] getPage(int pageN) {
-		List<GUIButton> buttonCache = new ArrayList<>(rbm.getRewardCache(group));
-		buttonCache.add(0, newRewardButton);
-		return generatePage(pageN, 2, 27, buttonCache);
+	public void preparePage(int pageN) {
+		generatePage(pageN, 2, 27, rewardButtons);
 	}
 
 	@Override
@@ -52,7 +59,7 @@ public class RewardGroupGUI extends PaginatedGUI implements RGCacheListener {
 
 	@Override
 	public CMRGUI getPreviousGUI() {
-		return getGUIManager().getGUI(MainGUI.class, null, null);
+		return new MainGUI();
 	}
 
 }

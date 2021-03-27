@@ -5,32 +5,37 @@ import org.bukkit.conversations.Prompt;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.Reward;
+import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.RewardGUI;
 
-public class InsertCommandPrompt extends CMRPrompt {
+public class RewardChancePrompt extends CMRPrompt {
+	private RewardGroup group;
 	private Reward reward;
-	private int index;
-	public InsertCommandPrompt(Reward reward, int index) {
-		super(String.class);
+	public RewardChancePrompt(RewardGroup group, Reward reward) {
+		super(Double.class);
+		this.group = group;
 		this.reward = reward;
-		this.index = index;
 	}
+
 	@Override
 	public String getPromptText(ConversationContext cc) {
-		return "Please type the command to insert, without the slash";
+		return "Enter new base chance for reward, current value: " + reward.getRawChance() + "% (omit % sign)";
 	}
+
 	@Override
 	public CMRPermission getPermission() {
-		return CMRPermission.COMMAND_MODIFY;
+		return CMRPermission.REWARD_MODIFY;
 	}
+
 	@Override
 	public CMRGUI getNextGUI(ConversationContext cc) {
-		return new RewardGUI(reward.getParent(), reward);
+		return new RewardGUI(group, reward);
 	}
+
 	@Override
 	protected Prompt acceptValidatedInput(ConversationContext cc, String input) {
-		reward.insertCommand(input, index);
+		reward.setChance(Double.parseDouble(input));
 		return END_OF_CONVERSATION;
 	}
 

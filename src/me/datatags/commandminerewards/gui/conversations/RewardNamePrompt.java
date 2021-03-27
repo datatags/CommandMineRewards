@@ -12,7 +12,6 @@ import me.datatags.commandminerewards.Exceptions.InvalidRewardException;
 import me.datatags.commandminerewards.Exceptions.InvalidRewardGroupException;
 import me.datatags.commandminerewards.Exceptions.RewardAlreadyExistsException;
 import me.datatags.commandminerewards.Exceptions.RewardGroupAlreadyExistsException;
-import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.RewardGUI;
 import me.datatags.commandminerewards.gui.guis.RewardGroupGUI;
@@ -25,7 +24,7 @@ public class RewardNamePrompt extends CMRPrompt {
 	}
 	@Override
 	public String getPromptText(ConversationContext cc) {
-		return "Please enter new reward " + (group == null ? "group " : "") + "name or 'cancel' to abort";
+		return "Please enter new reward " + (group == null ? "group " : "") + "name.";
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -57,11 +56,10 @@ public class RewardNamePrompt extends CMRPrompt {
 	}
 	@Override
 	public CMRGUI getNextGUI(ConversationContext cc) {
-		GUIManager gm = getGUIManager();
 		if (group == null) {
-			return gm.getGUI(RewardGroupGUI.class, (RewardGroup) cc.getSessionData("group"), null);
+			return new RewardGroupGUI((RewardGroup) cc.getSessionData("group"));
 		} else {
-			return gm.getGUI(RewardGUI.class, group, (Reward) cc.getSessionData("reward"));
+			return new RewardGUI(group, (Reward) cc.getSessionData("reward"));
 		}
 	}
 

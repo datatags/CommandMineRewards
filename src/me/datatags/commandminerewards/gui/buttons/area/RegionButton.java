@@ -1,29 +1,26 @@
 package me.datatags.commandminerewards.gui.buttons.area;
 
 import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.AreaAlreadyInListException;
 import me.datatags.commandminerewards.Exceptions.AreaNotInListException;
 import me.datatags.commandminerewards.Exceptions.InvalidAreaException;
 import me.datatags.commandminerewards.gui.ItemBuilder;
-import me.datatags.commandminerewards.worldguard.WorldGuardManager;
 
 public class RegionButton extends AreaButton {
-	private WorldGuardManager wgm;
-	public RegionButton(String area, RewardGroup group) {
+	private boolean isRealRegion;
+	public RegionButton(String area, RewardGroup group, boolean isRealRegion) {
 		super(area, group);
-		this.wgm = CommandMineRewards.getInstance().getWGManager();
+		this.isRealRegion = isRealRegion;
 	}
 
 	@Override
 	protected List<String> getAreas() {
-		return wgm.getAllRegions();
+		return group == null ? gcm.getGlobalAllowedRegions() : group.getAllowedRegions();
 	}
 
 	@Override
@@ -57,8 +54,31 @@ public class RegionButton extends AreaButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
-		return new ItemBuilder(Material.STRUCTURE_BLOCK).name(ChatColor.GREEN + area).lore(ChatColor.LIGHT_PURPLE + "Click to toggle");
+	protected ItemBuilder build() {
+		Material mat;
+		ChatColor color;
+		String friendlyArea = area;
+		if (area.equals("*")) {
+			mat = Material.NETHER_STAR;
+			color = ChatColor.LIGHT_PURPLE;
+			friendlyArea += " (all)";
+		} else if (isRealRegion) {
+			mat = Material.STRUCTURE_BLOCK;
+			color = ChatColor.GREEN;
+		} else {
+			mat = Material.BARRIER;
+			color = ChatColor.RED;
+		}
+		ItemBuilder ib = new ItemBuilder(mat).name(color + friendlyArea);
+		if (!isRealRegion) {
+			if (!area.equals("*")) {
+				ib.lore(ChatColor.RED + "Region does not exist");
+			}
+			ib.lore(ChatColor.RED + "Click to remove");
+		} else {
+			ib.lore(ChatColor.LIGHT_PURPLE + "Click to toggle");
+		}
+		return ib;
 	}
 
 }

@@ -5,6 +5,8 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.datatags.commandminerewards.CMRLogger;
+
 public class SoundCommand extends SpecialCommand {
 
 	@Override
@@ -50,7 +52,7 @@ public class SoundCommand extends SpecialCommand {
 		}
 		Player target = (Player) sender;
 		if (args.length < 1) {
-			getPlugin().warning("No sound argument supplied to sound command");
+			CMRLogger.warning("No sound argument supplied to sound command");
 			return true;
 		}
 		Sound sound = null;
@@ -63,7 +65,7 @@ public class SoundCommand extends SpecialCommand {
 		try {
 			sound = Sound.valueOf(soundString);
 		} catch (IllegalArgumentException e) {
-			if (warn) getPlugin().warning("Couldn't find sound " + soundString + ", if you are sure the sound works please prefix it with ! to disable this message.");
+			if (warn) CMRLogger.warning("Couldn't find sound " + soundString + ", if you are sure the sound works please prefix it with ! to disable this message.");
 		}
 		if (sound == null) {
 			target.playSound(target.getLocation(), args[0], 100, 0);

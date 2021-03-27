@@ -7,7 +7,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.commands.RewardCommandEntry;
 import me.datatags.commandminerewards.gui.ItemBuilder;
@@ -32,9 +31,9 @@ public class RewardButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		ItemBuilder ib = new ItemBuilder(Material.PAPER).name(ChatColor.LIGHT_PURPLE + reward.getName());
-		ib.lore(ChatColor.BLUE + "Base chance: " + reward.getChance());
+		ib.lore(ChatColor.BLUE + "Active chance: " + reward.getChance() + "%");
 		ib.lore(ChatColor.LIGHT_PURPLE + "Commands:");
 		if (reward.getCommands().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
@@ -53,13 +52,8 @@ public class RewardButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
-	}
-
-	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.delayOpenGUI(player, parent.getGUIManager().getGUI(RewardGUI.class, reward.getParent(), reward));
+		CMRGUI.delayOpenGUI(player, new RewardGUI(reward.getParent(), reward));
 	}
 	
 	public Reward getReward() {

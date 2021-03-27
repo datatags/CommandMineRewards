@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.commands.block.BlockCommand;
 import me.datatags.commandminerewards.commands.cmd.CmdCommand;
@@ -119,12 +120,12 @@ public class CommandDispatcher implements CommandExecutor {
 	public SpecialCommand getSpecialCommand(String name) {
 		CompoundCommand special = (CompoundCommand)getCommand("special");
 		if (special == null)  {
-			cmr.warning("Couldn't find base special command?!");
+			CMRLogger.warning("Couldn't find base special command?!");
 			return null;
 		}
 		SpecialCommand cmd = (SpecialCommand) getCommand(name, special.getChildren());
 		if (cmd == null) {
-			cmr.debug("Couldn't find special command " + name);
+			CMRLogger.debug("Couldn't find special command " + name);
 			return null;
 		}
 		return cmd;

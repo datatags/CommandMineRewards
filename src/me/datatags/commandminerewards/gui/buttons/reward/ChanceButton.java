@@ -1,4 +1,4 @@
-package me.datatags.commandminerewards.gui.buttons.general;
+package me.datatags.commandminerewards.gui.buttons.reward;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -7,21 +7,24 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
+import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.conversations.CMRConversationFactory;
-import me.datatags.commandminerewards.gui.conversations.RewardNamePrompt;
+import me.datatags.commandminerewards.gui.conversations.RewardChancePrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
-public class NewRewardButton extends GUIButton {
+public class ChanceButton extends GUIButton {
 	private RewardGroup group;
-	public NewRewardButton(RewardGroup group) {
+	private Reward reward;
+	public ChanceButton(RewardGroup group, Reward reward) {
 		this.group = group;
+		this.reward = reward;
 	}
 	@Override
 	public CMRPermission getPermission() {
-		return CMRPermission.REWARD_MODIFY;
+		return CMRPermission.REWARD;
 	}
 
 	@Override
@@ -31,12 +34,17 @@ public class NewRewardButton extends GUIButton {
 
 	@Override
 	protected ItemBuilder build() {
-		return new ItemBuilder(Material.EMERALD_BLOCK).name(ChatColor.GREEN + "New reward" + (group == null ? " group" : ""));
+		ItemBuilder ib = new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.GREEN + "Chance");
+		ib.lore(ChatColor.DARK_GREEN + "Base chance: " + reward.getRawChance() + "%");
+		if (reward.getRawChance() != reward.getChance()) {
+			ib.lore(ChatColor.BLUE + "Chance adjusted by multiplier: " + reward.getChance() + "%");
+		}
+		return ib;
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRConversationFactory.startConversation(player, new RewardNamePrompt(group));
+		CMRConversationFactory.startConversation(player, new RewardChancePrompt(group, reward));
 	}
 
 }

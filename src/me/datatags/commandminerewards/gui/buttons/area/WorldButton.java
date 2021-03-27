@@ -31,13 +31,18 @@ public class WorldButton extends AreaButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		Material mat;
 		ChatColor color;
 		World realWorld = Bukkit.getWorld(area);
 		// in case a non-existent world is in a list
 		Environment env = realWorld == null ? null : realWorld.getEnvironment();
-		if (env == null) {
+		String friendlyArea = area;
+		if (area.equals("*")) {
+			mat = Material.NETHER_STAR;
+			color = ChatColor.LIGHT_PURPLE;
+			friendlyArea += " (all)";
+		} else if (env == null) {
 			mat = Material.BARRIER;
 			color = ChatColor.WHITE;
 		} else if (env == Environment.NETHER) {
@@ -50,7 +55,16 @@ public class WorldButton extends AreaButton {
 			mat = Material.GRASS_BLOCK;
 			color = ChatColor.GREEN;
 		}
-		return new ItemBuilder(mat).name(color + area).lore(ChatColor.LIGHT_PURPLE + "Click to toggle");
+		ItemBuilder ib = new ItemBuilder(mat).name(color + friendlyArea);
+		if (env == null) {
+			if (!area.equals("*")) {
+				ib.lore(ChatColor.RED + "World does not exist");
+			}
+			ib.lore(ChatColor.RED + "Click to remove");
+		} else {
+			ib.lore(ChatColor.LIGHT_PURPLE + "Click to toggle");
+		}
+		return ib;
 	}
 	
 	@Override

@@ -51,7 +51,7 @@ public class GlobalConfigManager {
 		try {
 			rewardsConfig.save(rewardsFile);
 		} catch (IOException e) {
-			cmr.warning("Failed to save rewards.yml:");
+			CMRLogger.warning("Failed to save rewards.yml:");
 			e.printStackTrace();
 		}
 	}
@@ -80,7 +80,7 @@ public class GlobalConfigManager {
 		if (changed) {
 			cmr.saveConfig();
 			saveRewardsConfig();
-			cmr.info("Successfully migrated config!");
+			CMRLogger.info("Successfully migrated config!");
 		}
 	}
 	private boolean moveToRewards(String key) {

@@ -1,4 +1,4 @@
-package me.datatags.commandminerewards.gui.buttons.misc;
+package me.datatags.commandminerewards.gui.buttons.reward;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.CommandMineRewards;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.Exceptions.CommandNotInListException;
 import me.datatags.commandminerewards.commands.RewardCommandEntry;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
+import me.datatags.commandminerewards.gui.conversations.CMRConversationFactory;
 import me.datatags.commandminerewards.gui.conversations.InsertCommandPrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
@@ -35,30 +35,37 @@ public class CommandButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
-		ItemBuilder ib = new ItemBuilder(Material.PAPER).name(entry.getCommand());
-		ib.lore(ChatColor.GREEN + "Click to insert after");
-		ib.lore(ChatColor.GREEN + "Shift-click to insert before");
-		ib.lore(ChatColor.RED + "Right-click to delete");
+	protected ItemBuilder build() {
+		ItemBuilder ib;
+		if (entry == null) {
+			ib = new ItemBuilder(Material.WRITABLE_BOOK).name(ChatColor.RED + "No commands");
+			ib.lore(ChatColor.GREEN + "Click to add");
+		} else {
+			ib = new ItemBuilder(Material.PAPER).name(entry.getCommand());
+			ib.lore(ChatColor.GREEN + "Click to insert after");
+			ib.lore(ChatColor.GREEN + "Shift-click to insert before");
+			ib.lore(ChatColor.RED + "Right-click to delete");
+		}
 		return ib;
-	}
-
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
-			int index = reward.getCommands().indexOf(entry);
-			if (index == -1) {
-				CommandMineRewards.getInstance().getLogger().warning("Couldn't find index of clicked command button");
+			int index;
+			if (entry == null) {
+				index = 0;
+			} else {
+				index = reward.getCommands().indexOf(entry);
+				if (index == -1) {
+					CMRLogger.warning("Couldn't find index of clicked command button");
+					return;
+				}
+				if (!clickType.isShiftClick()) {
+					index++;
+				}
 			}
-			if (!clickType.isShiftClick()) {
-				index++;
-			}
-			parent.getGUIManager().startConversation(player, new InsertCommandPrompt(reward, index));
+			CMRConversationFactory.startConversation(player, new InsertCommandPrompt(reward, index));
 		} else if (clickType.isRightClick()) {
 			try {
 				reward.removeCommand(entry.getCommand());
@@ -66,7 +73,7 @@ public class CommandButton extends GUIButton {
 				e.printStackTrace();
 				return;
 			}
-			parent.refreshGUI(player);
+			parent.refreshAll();
 		}
 	}
 	

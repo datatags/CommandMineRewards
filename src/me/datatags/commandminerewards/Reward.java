@@ -24,36 +24,41 @@ public class Reward {
 	private static final Random RANDOM = new Random();
 	private ConfigurationSection group;
 	private Permission perm; // the permission required for this reward specifically.  Looks like cmr.use.rewardsection.reward
-	private RewardGroup parent;
+	private String parentName;
 	private GlobalConfigManager gcm;
 	private List<RewardCommandEntry> commands;
-	public Reward(String parent, String reward, boolean createIfNotFound) throws RewardAlreadyExistsException {
-		this(new RewardGroup(parent), reward, createIfNotFound);
+	private CMRBlockManager cbm;
+	public Reward(String parent, String reward, boolean create) throws RewardAlreadyExistsException {
+		this(new RewardGroup(parent), reward, create);
 	}
-	public Reward(RewardGroup parent, String reward, boolean createIfNotFound) throws RewardAlreadyExistsException {
+	public Reward(RewardGroup parent, String reward, boolean create) throws RewardAlreadyExistsException {
 		cmr = CommandMineRewards.getInstance();
+		cbm = CMRBlockManager.getInstance();
 		if (reward.contains(".")) {
 			throw new InvalidRewardGroupException("You cannot use periods in reward names!");
 		}
 		this.gcm = GlobalConfigManager.getInstance();
-		this.parent = parent;
+		this.parentName = parent.getName();
 		boolean rewardExists = gcm.getRewardsConfig().isConfigurationSection(parent.getName() + ".rewards." + reward); 
-		if (!rewardExists && !createIfNotFound) {
+		if (!rewardExists && !create) {
 			if (gcm.searchIgnoreCase(reward, parent.getName() + ".rewards") == null) {
 				throw new InvalidRewardException("Reward " + reward + " does not exist under group " + parent.getName() + "!");
 			}
 			reward = gcm.searchIgnoreCase(reward, parent.getName() + ".rewards");
-		} else if (rewardExists && createIfNotFound){
+		} else if (rewardExists && create){
 			throw new RewardAlreadyExistsException("Reward " + reward + " already exists under group " + parent.getName() + "!");
 		}
-		if (!rewardExists && createIfNotFound) {
+		if (!rewardExists && create) {
 			this.group = gcm.getRewardsConfig().createSection(parent.getName() + ".rewards." + reward);
 			gcm.saveRewardsConfig();
-			getCacheParent().loadChild(getName());
+			getParent().loadChild(getName());
 		}
 		this.group = gcm.getRewardsConfig().getConfigurationSection(parent.getName() + ".rewards." + reward);
 		perm = new Permission("cmr.use." + parent.getName() + "." + reward);
 		buildCommands();
+		if (create) {
+			cbm.loadReward(parent, this);
+		}
 	}
 	public Reward(String parent, String reward) throws RewardAlreadyExistsException {
 		this(parent, reward, false);
@@ -68,7 +73,7 @@ public class Reward {
 				String[] split = command.split(" ");
 				SpecialCommand scmd = CommandDispatcher.getInstance().getSpecialCommand(split[0].substring(1)); 
 				if (scmd == null) {
-					cmr.warning("Invalid special command: " + command);
+					CMRLogger.warning("Invalid special command: " + command);
 					continue;
 				}
 				String[] args = Arrays.copyOfRange(split, 1, split.length);
@@ -82,7 +87,7 @@ public class Reward {
 		return this.group.getDouble("chance", 0); // return 0 if no value set
 	}
 	public double getChance() {
-		return getRawChance() * gcm.getMultiplier();
+		return Math.min(getRawChance() * gcm.getMultiplier(), 100);
 	}
 	public void setChance(double newChance) {
 		if (newChance > 100) {
@@ -138,7 +143,8 @@ public class Reward {
 	public void delete() {
 		gcm.getRewardsConfig().set(this.getPath(), null);
 		gcm.saveRewardsConfig();
-		getCacheParent().unloadChild(getName());
+		getParent().unloadChild(getName());
+		cbm.unloadReward(getParent(), getName());
 	}
 	public String getName() {
 		return this.group.getName();
@@ -149,17 +155,8 @@ public class Reward {
 	private void set(String path, Object newValue) {
 		this.group.set(path, newValue);
 		gcm.saveRewardsConfig();
-		getCacheParent().reloadChild(getName());
-	}
-	private RewardGroup getCacheParent() {
-		CMRBlockManager cbm = CMRBlockManager.getInstance();
-		for (RewardGroup group : cbm.getGroupCache()) {
-			if (group.getName().equals(parent.getName())) {
-				return group;
-			}
-		}
-		cmr.warning("Couldn't find parent for reward " + this.getName());
-		return null;
+		getParent().reloadChild(getName());
+		cbm.reloadReward(getParent(), this);
 	}
 	public boolean hasPermission(Player player) {
 		return player.hasPermission(perm);
@@ -168,10 +165,16 @@ public class Reward {
 		return this.perm;
 	}
 	public RewardGroup getParent() {
-		return parent;
+		for (RewardGroup group : cbm.getGroupCache()) {
+			if (group.getName().equals(parentName)) {
+				return group;
+			}
+		}
+		CMRLogger.warning("Couldn't find parent for reward " + this.getName());
+		return null;
 	}
 	private void debug(String msg) {
-		cmr.debug(msg);
+		CMRLogger.debug(msg);
 	}
 	public boolean isApplicable(Player player) {
 		// does not check things that should be checked by RewardGroup

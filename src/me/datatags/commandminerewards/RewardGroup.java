@@ -77,11 +77,10 @@ public class RewardGroup {
 		registerPermissions();
 	}
 	private void registerPermissions() {
-		CommandMineRewards cmr = CommandMineRewards.getInstance();
 		for (Reward reward : this.getChildren()) {
 			String permission = "cmr.use." + group.getName() + "." + reward.getName();
 			if (Bukkit.getPluginManager().getPermission(permission) == null) {
-				cmr.debug("Adding permission " + permission);
+				CMRLogger.debug("Adding permission " + permission);
 				Bukkit.getPluginManager().addPermission(new Permission(permission));
 			}
 		}
@@ -89,7 +88,7 @@ public class RewardGroup {
 	}
 	public List<String> getRawBlocks() {
 		if (blocksCache == null) { // if not cached
-			cmr.warning("Reward group " + this.getName() + "'s block list was not cached.  Was it just created?");
+			CMRLogger.warning("Reward group " + this.getName() + "'s block list was not cached.  Was it just created?");
 			blocksCache = validateBlocks(); // validate it and cache the result.
 		}
 		return blocksCache;
@@ -100,16 +99,16 @@ public class RewardGroup {
 		for (String block : this.group.getStringList("blocks")) {
 			String[] sections = block.split(":", 2); // item [0] = block; item [1] = data, if applicable
 			if (Material.matchMaterial(sections[0]) == null || !Material.matchMaterial(sections[0]).isBlock()) {
-				if (log) cmr.error("Reward group " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
+				if (log) CMRLogger.error("Reward group " + this.getName() + " has an invalid block in the blocks list:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 				continue;
 			}
 			if (block.contains(":")) {
 				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(sections[0]))) {
-					if (log) cmr.error("Reward group " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
+					if (log) CMRLogger.error("Reward group " + this.getName() + " has a growth identifier on a block that does not grow:  " + sections[0] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 				if (!sections[1].equalsIgnoreCase("true") && !sections[1].equalsIgnoreCase("false")) {
-					if (log) cmr.error("Reward group " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
+					if (log) CMRLogger.error("Reward group " + this.getName() + " has an invalid growth identifier:  " + sections[1] + ".  " + (gcm.removeInvalidValues() ? "Removing." : "Ignoring."));
 					continue;
 				}
 			}
@@ -133,7 +132,7 @@ public class RewardGroup {
 		for (String block : getRawBlocks()) {
 			if (!block.contains(":")) { // one element
 				if (blocks.containsKey(block)) {
-					cmr.warning("Duplicate item (maybe different growth values) in blocks list of group " + this.getName() + ":  " + block + ".");
+					CMRLogger.warning("Duplicate item (maybe different growth values) in blocks list of group " + this.getName() + ":  " + block + ".");
 					String prefix = "";
 					while (blocks.containsKey(prefix + block)) {
 						prefix += "$";
@@ -144,7 +143,7 @@ public class RewardGroup {
 				}
 			} else { // two elements
 				if (!cbm.getStateManager().canHaveData(Material.matchMaterial(block.split(":")[0]))) {
-					cmr.error("Reward group " + this.getName() + " has a growth identifier on a non-growable block!");
+					CMRLogger.error("Reward group " + this.getName() + " has a growth identifier on a non-growable block!");
 					continue;
 				}
 				String blockStripped = block.split(":")[0];
@@ -154,11 +153,11 @@ public class RewardGroup {
 				} else if (block.split(":")[1].equalsIgnoreCase("false")) {
 					data = false;
 				} else {
-					cmr.error("Reward group " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
+					CMRLogger.error("Reward group " + this.getName() + " has an invalid growth identifier under the block " + block.split(":")[0] + ".");
 					continue;
 				}
 				if (blocks.containsKey(blockStripped)) {
-					cmr.warning("Duplicate item (maybe different growth values) in blocks list of group " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
+					CMRLogger.warning("Duplicate item (maybe different growth values) in blocks list of group " + this.getName() + ":  " + block + " with data value " + block.split(":")[1] + ".");
 					String prefix = "";
 					while (blocks.containsKey(prefix + blockStripped)) {
 						prefix += "$";
@@ -376,11 +375,11 @@ public class RewardGroup {
 				return new Reward(this, childName, false);
 			}
 		}
-		cmr.warning("group " + this.getName() + " tried to find new child " + child + " but failed.");
+		CMRLogger.warning("group " + this.getName() + " tried to find new child " + child + " but failed.");
 		return null;
 	}
 	protected void debug(String msg) {
-		cmr.debug(msg);
+		CMRLogger.debug(msg);
 	}
 	public boolean isApplicable(BlockState state, Player player) {
 		// block type is checked by CMRBlockHandler
@@ -435,7 +434,7 @@ public class RewardGroup {
 		}
 	}
 	public void unloadChild(String name) {
-		cmr.debug("group " + this.getName() + " is attempting to reload child " + name);
+		debug("group " + this.getName() + " is attempting to unload child " + name);
 		Reward reload = null;
 		for (Reward reward : children) {
 			if (reward.getName().equals(name)) {
@@ -443,7 +442,7 @@ public class RewardGroup {
 			}
 		}
 		if (reload == null) {
-			cmr.warning("group " + this.getName() + " attempted to reload child " + name + " but couldn't find it.");
+			CMRLogger.warning("group " + this.getName() + " attempted to unload child " + name + " but couldn't find it.");
 			return;
 		}
 		children.remove(reload);

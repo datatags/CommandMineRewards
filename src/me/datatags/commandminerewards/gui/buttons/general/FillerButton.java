@@ -6,16 +6,11 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class FillerButton extends GUIButton {
-
-	public FillerButton() {
-		
-	}
 
 	@Override
 	public CMRPermission getPermission() {
@@ -24,23 +19,15 @@ public class FillerButton extends GUIButton {
 
 	@Override
 	public CMRPermission getClickPermission() {
-		return CMRPermission.GUI;
+		return null;
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		return new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).name(" ");
 	}
 
 	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
-	}
-
-	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {}
 
 }

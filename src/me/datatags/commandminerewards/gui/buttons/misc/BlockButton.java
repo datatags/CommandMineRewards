@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.BlockNotInListException;
 import me.datatags.commandminerewards.gui.ItemBuilder;
@@ -35,29 +35,30 @@ public class BlockButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		ItemBuilder ib = new ItemBuilder(block);
 		if (data != null) {
 			ib.lore(ChatColor.YELLOW + "Data: " + (data ? ChatColor.GREEN : ChatColor.RED) + data.toString());
 		}
+		ib.lore(ChatColor.RED + "Click to delete");
 		return ib;
 	}
-
+	
 	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
+	public boolean isButton(ItemStack is) {
+		return is.equals(this.getIcon());
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (clickType.isRightClick()) {
-			try {
-				group.removeBlock(block.toString(), data);
-			} catch (BlockNotInListException e) {
-				e.printStackTrace();
-			}
-			parent.refreshGUI(player);
+		CMRLogger.debug("Attempting to remove block");
+		try {
+			group.removeBlock(block.toString(), data);
+		} catch (BlockNotInListException e) {
+			e.printStackTrace(); // ???
+			return;
 		}
+		parent.refreshAll();
 	}
 	
 }

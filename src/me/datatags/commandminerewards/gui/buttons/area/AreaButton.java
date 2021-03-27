@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import me.datatags.commandminerewards.CommandMineRewards;
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.AreaAlreadyInListException;
@@ -32,7 +32,7 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 		} else {
 			addArea();
 		}
-		parent.openFor(player);
+		parent.refreshAll();
 	}
 	
 	protected abstract List<String> getAreas();
@@ -49,7 +49,7 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 				addLocal();
 			}
 		} catch (InvalidAreaException | AreaAlreadyInListException e) {
-			CommandMineRewards.getInstance().getLogger().warning("Attempted to add " + area + " where it already existed!");
+			CMRLogger.warning("Attempted to add " + area + " where it already existed!");
 		}
 	}
 	protected void removeArea() {
@@ -60,15 +60,11 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 				removeLocal();
 			}
 		} catch (InvalidAreaException | AreaNotInListException e) {
-			CommandMineRewards.getInstance().getLogger().warning("Attempted to remove " + area + " from where it did not exist!");
+			CMRLogger.warning("Attempted to remove " + area + " from where it did not exist!");
 		}
 	}
 	public boolean isInList() {
 		return getAreas().contains(area);
-	}
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
 	}
 
 	@Override

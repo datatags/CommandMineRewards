@@ -27,6 +27,6 @@ public class MultiplierPrompt extends CMRPrompt {
 	}
 	@Override
 	public CMRGUI getNextGUI(ConversationContext cc) {
-		return getGUIManager().getGUI(MainGUI.class, null, null);
+		return new MainGUI();
 	}
 }

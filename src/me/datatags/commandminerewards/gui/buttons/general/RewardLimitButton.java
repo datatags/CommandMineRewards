@@ -11,13 +11,16 @@ import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
+import me.datatags.commandminerewards.gui.conversations.CMRConversationFactory;
 import me.datatags.commandminerewards.gui.conversations.RewardLimitPrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class RewardLimitButton extends GUIButton {
-	public RewardGroup group;
+	private RewardGroup group;
+	private GlobalConfigManager gcm;
 	public RewardLimitButton(RewardGroup group) {
 		this.group = group;
+		this.gcm = GlobalConfigManager.getInstance();
 	}
 	@Override
 	public CMRPermission getPermission() {
@@ -30,12 +33,8 @@ public class RewardLimitButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
-		return new ItemBuilder(Material.CLOCK).name(ChatColor.RED + "Reward Limit");
-	}
-
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
+	protected ItemBuilder build() {
+		ItemBuilder ib = new ItemBuilder(Material.CLOCK).name(ChatColor.RED + "Reward Limit");
 		int value;
 		if (group == null) {
 			value = gcm.getGlobalRewardLimit();
@@ -43,12 +42,25 @@ public class RewardLimitButton extends GUIButton {
 			value = group.getRewardLimit();
 		}
 		String valueStr = value + (value == -1 ? " (No limit)" : "");
-		return getBase().lore(ChatColor.RED + "Current limit: " + valueStr).build();
+		ib.lore(ChatColor.RED + "Current limit: " + valueStr);
+		if (value > -1) {
+			ib.lore(ChatColor.RED + "Right-click to clear limit");
+		}
+		return ib;
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.getGUIManager().startConversation(player, new RewardLimitPrompt(group));
+		if (clickType.isRightClick()) {
+			if (group == null) {
+				GlobalConfigManager.getInstance().setGlobalRewardLimit(-1);
+			} else {
+				group.setRewardLimit(-1);
+			}
+			parent.refreshAll();
+			return;
+		}
+		CMRConversationFactory.startConversation(player, new RewardLimitPrompt(group));
 	}
 
 }

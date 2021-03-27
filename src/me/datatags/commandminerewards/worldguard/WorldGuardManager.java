@@ -6,27 +6,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 
-import me.datatags.commandminerewards.CommandMineRewards;
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 
 public class WorldGuardManager {
 	private RegionChecker checker = null;
 	private boolean useWorldGuard = false;
-	private CommandMineRewards cmr;
-	public WorldGuardManager(CommandMineRewards cmr) {
-		this.cmr = cmr;
+	public WorldGuardManager() {
 		if (getWorldGuard() != null) {
-			cmr.info("Found WorldGuard.");
+			CMRLogger.info("Found WorldGuard.");
 			RegionChecker rc = new RegionCheckerWG7x();
 			if (checkWGVersion(rc)) {
 				checker = rc;
 				useWorldGuard = true;
 			} else {
-				cmr.info("WorldGuard support will be disabled until otherwise noted.");
+				CMRLogger.info("WorldGuard support will be disabled until otherwise noted.");
 			}
 		} else {
-			cmr.info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
+			CMRLogger.info("Could not find WorldGuard, the allowedRegions settings will be ignored.");
 		}
 	}
 	public boolean isAllowedInRegions(RewardGroup rewardGroup, Block block) {
@@ -73,15 +71,15 @@ public class WorldGuardManager {
 	}
 	private boolean checkWGVersion(RegionChecker checker) {
 		if (checker == null) {
-			cmr.warning("Something is wrong, please report this error: Something attempted to inject a null RegionChecker");
+			CMRLogger.warning("Something is wrong, please report this error: Something attempted to inject a null RegionChecker");
 			return false;
 		}
 		int wgVersion = getWGMajorVersion();
 		if (wgVersion != checker.getNative()) {
-			cmr.warning("A plugin has registered a RegionChecker for WorldGuard v" + checker.getNative() + " which is not installed.");
+			CMRLogger.warning("A plugin has registered a RegionChecker for WorldGuard v" + checker.getNative() + " which is not installed.");
 			return false;
 		}
-		cmr.info("WorldGuard support for v" + wgVersion + " has been registered.");
+		CMRLogger.info("WorldGuard support for v" + wgVersion + " has been registered.");
 		return true;
 	}
 }

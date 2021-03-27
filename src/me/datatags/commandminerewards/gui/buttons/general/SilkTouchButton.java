@@ -18,67 +18,65 @@ import me.datatags.commandminerewards.gui.guis.CMRGUI;
 public class SilkTouchButton extends GUIButton {
 	private RewardGroup rewardGroup;
 	private Reward reward;
+	private GlobalConfigManager gcm;
 	public SilkTouchButton(RewardGroup rewardGroup, Reward reward) {
 		this.rewardGroup = rewardGroup;
 		this.reward = reward;
+		this.gcm = GlobalConfigManager.getInstance();
 	}
 		
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		ItemBuilder ib = new ItemBuilder(Material.ENCHANTED_BOOK).name(ChatColor.LIGHT_PURPLE + "Silk Touch Policy");
 		ib.lore(ChatColor.DARK_PURPLE + "Left click to cycle through policies");
 		ib.lore(ChatColor.DARK_PURPLE + "Right click to inherit policy");
+		SilkTouchPolicy local = getLocalPolicy();
+		SilkTouchPolicy inherits = getInheritablePolicy();
+		ib.lore("Local value: " + local.getFriendlyName()).lore("Can inherit: " + inherits.getFriendlyName());
 		return ib;
 	}
 	
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		SilkTouchPolicy local = getLocalPolicy(gcm);
-		SilkTouchPolicy inherits;
+	private SilkTouchPolicy getInheritablePolicy() {
 		if (rewardGroup == null) {
-			inherits = SilkTouchPolicy.IGNORED;
+			return SilkTouchPolicy.IGNORED;
+		} else if (reward == null) {
+			return gcm.getSilkTouchPolicy(null, null);
 		} else {
-			inherits = gcm.getSilkTouchPolicy(rewardGroup, reward);
+			return gcm.getSilkTouchPolicy(rewardGroup, null);
 		}
-		return getBase().lore("Local value: " + local.getFriendlyName()).lore("Can inherit: " + inherits.getFriendlyName()).build();
 	}
 	
-	private SilkTouchPolicy getLocalPolicy(GlobalConfigManager gcm) {
+	private SilkTouchPolicy getLocalPolicy() {
 		if (rewardGroup == null) {
 			return gcm.getGlobalSilkTouchPolicy();
+		} else if (reward == null) {
+			return rewardGroup.getSilkTouchPolicy();
 		} else {
-			if (reward == null) {
-				return rewardGroup.getSilkTouchPolicy();
-			} else {
-				return reward.getSilkTouchPolicy();
-			}
+			return reward.getSilkTouchPolicy();
 		}
 	}
 	
-	private void setLocalPolicy(SilkTouchPolicy stp, GlobalConfigManager gcm) {
+	private void setLocalPolicy(SilkTouchPolicy stp) {
 		if (rewardGroup == null) {
 			gcm.setGlobalSilkTouchPolicy(stp);
+		} else if (reward == null) {
+			rewardGroup.setSilkTouchPolicy(stp);
 		} else {
-			if (reward == null) {
-				rewardGroup.setSilkTouchPolicy(stp);
-			} else {
-				reward.setSilkTouchPolicy(stp);
-			}
+			reward.setSilkTouchPolicy(stp);
 		}
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		GlobalConfigManager gcm = GlobalConfigManager.getInstance();
 		SilkTouchPolicy next;
 		if (clickType.isLeftClick()) {
-			next = nextPolicy(getLocalPolicy(gcm));
+			next = nextPolicy(getLocalPolicy());
 		} else if (clickType.isRightClick()) {
 			next = SilkTouchPolicy.INHERIT;
 		} else {
 			return;
 		}
-		setLocalPolicy(next, gcm);
+		setLocalPolicy(next);
 		parent.openFor(player);
 	}
 	
@@ -89,7 +87,7 @@ public class SilkTouchButton extends GUIButton {
 		case IGNORED:
 			return SilkTouchPolicy.DISALLOWED;
 		case DISALLOWED:
-		default: // INHERIT
+		default: // INHERIT or anything else that's weird
 			return SilkTouchPolicy.REQUIRED;
 		}
 	}

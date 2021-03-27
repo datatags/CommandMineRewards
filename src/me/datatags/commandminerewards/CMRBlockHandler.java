@@ -30,17 +30,16 @@ public class CMRBlockHandler {
 		this.growth = growth;
 	}
 	public int execute(BlockState block, Player player, int globalRewardLimit) {
-		CommandMineRewards cmr = CommandMineRewards.getInstance();
-		cmr.debug("Processing block " + block.getType().toString());
+		CMRLogger.debug("Processing block " + block.getType().toString());
 		int rewardsExecuted = 0;
 		List<RewardGroup> groupCache = new ArrayList<>(CMRBlockManager.getInstance().getGroupCache());
 		if (gcm.isRandomizingRewardOrder()) {
 			Collections.shuffle(groupCache);
 		}
 		for (RewardGroup group : groupCache) {
-			cmr.debug("Processing group from cache: " + group.getName());
+			CMRLogger.debug("Processing group from cache: " + group.getName());
 			if (rewardSections.contains(group.getName())) {
-				cmr.debug("Found group from cache: " + group.getName());
+				CMRLogger.debug("Found group from cache: " + group.getName());
 				rewardsExecuted += group.execute(block, player, globalRewardLimit - rewardsExecuted);
 				if (globalRewardLimit > -1 && globalRewardLimit - rewardsExecuted < 1) break;
 			}

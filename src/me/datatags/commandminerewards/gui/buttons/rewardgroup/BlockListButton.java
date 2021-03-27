@@ -10,7 +10,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
@@ -33,13 +32,8 @@ public class BlockListButton extends GUIButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
-		return new ItemBuilder(Material.GRASS_BLOCK).name(ChatColor.GOLD + "Block List");
-	}
-
-	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		ItemBuilder ib = getBase();
+	protected ItemBuilder build() {
+		ItemBuilder ib = new ItemBuilder(Material.GRASS_BLOCK).name(ChatColor.GOLD + "Block List");
 		int i = 0;
 		Map<String,Boolean> blocks = group.getBlocksWithData();
 		for (Entry<String,Boolean> entry : blocks.entrySet()) {
@@ -53,12 +47,12 @@ public class BlockListButton extends GUIButton {
 				break;
 			}
 		}
-		return ib.build();
+		return ib;
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.getGUIManager().getGUI(BlockListGUI.class, group, null).openFor(player);
+		CMRGUI.delayOpenGUI(player, new BlockListGUI(group));
 	}
 
 }

@@ -8,19 +8,18 @@ import org.bukkit.persistence.PersistentDataType;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.CommandMineRewards;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public abstract class GUIButton {
-	public static final NamespacedKey key = new NamespacedKey(CommandMineRewards.getInstance(), "buttonIdentifier");
+	public static final NamespacedKey KEY = new NamespacedKey(CommandMineRewards.getInstance(), "buttonIdentifier");
 	protected ItemBuilder base;
 	public GUIButton() {
 		
 	}
 	public abstract CMRPermission getPermission();
 	public abstract CMRPermission getClickPermission();
-	protected abstract ItemBuilder buildBase();
+	protected abstract ItemBuilder build();
 	protected ItemBuilder getBase() {
 		if (base == null) {
 			resetBase();
@@ -28,24 +27,20 @@ public abstract class GUIButton {
 		return base.clone();
 	}
 	public void resetBase() {
-		base = buildBase();
+		base = build();
 		addIdentityTag();
 	}
-	public ItemStack getBaseItem() {
+	public ItemStack getIcon() {
 		return getBase().build();
-	}
-	protected abstract ItemStack personalize(Player player, GlobalConfigManager gcm);
-	public ItemStack getButton(Player player) {
-		return personalize(player, GlobalConfigManager.getInstance());
 	}
 	public boolean isButton(ItemStack is) { // override to distinguish from other buttons of the same type in the same GUI 
 		if (is == null) return false;
 		if (!is.hasItemMeta()) return false;
 		if (!is.getItemMeta().hasDisplayName()) return false; // all buttons have item name, even if the name is " "
-		return getBaseItem().getItemMeta().getDisplayName().equals(is.getItemMeta().getDisplayName());
+		return getIcon().getItemMeta().getDisplayName().equals(is.getItemMeta().getDisplayName());
 	}
 	public abstract void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType);
 	protected void addIdentityTag() {
-		base.getItemMeta().getPersistentDataContainer().set(key, PersistentDataType.STRING, this.getClass().getSimpleName());
+		base.getItemMeta().getPersistentDataContainer().set(KEY, PersistentDataType.STRING, this.getClass().getSimpleName());
 	}
 }

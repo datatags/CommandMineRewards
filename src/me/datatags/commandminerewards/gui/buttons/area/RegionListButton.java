@@ -1,5 +1,7 @@
 package me.datatags.commandminerewards.gui.buttons.area;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -35,26 +37,39 @@ public class RegionListButton extends AreaListButton {
 	}
 
 	@Override
-	protected ItemBuilder buildBase() {
+	protected ItemBuilder build() {
 		ItemBuilder ib = new ItemBuilder(Material.FILLED_MAP);
 		MapMeta mm = (MapMeta) ib.getItemMeta();
 		mm.setColor(Color.LIME);
 		ib.name(ChatColor.GREEN + "Allowed Regions");
+		if (wgm.getAllRegions().size() == 0) {
+			ib.lore(ChatColor.RED + "No regions exist");
+			return ib;
+		}
+		for (String region : generateLore(ib, gcm.getGlobalAllowedRegions(), group == null ? null : group.getAllowedRegions())) {
+			ib.lore(ChatColor.GREEN + "- " + region);
+		}
 		return ib;
 	}
 
 	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		ItemBuilder base = getBase();
-		for (String region : generateLore(gcm.getGlobalAllowedRegions(), group == null ? null : group.getAllowedRegions())) {
-			base.lore(ChatColor.GREEN + "- " + region);
+	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+		if (handleRightClick(clickType)) {
+			parent.refreshAll();
+			return;
 		}
-		return base.build();
+		if (wgm.getAllRegions().size() == 0) return;
+		CMRGUI.delayOpenGUI(player, new RegionListGUI(group));
 	}
 
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.delayOpenGUI(player, parent.getGUIManager().getGUI(RegionListGUI.class, group, null));
+	public void setLocalAreas(List<String> areas) {
+		group.setAllowedRegions(areas);
+	}
+
+	@Override
+	public void setGlobalAreas(List<String> areas) {
+		GlobalConfigManager.getInstance().setGlobalAllowedRegions(areas);
 	}
 
 }

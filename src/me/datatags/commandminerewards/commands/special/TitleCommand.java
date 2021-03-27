@@ -4,6 +4,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.datatags.commandminerewards.CMRLogger;
+
 public class TitleCommand extends SpecialCommand {
 	@Override
 	public String getName() {
@@ -49,15 +51,15 @@ public class TitleCommand extends SpecialCommand {
 		}
 		Player target = (Player) sender;
 		if (args.length != 5 && args.length != 2) {
-			getPlugin().warning("Incorrect number of args: " + args.length);
+			CMRLogger.warning("Incorrect number of args: " + args.length);
 			return true;
 		}
 		if (getPlugin().getMinecraftVersion() < 9) {
-			getPlugin().warning("This version of minecraft does not support the !title command.");
+			CMRLogger.warning("This version of minecraft does not support the !title command.");
 			return true;
 		}
 		if (getPlugin().getMinecraftVersion() < 11 && args.length == 5) {
-			getPlugin().warning("This version of minecraft does not support setting the fadeIn/stay/fadeOut for titles, but you can still use it without those.");
+			CMRLogger.warning("This version of minecraft does not support setting the fadeIn/stay/fadeOut for titles, but you can still use it without those.");
 			return true;
 		}
 		String title = args[0];
@@ -73,7 +75,7 @@ public class TitleCommand extends SpecialCommand {
 				stay = Integer.parseInt(args[3]);
 				fadeOut = Integer.parseInt(args[4]);
 			} catch (NumberFormatException e) {
-				getPlugin().warning("Couldn't run command title: Couldn't parse one of: " + args[2] + ", " + args[3] + ", " + args[4] + " as number");
+				CMRLogger.warning("Couldn't run command title: Couldn't parse one of: " + args[2] + ", " + args[3] + ", " + args[4] + " as number");
 				return true;
 			}
 		}

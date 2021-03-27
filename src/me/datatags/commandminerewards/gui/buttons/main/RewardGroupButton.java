@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
@@ -30,8 +29,7 @@ public class RewardGroupButton extends GUIButton {
 		return CMRPermission.REWARD; // not REWARD_MODIFY because clicking the button does not modify the reward group
 	}
 	@Override
-	protected ItemBuilder buildBase() {
-		// TODO: reward group icon is first block in list
+	protected ItemBuilder build() {
 		ItemBuilder ib = new ItemBuilder(Material.BOOKSHELF).name(ChatColor.YELLOW + group.getName());
 		ib.lore(ChatColor.GREEN + "Rewards:");
 		if (group.getChildren().size() == 0) {
@@ -68,15 +66,12 @@ public class RewardGroupButton extends GUIButton {
 		return ib;
 	}
 	@Override
-	protected ItemStack personalize(Player player, GlobalConfigManager gcm) {
-		return getBase().build();
-	}
-	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
-			parent.getGUIManager().getGUI(RewardGroupGUI.class, group, null).openFor(player);
+			new RewardGroupGUI(group).openFor(player);
 		} else if (clickType.isRightClick() && group.getChildrenNames().size() == 0) {
 			group.delete();
+			parent.refreshAll();
 		}
 	}
 	public RewardGroup getRewardGroup() {

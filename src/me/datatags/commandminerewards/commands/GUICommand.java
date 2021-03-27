@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.guis.MainGUI;
 
 public class GUICommand extends CMRCommand {
@@ -36,8 +35,8 @@ public class GUICommand extends CMRCommand {
 			sender.sendMessage(ChatColor.RED + "You can't use the GUI unless you're a player!");
 			return true;
 		}
-		// TODO: open last GUI player was using instead of the main one every time
-		GUIManager.getInstance().getGUI(MainGUI.class, null, null).openFor((Player)sender);
+		// TODO: open last GUI player was using instead of the main one every time?
+		new MainGUI().openFor((Player)sender);
 		return true;
 	}
 
