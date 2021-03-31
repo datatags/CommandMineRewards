@@ -7,5 +7,6 @@ public enum ArgType {
 	BLOCK,
 	WORLD,
 	REGION,
-	BOOLEAN;
+	BOOLEAN,
+	PLAYER;
 }

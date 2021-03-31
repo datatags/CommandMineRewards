@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import me.datatags.commandminerewards.CommandMineRewards;
@@ -91,32 +92,31 @@ public class CMRTabComplete implements TabCompleter {
 			ArgType currentArg = chosenArgs[args.length - (2 + compoundOffset)]; // last arg should be x - 1 because we don't want to count the sub-command
 			if (currentArg == ArgType.BLOCK) {
 				return options; // TODO: Return list of blocks rather than nothing?
-			}
-			if (currentArg == ArgType.REWARD_SECTION) {
+			} else if (currentArg == ArgType.REWARD_SECTION) {
 				options.addAll(GlobalConfigManager.getInstance().getRewardSectionNames());
-			}
-			if (currentArg == ArgType.REWARD) {
+			} else if (currentArg == ArgType.REWARD) {
 				String sectionName = args[args.length - 2]; // not the last one, the incomplete one, but the second-to-last one that has the group in it.  I hope this works...
 				try {
 				options.addAll(new RewardGroup(sectionName).getChildrenNames());
 				} catch (InvalidRewardGroupException e) {
 					return options;
 				}
-			}
-			if (currentArg == ArgType.REGION) {
+			} else if (currentArg == ArgType.REGION) {
 				WorldGuardManager wgm = cmr.getWGManager();
 				if (wgm.usingWorldGuard()) {
 					options.addAll(wgm.getAllRegions());
 				}
-			}
-			if (currentArg == ArgType.WORLD) {
+			} else if (currentArg == ArgType.WORLD) {
 				for (World world : Bukkit.getServer().getWorlds()) {
 					options.add(world.getName());
 				}
-			}
-			if (currentArg == ArgType.SILKTOUCH) {
+			} else if (currentArg == ArgType.SILKTOUCH) {
 				for (SilkTouchPolicy str : SilkTouchPolicy.values()) {
-					options.add(str.toString()); // forgot the pretty names include color codes which screws with commands pretty badly
+					options.add(str.toString()); // don't use the pretty names, they include color codes which screws with commands pretty badly
+				}
+			} else if (currentArg == ArgType.PLAYER) {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					options.add(player.getName());
 				}
 			}
 		}

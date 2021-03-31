@@ -32,11 +32,12 @@ public class RewardButton extends GUIButton {
 
 	@Override
 	protected ItemBuilder build() {
-		ItemBuilder ib = new ItemBuilder(Material.PAPER).name(ChatColor.LIGHT_PURPLE + reward.getName());
+		ItemBuilder ib = new ItemBuilder(Material.BOOK).name(ChatColor.LIGHT_PURPLE + reward.getName());
 		ib.lore(ChatColor.BLUE + "Active chance: " + reward.getChance() + "%");
 		ib.lore(ChatColor.LIGHT_PURPLE + "Commands:");
 		if (reward.getCommands().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
+			ib.lore(ChatColor.RED + "Right-click to delete");
 		} else {
 			int i = 0;
 			int howMany = reward.getCommands().size();
@@ -47,12 +48,24 @@ public class RewardButton extends GUIButton {
 					break;
 				}
 			}
+			ib.lore(ChatColor.YELLOW + "You must delete all commands under");
+			ib.lore(ChatColor.YELLOW + "this reward before deleting it.");
 		}
+		ib.lore(ChatColor.GREEN + "Middle-click to test all commands");
 		return ib;
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+		if (clickType.isRightClick()) {
+			if (reward.getCommands().size() != 0) return;
+			reward.delete();
+			parent.refreshSelf(player);
+			return;
+		} else if (clickType == ClickType.MIDDLE) {
+			reward.execute(player, true);
+			return;
+		}
 		CMRGUI.delayOpenGUI(player, new RewardGUI(reward.getParent(), reward));
 	}
 	

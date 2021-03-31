@@ -28,7 +28,7 @@ public class CommandMineRewards extends JavaPlugin {
 		gcm.load(); // this needs to run before RewardSections start loading
 		CMRBlockManager.getInstance(); // not a priority, just to get the sort timer ticking
 		getServer().getPluginManager().registerEvents(new EventListener(), this); // initialize the block break listener
-		getServer().getPluginManager().registerEvents(new GUIListener(), this);
+		getServer().getPluginManager().registerEvents(new GUIListener(this), this);
 		CommandDispatcher.getInstance(); // initialize the commands
 		new Metrics(this, 9691);
 		CMRLogger.info("CommandMineRewards is enabled!");

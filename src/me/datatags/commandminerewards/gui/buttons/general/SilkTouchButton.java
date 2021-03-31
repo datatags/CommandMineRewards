@@ -77,7 +77,7 @@ public class SilkTouchButton extends GUIButton {
 			return;
 		}
 		setLocalPolicy(next);
-		parent.openFor(player);
+		parent.refreshSelf(player);
 	}
 	
 	private SilkTouchPolicy nextPolicy(SilkTouchPolicy stp) {

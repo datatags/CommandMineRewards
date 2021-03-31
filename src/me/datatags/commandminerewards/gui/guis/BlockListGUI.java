@@ -36,7 +36,7 @@ public class BlockListGUI extends PaginatedGUI {
 	
 	@Override
 	public int getMaxPages() {
-		return (int)Math.ceil(group.getBlocksWithData().size() / 45d);
+		return (int)Math.max(1, Math.ceil(group.getBlocksWithData().size() / 45d));
 	}
 
 	@Override

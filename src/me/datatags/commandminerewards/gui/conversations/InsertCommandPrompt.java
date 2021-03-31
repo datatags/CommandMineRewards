@@ -18,7 +18,7 @@ public class InsertCommandPrompt extends CMRPrompt {
 	}
 	@Override
 	public String getPromptText(ConversationContext cc) {
-		return "Please type the command to insert, without the slash";
+		return "Please type the command to insert, without the slash. Use %player% in place of the player receiving the reward.";
 	}
 	@Override
 	public CMRPermission getPermission() {

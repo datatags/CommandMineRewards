@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.datatags.commandminerewards.CommandMineRewards;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
 import me.datatags.commandminerewards.gui.buttons.paginated.NextPageButton;
@@ -19,10 +20,19 @@ public abstract class PaginatedGUI extends CMRGUI {
 		openFor(player, 1);
 	}
 	public void openFor(Player player, int page) {
-		if (page > getMaxPages()) {
-			throw new IllegalArgumentException("Max pages is " + getMaxPages() + ", got " + page);
+		openFor(getNewHolder(player), page);
+	}
+	@Override
+	public void openFor(GUIUserHolder holder) {
+		openFor(holder, 1);
+	}
+	public void openFor(GUIUserHolder holder, int page) {
+		if (page < 1) {
+			throw new IllegalArgumentException("Min page is 1, got " + page);
 		}
-		users.put(player.getUniqueId(), this);
+		if (page > getMaxPages()) {
+			throw new IllegalArgumentException("Max page is " + getMaxPages() + ", got " + page);
+		}
 		recentPage = page;
 		preparePage(page);
 		for (int y = 0; y < gui.length; y++) {
@@ -38,7 +48,7 @@ public abstract class PaginatedGUI extends CMRGUI {
 				}
 			}
 		}
-		player.openInventory(generateInventory(player, gui));
+		super.openFor(holder);
 	}
 	public abstract int getMaxPages();
 	public abstract void preparePage(int pageN);

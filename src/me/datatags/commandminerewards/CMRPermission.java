@@ -25,7 +25,8 @@ public enum CMRPermission {
 	SPECIAL,
 	LIMIT,
 	LIMIT_MODIFY,
-	GUI;
+	GUI,
+	ADMIN;
 	public static final String NO_PERMISSION = ChatColor.RED + "You do not have permission to do that!";
 	private Permission perm;
 	private CMRPermission() {

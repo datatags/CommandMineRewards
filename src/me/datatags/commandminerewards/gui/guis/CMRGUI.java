@@ -13,24 +13,71 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.gui.CMRInventoryHolder;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.buttons.general.BackButton;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
 
 public abstract class CMRGUI implements Cloneable {
-	protected static Map<UUID,CMRGUI> users = new HashMap<>();
+	protected static Map<UUID,GUIUserHolder> users = new HashMap<>();
 	protected GUIButton[][] gui = new GUIButton[6][9];
 	
 	public static void removeUser(Player player) {
-		users.remove(player.getUniqueId());
+		GUIUserHolder ownerHolder = users.remove(player.getUniqueId());
+		if (ownerHolder != null) {
+			ownerHolder.clear();
+			return;
+		}
+		for (GUIUserHolder holder : users.values()) {
+			if (holder.containsUser(player)) {
+				holder.removeHelper(player);
+				return;
+			}
+		}
 	}
 	
 	public void openFor(Player player) {
-		player.openInventory(generateInventory(player, gui));
-		users.put(player.getUniqueId(), this);
+		openFor(getNewHolder(player));
 	}
+	
+	public void openFor(GUIUserHolder holder) {
+		holder.changeGUI(this);
+		Player owner = Bukkit.getPlayer(holder.getOwner());
+		Inventory inv = generateInventory(owner, gui);
+		owner.openInventory(inv);
+		for (UUID helper : holder.getHelpers()) {
+			Player player = Bukkit.getPlayer(helper);
+			CMRLogger.debug("Opening GUI for helper " + player.getName());
+			player.openInventory(inv);
+		}
+	}
+	
+	protected GUIUserHolder getNewHolder(Player player) {
+		GUIUserHolder playerHolder = getHolder(player);
+		boolean owner = playerHolder != null && playerHolder.getOwner().equals(player.getUniqueId());
+		if (playerHolder != null && !owner) {
+			playerHolder.removeHelper(player);
+			playerHolder = null;
+		}
+		if (playerHolder == null) {
+			playerHolder = new GUIUserHolder(player, this);
+			users.put(player.getUniqueId(), playerHolder);
+		}
+		return playerHolder;
+	}
+	
+	public static GUIUserHolder getHolder(Player player) {
+		for (GUIUserHolder holder : users.values()) {
+			if (holder.containsUser(player)) {
+				return holder;
+			}
+		}
+		return null;
+	}
+	
 	protected Inventory generateInventory(Player player, GUIButton[][] toOpen) {
 		Inventory inv = createInventory();
 		if (getPreviousGUI() != null) {
@@ -59,9 +106,9 @@ public abstract class CMRGUI implements Cloneable {
 	}
 	public abstract CMRGUI getPreviousGUI();
 	public void onClick(InventoryClickEvent e) {
-		findClicked(e, gui);
+		findClicked(e, gui, getHolder((Player)e.getWhoClicked()));
 	}
-	public void findClicked(InventoryClickEvent e, GUIButton[][] active) {
+	public void findClicked(InventoryClickEvent e, GUIButton[][] active, GUIUserHolder holder) {
 		if (e.getClickedInventory() == null || e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
 		ItemStack item = e.getCurrentItem();
 		if (item == null) return;
@@ -71,7 +118,7 @@ public abstract class CMRGUI implements Cloneable {
 			for (GUIButton button : row) {
 				if (button == null) continue;
 				if (button.getClass().getSimpleName().equals(buttonClass) && button.isButton(item)) {
-					button.onClick((Player)e.getWhoClicked(), item, this, e.getClick());
+					button.onClick(Bukkit.getPlayer(holder.getOwner()), item, this, e.getClick());
 					return; // I don't think we need to tell more than one button it was clicked ever
 				}
 			}
@@ -100,9 +147,8 @@ public abstract class CMRGUI implements Cloneable {
 		}.runTaskLater(CommandMineRewards.getInstance(), 1);
 	}
 	public void refreshAll() {
-		for (Entry<UUID,CMRGUI> entry : users.entrySet()) {
-			Player player = Bukkit.getPlayer(entry.getKey());
-			entry.setValue(entry.getValue().refreshSelf(player));
+		for (Entry<UUID,GUIUserHolder> entry : users.entrySet()) {
+			entry.getValue().updateGUI();
 		}
 	}
 	public CMRGUI refreshSelf(Player player) {

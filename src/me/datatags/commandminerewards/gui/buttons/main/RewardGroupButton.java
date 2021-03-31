@@ -61,7 +61,7 @@ public class RewardGroupButton extends GUIButton {
 			ib.lore(ChatColor.RED + "Right-click to delete");
 		} else {
 			ib.lore(ChatColor.YELLOW + "You must delete all rewards under");
-			ib.lore(ChatColor.YELLOW + "this group before deleting.");
+			ib.lore(ChatColor.YELLOW + "this group before deleting it.");
 		}
 		return ib;
 	}
