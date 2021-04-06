@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 import me.datatags.commandminerewards.GlobalConfigManager;
@@ -20,7 +21,6 @@ public abstract class AreaListButton extends GUIButton {
 	}
 	
 	protected List<String> generateLore(ItemBuilder ib, List<String> globalAreas, List<String> localAreas) {
-		addRightClickLore(ib);
 		String localLore = ChatColor.LIGHT_PURPLE + "Locally allowed:";
 		if (localAreas != null) {
 			if (localAreas.size() == 0) {
@@ -37,9 +37,10 @@ public abstract class AreaListButton extends GUIButton {
 		}
 		return globalAreas;
 	}
-	protected void addRightClickLore(ItemBuilder ib) {
-		ib.lore(ChatColor.RED + "Right-click to clear and inherit");
-		ib.lore(ChatColor.GREEN + "Shift-right-click to allow all");
+	public void addClickableLore(Player player) {
+		List<String> lore = base.getLore();
+		lore.add(0, ChatColor.RED + "Right-click to clear and inherit");
+		lore.add(1, ChatColor.GREEN + "Shift-right-click to allow all");
 	}
 	public boolean handleRightClick(ClickType click) {
 		if (!click.isRightClick()) return false;

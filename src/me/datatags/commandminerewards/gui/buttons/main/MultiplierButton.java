@@ -35,4 +35,9 @@ public class MultiplierButton extends GUIButton {
 		return new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.YELLOW + "Multiplier")
 				.lore(ChatColor.YELLOW + "Current multiplier: " + GlobalConfigManager.getInstance().getMultiplier());
 	}
+	
+	@Override
+	public void addClickableLore(Player player) {
+		base.lore(ChatColor.YELLOW + "Click to modify");
+	}
 }

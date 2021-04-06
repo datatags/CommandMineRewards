@@ -28,12 +28,16 @@ public class SilkTouchButton extends GUIButton {
 	@Override
 	protected ItemBuilder build() {
 		ItemBuilder ib = new ItemBuilder(Material.ENCHANTED_BOOK).name(ChatColor.LIGHT_PURPLE + "Silk Touch Policy");
-		ib.lore(ChatColor.DARK_PURPLE + "Left click to cycle through policies");
-		ib.lore(ChatColor.DARK_PURPLE + "Right click to inherit policy");
 		SilkTouchPolicy local = getLocalPolicy();
 		SilkTouchPolicy inherits = getInheritablePolicy();
 		ib.lore("Local value: " + local.getFriendlyName()).lore("Can inherit: " + inherits.getFriendlyName());
 		return ib;
+	}
+	
+	@Override
+	public void addClickableLore(Player player) {
+		base.lore(ChatColor.DARK_PURPLE + "Left click to cycle through policies");
+		base.lore(ChatColor.DARK_PURPLE + "Right click to inherit policy");
 	}
 	
 	private SilkTouchPolicy getInheritablePolicy() {

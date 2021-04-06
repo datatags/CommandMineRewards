@@ -35,10 +35,7 @@ public class RewardButton extends GUIButton {
 		ItemBuilder ib = new ItemBuilder(Material.BOOK).name(ChatColor.LIGHT_PURPLE + reward.getName());
 		ib.lore(ChatColor.BLUE + "Active chance: " + reward.getChance() + "%");
 		ib.lore(ChatColor.LIGHT_PURPLE + "Commands:");
-		if (reward.getCommands().size() == 0) {
-			ib.lore(ChatColor.RED + "- None");
-			ib.lore(ChatColor.RED + "Right-click to delete");
-		} else {
+		if (hasCommands()) {
 			int i = 0;
 			int howMany = reward.getCommands().size();
 			for (RewardCommandEntry cmd : reward.getCommands()) {
@@ -48,21 +45,35 @@ public class RewardButton extends GUIButton {
 					break;
 				}
 			}
-			ib.lore(ChatColor.YELLOW + "You must delete all commands under");
-			ib.lore(ChatColor.YELLOW + "this reward before deleting it.");
+		} else {
+			ib.lore(ChatColor.RED + "- None");
 		}
-		ib.lore(ChatColor.GREEN + "Middle-click to test all commands");
 		return ib;
+	}
+	
+	@Override
+	public void addClickableLore(Player player) {
+		if (CMRPermission.COMMAND_MODIFY.test(player)) {
+			if (hasCommands()) {
+				base.lore(ChatColor.YELLOW + "You must delete all commands under");
+				base.lore(ChatColor.YELLOW + "this reward before deleting it.");
+			} else {
+				base.lore(ChatColor.RED + "Right-click to delete");
+			}
+		}
+		if (CMRPermission.COMMAND_EXECUTE.test(player)) {
+			base.lore(ChatColor.GREEN + "Middle-click to test all commands");
+		}
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (clickType.isRightClick()) {
-			if (reward.getCommands().size() != 0) return;
+		if (clickType.isRightClick() && CMRPermission.COMMAND_MODIFY.test(player)) {
+			if (hasCommands()) return;
 			reward.delete();
 			parent.refreshSelf(player);
 			return;
-		} else if (clickType == ClickType.MIDDLE) {
+		} else if (clickType == ClickType.MIDDLE && CMRPermission.COMMAND_EXECUTE.test(player)) {
 			reward.execute(player, true);
 			return;
 		}
@@ -71,6 +82,10 @@ public class RewardButton extends GUIButton {
 	
 	public Reward getReward() {
 		return reward;
+	}
+	
+	private boolean hasCommands() {
+		return reward.getCommands().size() > 0;
 	}
 
 }

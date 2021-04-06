@@ -41,6 +41,11 @@ public class ChanceButton extends GUIButton {
 		}
 		return ib;
 	}
+	
+	@Override
+	public void addClickableLore(Player player) {
+		base.lore(ChatColor.YELLOW + "Click to modify");
+	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {

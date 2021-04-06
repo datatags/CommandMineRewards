@@ -90,7 +90,7 @@ public abstract class CMRGUI implements Cloneable {
 				if (button == null || button.getPermission() == null || !button.getPermission().test(player)) {
 					button = new FillerButton();
 				}
-				inv.setItem(x + (y * 9), button.getIcon());
+				inv.setItem(x + (y * 9), button.getIcon(player));
 			}
 		}
 		return inv;
@@ -118,7 +118,9 @@ public abstract class CMRGUI implements Cloneable {
 			for (GUIButton button : row) {
 				if (button == null) continue;
 				if (button.getClass().getSimpleName().equals(buttonClass) && button.isButton(item)) {
-					button.onClick(Bukkit.getPlayer(holder.getOwner()), item, this, e.getClick());
+					if (button.getClickPermission() != null && button.getClickPermission().test(e.getWhoClicked())) {
+						button.onClick(Bukkit.getPlayer(holder.getOwner()), item, this, e.getClick());
+					}
 					return; // I don't think we need to tell more than one button it was clicked ever
 				}
 			}

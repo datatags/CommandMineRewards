@@ -6,9 +6,11 @@ import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.BlockAlreadyInListException;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
@@ -67,6 +69,8 @@ public class BlockListGUI extends PaginatedGUI {
 	}
 	
 	private boolean doOwnActions(InventoryClickEvent e) {
+		Player player = (Player) e.getWhoClicked();
+		if (!CMRPermission.BLOCK_MODIFY.test(player)) return false; // back button may still be useful
 		if (e.getClickedInventory() == null) return false;
 		if (e.getClickedInventory().equals(e.getView().getTopInventory())) return false; // handled by the GUI buttons
 		ItemStack testItem = e.getCurrentItem();

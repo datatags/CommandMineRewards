@@ -10,13 +10,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import me.datatags.commandminerewards.hook.McMMOHook;
+
 public class EventListener implements Listener {
 	private CMRBlockManager cbm;
 	private GlobalConfigManager gcm;
+	private McMMOHook mh;
 	private Map<Integer,BlockState> autopickupCompatData = new HashMap<>();
-	public EventListener() {
+	public EventListener(McMMOHook mh) {
 		this.gcm = GlobalConfigManager.getInstance();
 		this.cbm = CMRBlockManager.getInstance();
+		this.mh = mh;
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreakEvent(BlockBreakEvent e) {
@@ -33,10 +37,18 @@ public class EventListener implements Listener {
 		}
 		if (e.isCancelled()) {
 			CMRLogger.debug("Player was denied access to all sections because event was cancelled.");
+			CMRLogger.debug("This is often caused by block claim plugins, and is normal behavior of the plugin.");
+			CMRLogger.debug("If this is outside a claim, you may have a misbehaving auto-pickup plugin, see CMR FAQ for more info.");
 			return;
 		}
 		if (state.getType() == Material.AIR) {
-			CMRLogger.debug("Player was denied access to all sections because CMR received air block in event handler??");
+			CMRLogger.warning("Received air block in event handler??");
+			CMRLogger.info("This can be caused by auto-pickup plugins, if this is the case, enable autopickupCompat in config.yml");
+			return;
+		}
+		if (mh != null && mh.getPlaceStore().isTrue(state)) {
+			CMRLogger.debug("Player was denied access to all sections because the block was player-placed according to mcMMO.");
+			CMRLogger.debug("If this is not desired, set mcMMOHookEnabled to false in config.yml");
 			return;
 		}
 		cbm.executeAllSections(state, e.getPlayer());

@@ -30,7 +30,17 @@ public class RewardGroupButton extends GUIButton {
 	}
 	@Override
 	protected ItemBuilder build() {
-		ItemBuilder ib = new ItemBuilder(Material.BOOKSHELF).name(ChatColor.YELLOW + group.getName());
+		Material mat = Material.BOOKSHELF;
+		if (group.getBlocks().size() > 0) {
+			for (String block : group.getBlocks()) {
+				Material test = Material.matchMaterial(block);
+				if (test != null && test.isItem()) {
+					mat = test;
+					break;
+				}
+			}
+		}
+		ItemBuilder ib = new ItemBuilder(mat).name(ChatColor.YELLOW + group.getName());
 		ib.lore(ChatColor.GREEN + "Rewards:");
 		if (group.getChildren().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
@@ -57,19 +67,23 @@ public class RewardGroupButton extends GUIButton {
 				}
 			}
 		}
-		if (group.getChildrenNames().size() == 0) {
-			ib.lore(ChatColor.RED + "Right-click to delete");
-		} else {
-			ib.lore(ChatColor.YELLOW + "You must delete all rewards under");
-			ib.lore(ChatColor.YELLOW + "this group before deleting it.");
-		}
 		return ib;
+	}
+	@Override
+	public void addClickableLore(Player player) {
+		if (!CMRPermission.REWARD_MODIFY.test(player)) return;
+		if (group.getChildrenNames().size() == 0) {
+			base.lore(ChatColor.RED + "Right-click to delete");
+		} else {
+			base.lore(ChatColor.YELLOW + "You must delete all rewards under");
+			base.lore(ChatColor.YELLOW + "this group before deleting it.");
+		}
 	}
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
 			new RewardGroupGUI(group).openFor(player);
-		} else if (clickType.isRightClick() && group.getChildrenNames().size() == 0) {
+		} else if (CMRPermission.REWARD_MODIFY.test(player) && clickType.isRightClick() && group.getChildrenNames().size() == 0) {
 			group.delete();
 			parent.refreshAll();
 		}

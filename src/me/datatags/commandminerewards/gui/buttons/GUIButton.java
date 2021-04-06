@@ -14,9 +14,7 @@ import me.datatags.commandminerewards.gui.guis.CMRGUI;
 public abstract class GUIButton {
 	public static final NamespacedKey KEY = new NamespacedKey(CommandMineRewards.getInstance(), "buttonIdentifier");
 	protected ItemBuilder base;
-	public GUIButton() {
-		
-	}
+	
 	public abstract CMRPermission getPermission();
 	public abstract CMRPermission getClickPermission();
 	protected abstract ItemBuilder build();
@@ -30,14 +28,22 @@ public abstract class GUIButton {
 		base = build();
 		addIdentityTag();
 	}
-	public ItemStack getIcon() {
-		return getBase().build();
+	public ItemStack getIcon(Player player) {
+		resetBase();
+		if (this.getClickPermission() != null && this.getClickPermission().test(player)) {
+			addClickableLore(player);
+		}
+		return base.build();
 	}
+	public void addClickableLore(Player player) {} // mostly used for permission checks
 	public boolean isButton(ItemStack is) { // override to distinguish from other buttons of the same type in the same GUI 
 		if (is == null) return false;
+		if (is.getType() != getBase().getType()) return false;
+		if (!getBase().hasName()) return true;
+		
 		if (!is.hasItemMeta()) return false;
-		if (!is.getItemMeta().hasDisplayName()) return false; // all buttons have item name, even if the name is " "
-		return getIcon().getItemMeta().getDisplayName().equals(is.getItemMeta().getDisplayName());
+		if (!is.getItemMeta().hasDisplayName()) return false;
+		return getBase().getItemMeta().getDisplayName().equals(is.getItemMeta().getDisplayName());
 	}
 	public abstract void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType);
 	protected void addIdentityTag() {

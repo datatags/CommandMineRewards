@@ -30,8 +30,17 @@ public class ItemBuilder implements Cloneable {
 		this.lore.add(lore);
 		return this;
 	}
+	public List<String> getLore() {
+		return lore;
+	}
 	public ItemMeta getItemMeta() {
 		return im;
+	}
+	public Material getType() {
+		return material;
+	}
+	public boolean hasName() {
+		return name != null;
 	}
 	public ItemStack build() {
 		ItemStack is = new ItemStack(material);

@@ -40,21 +40,20 @@ public class BlockButton extends GUIButton {
 		if (data != null) {
 			ib.lore(ChatColor.YELLOW + "Data: " + (data ? ChatColor.GREEN : ChatColor.RED) + data.toString());
 		}
-		ib.lore(ChatColor.RED + "Click to delete");
 		return ib;
 	}
 	
 	@Override
-	public boolean isButton(ItemStack is) {
-		return is.equals(this.getIcon());
+	public void addClickableLore(Player player) {
+		base.lore(ChatColor.RED + "Click to delete");
 	}
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRLogger.debug("Attempting to remove block");
 		try {
 			group.removeBlock(block.toString(), data);
 		} catch (BlockNotInListException e) {
+			CMRLogger.error("The GUI seems to have desynchronized from the current block list, please report this error!");
 			e.printStackTrace(); // ???
 			return;
 		}

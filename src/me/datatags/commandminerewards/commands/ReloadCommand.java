@@ -3,9 +3,7 @@ package me.datatags.commandminerewards.commands;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import me.datatags.commandminerewards.CMRBlockManager;
 import me.datatags.commandminerewards.CMRPermission;
-import me.datatags.commandminerewards.GlobalConfigManager;
 
 public class ReloadCommand extends CMRCommand {
 	@Override
@@ -34,9 +32,7 @@ public class ReloadCommand extends CMRCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, String[] args) {
-		GlobalConfigManager.getInstance().load();
 		getPlugin().reload();
-		CMRBlockManager.getInstance().reloadCache();
 		sender.sendMessage(ChatColor.GREEN + "CMR config reloaded!");
 		return true;
 	}

@@ -17,7 +17,7 @@ public abstract class CMRPrompt extends ValidatingPrompt {
 	@Override
 	protected boolean isInputValid(ConversationContext cc, String input) {
 		Player player = (Player)cc.getForWhom();
-		if (!getPermission().test(player)) {
+		if (!getPermission().attempt(player)) {
 			Bukkit.getLogger().warning("[CommandMineRewards] GUI permissions error on user " + player.getName() + ", please report this.");
 			return false;
 		}

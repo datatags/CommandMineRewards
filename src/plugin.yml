@@ -3,7 +3,7 @@ main: me.datatags.commandminerewards.CommandMineRewards
 author: Datatags
 version: 7.0
 api-version: 1.13
-softdepend: [WorldGuard]
+softdepend: [WorldGuard, mcMMO]
 commands:
     cmr:
         description: The command for utilizing CMR
@@ -21,6 +21,7 @@ permissions:
             cmr.region: true
             cmr.limit: true
             cmr.gui: true
+            cmr.silktouchpolicy: true
     cmr.admin:
         description: Allows you to use any CMR commands
         children:

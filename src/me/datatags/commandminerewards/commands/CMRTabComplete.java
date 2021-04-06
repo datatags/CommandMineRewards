@@ -22,7 +22,6 @@ public class CMRTabComplete implements TabCompleter {
 	private CommandMineRewards cmr;
 	public CMRTabComplete(CommandMineRewards cmr) {
 		this.cmr = cmr;
-		cmr.getCommand("cmr").setTabCompleter(this);
 	}
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {

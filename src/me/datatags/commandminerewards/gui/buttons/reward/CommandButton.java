@@ -42,11 +42,15 @@ public class CommandButton extends GUIButton {
 			ib.lore(ChatColor.GREEN + "Click to add");
 		} else {
 			ib = new ItemBuilder(Material.PAPER).name(entry.getCommand());
-			ib.lore(ChatColor.GREEN + "Click to insert after");
-			ib.lore(ChatColor.GREEN + "Shift-click to insert before");
-			ib.lore(ChatColor.RED + "Right-click to delete");
 		}
 		return ib;
+	}
+	
+	@Override
+	public void addClickableLore(Player player) {
+		base.lore(ChatColor.GREEN + "Click to insert after");
+		base.lore(ChatColor.GREEN + "Shift-click to insert before");
+		base.lore(ChatColor.RED + "Right-click to delete");
 	}
 
 	@Override

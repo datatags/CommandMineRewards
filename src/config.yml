@@ -1,9 +1,9 @@
 # globalAllowedWorlds: string list: a list of worlds all rewards will operate in.  Is overridden by allowedWorlds in a reward section.  Defaults to "*", meaning all worlds allowed.
 globalAllowedWorlds:
-    - "*"
+- "*"
 # globalAllowedRegions: string list: same as globalAllowedWorlds except with WorldGuard regions instead of worlds.
 globalAllowedRegions:
-    - "*"
+- "*"
 # globalSilkTouch: string, can be REQUIRED, IGNORED, or DISALLOWED: The global setting on whether silk touch is required, disallowed, or ignored to receive rewards.  Is overrided by silkTouch in a reward section or reward.  Defaults to IGNORED.
 globalSilkTouch: IGNORED
 # removeInvalidValues: boolean: If true, will delete invalid blocks in the lists of blocks.
@@ -13,11 +13,12 @@ survivalOnly: true
 # boolean: will prevent you from using invalid worlds and WorldGuard regions in their associated commands
 validateWorldsAndRegions: true
 # verbosity: number (0, 1, or 2) (default 1):  How verbose console messages should be.  0 for only errors, 1 for errors and executed commands, 2 for a metric ton of logging detail. (probably don't use 2 in production.)
-# Please note that even with verbosity: 0 you will still receive command output in console.  ex. if you have in a reward /give %player% diamond, you will still receive the message "Gave 1 [Diamond] to %player%" every time it runs. If you find a way to prevent the command output, message me on Spigot.
+# Please note that even with verbosity: 0 you will still receive command output in console.  ex. if you have in a reward /give %player% diamond, you will still receive the message "Gave 1 [Diamond] to %player%" every time it runs,
+# and there is no way to prevent this that I'm aware of. If you figure it out, please let me know.
 verbosity: 1
-# debugLog: boolean (true or false): If true, will create a separate debug log in the CMR folder for easy bug reporting.  This setting is ignored unless verbosity is 2.
-debugLog: false
 # autopickupCompat: boolean (true or false): If true, will grab the broken block type at a lower priority than normal to allow compatibility with plugins such as auto pickup plugins. This setting should be disabled unless required as it may add a bit of overhead
 autopickupCompat: false
 # randomizeRewardOrder: boolean (true or false): If true, will randomize the order rewards are evaluated in, so it isn't weighted toward the first reward in the list. This usually only matters if you are using any sort of reward limit.
 randomizeRewardOrder: false
+# mcMMOHookEnabled: boolean (true or false): If true, will only allow rewards to be issued from blocks not placed by players, as determined by mcMMO. (Requires mcMMO to be installed obviously)
+mcMMOHookEnabled: false

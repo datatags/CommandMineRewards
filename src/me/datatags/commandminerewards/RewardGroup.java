@@ -2,7 +2,7 @@ package me.datatags.commandminerewards;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -128,7 +128,7 @@ public class RewardGroup {
 		return rv;
 	}
 	public Map<String,Boolean> getBlocksWithData() {
-		Map<String,Boolean> blocks = new HashMap<String,Boolean>();
+		Map<String,Boolean> blocks = new LinkedHashMap<String,Boolean>(); // linked hash map so it returns blocks in order
 		for (String block : getRawBlocks()) {
 			if (!block.contains(":")) { // one element
 				if (blocks.containsKey(block)) {

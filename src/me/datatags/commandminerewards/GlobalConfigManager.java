@@ -39,7 +39,6 @@ public class GlobalConfigManager {
 		checkOldConfig();
 	}
 	private void loadRewardsConfig() {
-		CommandMineRewards cmr = CommandMineRewards.getInstance();
 		rewardsFile = new File(cmr.getDataFolder() + File.separator + "rewards.yml");
 		if (!rewardsFile.exists()) {
 			cmr.getDataFolder().mkdirs();
@@ -210,9 +209,6 @@ public class GlobalConfigManager {
 	public boolean getDebug() {
 		return getConfig().getInt("verbosity", 1) > 1;
 	}
-	public boolean isDebugLog() {
-		return getConfig().getBoolean("debugLog");
-	}
 	public int getVerbosity() {
 		return getConfig().getInt("verbosity", 1);
 	}
@@ -236,6 +232,9 @@ public class GlobalConfigManager {
 	}
 	public boolean isRandomizingRewardOrder() {
 		return getConfig().getBoolean("randomizeRewardOrder", false);
+	}
+	public boolean isMcMMOHookEnabled() {
+		return getConfig().getBoolean("mcMMOHookEnabled", false);
 	}
 	public List<String> getRewardSectionNames() {
 		List<String> names = new ArrayList<String>();

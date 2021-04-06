@@ -1,7 +1,6 @@
 package me.datatags.commandminerewards.gui.guis;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -19,7 +18,7 @@ import me.datatags.commandminerewards.gui.buttons.rewardgroup.RewardButton;
 
 public class RewardGroupGUI extends PaginatedGUI {
 	private RewardGroup group;
-	private List<GUIButton> rewardButtons;
+	private List<GUIButton> buttons = new ArrayList<>();
 	public RewardGroupGUI(RewardGroup group) {
 		this.group = group;
 		gui[0][0] = new BlockListButton(group);
@@ -28,13 +27,11 @@ public class RewardGroupGUI extends PaginatedGUI {
 		gui[0][6] = new WorldListButton(group);
 		gui[0][8] = new RegionListButton(group);
 		addPageButtons();
-		List<RewardButton> buttons = new ArrayList<>();
+		buttons.add(new NewRewardButton(group));
 		for (Reward reward : group.getChildren()) {
 			buttons.add(new RewardButton(reward));
 		}
-		buttons.sort(Comparator.comparing(r -> r.getReward().getName()));
-		rewardButtons = new ArrayList<>(buttons);
-		rewardButtons.add(0, new NewRewardButton(group));
+		// we don't sort the buttons because the order can be important when using reward limits
 	}
 	
 	@Override
@@ -49,7 +46,7 @@ public class RewardGroupGUI extends PaginatedGUI {
 
 	@Override
 	public void preparePage(int pageN) {
-		generatePage(pageN, 2, 27, rewardButtons);
+		generatePage(pageN, 2, 27, buttons);
 	}
 
 	@Override

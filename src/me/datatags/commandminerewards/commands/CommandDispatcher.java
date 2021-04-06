@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CommandMineRewards;
@@ -23,11 +24,10 @@ import me.datatags.commandminerewards.commands.world.WorldCommand;
 
 public class CommandDispatcher implements CommandExecutor {
 	private static CommandDispatcher instance = null;
-	private CommandMineRewards cmr;
 	private List<CMRCommand> commands = new ArrayList<>();
-	private CommandDispatcher(CommandMineRewards cmr) {
-		this.cmr = cmr;
-		cmr.getCommand("cmr").setExecutor(this);
+	private PluginDescriptionFile pdf;
+	private CommandDispatcher() {
+		pdf = CommandMineRewards.getInstance().getDescription();
 		registerCommand(new HelpCommand());
 		registerCommand(new MultiplierCommand());
 		registerCommand(new ReloadCommand());
@@ -40,10 +40,11 @@ public class CommandDispatcher implements CommandExecutor {
 		registerCommand(new WorldCommand());
 		registerCommand(new SpecialCommand());
 		registerCommand(new GUICommand());
+		registerCommand(new DebugCommand());
 	}
 	public static CommandDispatcher getInstance() {
 		if (instance == null) {
-			instance = new CommandDispatcher(CommandMineRewards.getInstance());
+			instance = new CommandDispatcher();
 		}
 		return instance;
 	}
@@ -53,7 +54,7 @@ public class CommandDispatcher implements CommandExecutor {
 	}
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage(ChatColor.GREEN + "This server is running " + ChatColor.GOLD + "CommandMineRewards v" + cmr.getDescription().getVersion() + ChatColor.GREEN + " by AlanZ");
+			sender.sendMessage(ChatColor.GREEN + "This server is running " + ChatColor.GOLD + pdf.getName() + " v" + pdf.getVersion() + ChatColor.GREEN + " by " + pdf.getAuthors().get(0));
 			sender.sendMessage(ChatColor.GREEN + "Do " + ChatColor.GOLD + "/cmr help" + ChatColor.GREEN + " for commands.");
 			return true;
 		}
