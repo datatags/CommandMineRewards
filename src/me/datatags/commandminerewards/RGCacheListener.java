@@ -4,12 +4,12 @@ public interface RGCacheListener {
 	public default void registerCacheListener() {
 		CMRBlockManager.getInstance().registerListener(this);
 	}
-	public default void reloadCache() {}
-	public default void loadGroup(RewardGroup group) {}
-	public default void unloadSection(String group) {}
-	public default void reloadGroup(RewardGroup group) {}
+	public default void onCacheReload() {}
+	public default void onGroupLoad(RewardGroup group) {}
+	public default void onGroupUnload(String group) {}
+	public default void onGroupReload(RewardGroup group) {}
 	
-	public default void loadReward(RewardGroup group, Reward reward) {}
-	public default void unloadReward(RewardGroup group, String rewardName) {}
-	public default void reloadReward(RewardGroup group, Reward reward) {}
+	public default void onRewardLoad(RewardGroup group, Reward reward) {}
+	public default void onRewardUnload(RewardGroup group, String rewardName) {}
+	public default void onRewardReload(RewardGroup group, Reward reward) {}
 }

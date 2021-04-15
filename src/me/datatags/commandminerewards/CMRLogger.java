@@ -42,7 +42,7 @@ public class CMRLogger {
 	}
 
 	public static void debug(String msg, boolean logToConsole) {
-		logMessage(msg, Level.FINE, (debugMode || gcm.getDebug()) && logToConsole); // we use log level FINE then substitute it for debug or INFO where required
+		logMessage(msg, Level.FINE, (debugMode || gcm.isDebug()) && logToConsole); // we use log level FINE then substitute it for debug or INFO where required
 	}
 
 	public static void info(String msg) {

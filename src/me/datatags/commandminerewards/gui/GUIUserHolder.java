@@ -15,6 +15,7 @@ public class GUIUserHolder {
 	private UUID owner;
 	private Set<UUID> helpers = new HashSet<>();
 	private CMRGUI currentGUI;
+	private Conversation currentConvo;
 	public GUIUserHolder(Player owner, CMRGUI gui) {
 		this.owner = owner.getUniqueId();
 		this.currentGUI = gui;
@@ -34,21 +35,34 @@ public class GUIUserHolder {
 		return currentGUI;
 	}
 	public void changeGUI(CMRGUI gui) {
+		currentConvo = null;
 		currentGUI = gui;
 	}
 	public void updateGUI() {
-		if (currentGUI == null) return;
-		currentGUI = currentGUI.refreshSelf(Bukkit.getPlayer(owner));
+		if (isConversing()) return;
+		currentGUI = currentGUI.clone();
+		GUIManager.getInstance().delayOpenGUI(this, currentGUI);
 	}
 	public boolean isConversing() {
-		return currentGUI == null;
+		return currentConvo != null;
 	}
 	public void setConversation(Conversation convo) {
+		this.currentConvo = convo;
 		currentGUI = null;
 		convo.getContext().setSessionData("userholder", this);
 	}
-	public UUID getOwner() {
+	public Conversation getConversation() {
+		return currentConvo;
+	}
+	public void abandonConvo() {
+		if (!isConversing()) return;
+		currentConvo.abandon();
+	}
+	public UUID getOwnerUUID() {
 		return owner;
+	}
+	public Player getOwner() {
+		return Bukkit.getPlayer(getOwnerUUID());
 	}
 	public Set<UUID> getHelpers() {
 		return helpers;

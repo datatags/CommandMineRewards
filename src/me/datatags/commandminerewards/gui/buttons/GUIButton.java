@@ -8,6 +8,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.CommandMineRewards;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
@@ -29,7 +30,7 @@ public abstract class GUIButton {
 		addIdentityTag();
 	}
 	public ItemStack getIcon(Player player) {
-		resetBase();
+		resetBase(); // do we need to clear every time or is there a better way ?????
 		if (this.getClickPermission() != null && this.getClickPermission().test(player)) {
 			addClickableLore(player);
 		}
@@ -45,7 +46,7 @@ public abstract class GUIButton {
 		if (!is.getItemMeta().hasDisplayName()) return false;
 		return getBase().getItemMeta().getDisplayName().equals(is.getItemMeta().getDisplayName());
 	}
-	public abstract void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType);
+	public abstract void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType);
 	protected void addIdentityTag() {
 		base.getItemMeta().getPersistentDataContainer().set(KEY, PersistentDataType.STRING, this.getClass().getSimpleName());
 	}

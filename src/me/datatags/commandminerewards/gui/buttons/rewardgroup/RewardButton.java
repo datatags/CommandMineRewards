@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.commands.RewardCommandEntry;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
@@ -67,17 +68,18 @@ public class RewardButton extends GUIButton {
 	}
 
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (clickType.isRightClick() && CMRPermission.COMMAND_MODIFY.test(player)) {
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+		Player owner = holder.getOwner();
+		if (clickType.isRightClick() && CMRPermission.COMMAND_MODIFY.test(owner)) {
 			if (hasCommands()) return;
 			reward.delete();
-			CMRGUI.refreshAll();
+			holder.updateGUI();
 			return;
-		} else if (clickType == ClickType.MIDDLE && CMRPermission.COMMAND_EXECUTE.test(player)) {
-			reward.execute(player, true);
+		} else if (clickType == ClickType.MIDDLE && CMRPermission.COMMAND_EXECUTE.test(owner)) {
+			reward.execute(owner, true);
 			return;
 		}
-		CMRGUI.delayOpenGUI(player, new RewardGUI(reward.getParent(), reward));
+		parent.getGUIManager().delayOpenGUI(holder, new RewardGUI(reward.getParent(), reward));
 	}
 	
 	public Reward getReward() {

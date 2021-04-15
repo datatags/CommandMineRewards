@@ -33,5 +33,10 @@ public class InsertCommandPrompt extends CMRPrompt {
 		reward.insertCommand(input, index);
 		return END_OF_CONVERSATION;
 	}
-
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		if (!this.reward.getParent().getName().equals(group)) return false;
+		return this.reward.getName().equals(reward);
+	}
+	
 }

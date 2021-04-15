@@ -10,6 +10,7 @@ import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.BlockNotInListException;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
@@ -49,7 +50,7 @@ public class BlockButton extends GUIButton {
 	}
 
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
 		try {
 			group.removeBlock(block.toString(), data);
 		} catch (BlockNotInListException e) {
@@ -57,7 +58,7 @@ public class BlockButton extends GUIButton {
 			e.printStackTrace(); // ???
 			return;
 		}
-		CMRGUI.refreshAll();
+		holder.updateGUI();
 	}
 	
 }

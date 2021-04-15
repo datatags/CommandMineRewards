@@ -52,4 +52,10 @@ public class RewardLimitPrompt extends CMRPrompt {
 			return new RewardGroupGUI(group);
 		}
 	}
+
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		if (this.group == null || reward != null) return false;
+		return this.group.getName().equals(group);
+	}
 }

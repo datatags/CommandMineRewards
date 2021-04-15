@@ -29,4 +29,8 @@ public class MultiplierPrompt extends CMRPrompt {
 	public CMRGUI getNextGUI(ConversationContext cc) {
 		return new MainGUI();
 	}
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		return false;
+	}
 }

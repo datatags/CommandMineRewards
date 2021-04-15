@@ -3,6 +3,8 @@ package me.datatags.commandminerewards.gui.guis;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+
 import me.datatags.commandminerewards.CMRBlockManager;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
@@ -35,7 +37,7 @@ public class RewardGUI extends PaginatedGUI {
 	
 	@Override
 	public String getTitle() {
-		return "Reward - " + reward.getName();
+		return "Reward - " + ChatColor.LIGHT_PURPLE + reward.getName();
 	}
 
 	@Override
@@ -49,6 +51,13 @@ public class RewardGUI extends PaginatedGUI {
 	@Override
 	public void preparePage(int pageN) {
 		generatePage(pageN, 1, 36, commands);
+	}
+
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		if (!this.group.getName().equals(group)) return false;
+		if (reward == null) return true;
+		return this.reward.getName().equals(reward);
 	}
 
 }

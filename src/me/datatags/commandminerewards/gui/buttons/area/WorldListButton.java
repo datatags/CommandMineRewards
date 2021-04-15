@@ -5,13 +5,13 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.WorldListGUI;
@@ -45,12 +45,12 @@ public class WorldListButton extends AreaListButton {
 	}
 
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (handleRightClick(clickType)) {
-			CMRGUI.refreshAll();
-			return; // if true, the click was handled sufficiently
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+		if (handleRightClick(clickType)) { // if true, the click was handled sufficiently
+			holder.updateGUI();
+			return;
 		}
-		CMRGUI.delayOpenGUI(player, new WorldListGUI(group));
+		parent.getGUIManager().delayOpenGUI(holder, new WorldListGUI(group));
 	}
 
 	@Override

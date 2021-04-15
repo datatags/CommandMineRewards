@@ -151,14 +151,14 @@ public class CMRBlockManager {
 		}
 		reloadHandlers();
 		for (RGCacheListener listener : listeners) {
-			listener.reloadCache();
+			listener.onCacheReload();
 		}
 	}
 	public void reloadGroup(String name) {
 		unloadGroup(name, true);
 		RewardGroup group = loadGroup(name, true);
 		for (RGCacheListener listener : listeners) {
-			listener.reloadGroup(group);
+			listener.onGroupReload(group);
 		}
 	}
 	public RewardGroup loadGroup(String name) {
@@ -169,7 +169,7 @@ public class CMRBlockManager {
 		rewardGroupCache.add(group);
 		if (!reload) {
 			for (RGCacheListener listener : listeners) {
-				listener.loadGroup(group);
+				listener.onGroupLoad(group);
 			}
 		}
 		return group;
@@ -192,27 +192,27 @@ public class CMRBlockManager {
 		}
 		if (!reload) {
 			for (RGCacheListener listener : listeners) {
-				listener.unloadSection(name);
+				listener.onGroupUnload(name);
 			}
 		}
 	}
 	public void reloadReward(RewardGroup parent, Reward reward) {
 		CMRLogger.debug("Reloading reward " + reward.getName());
 		for (RGCacheListener listener : listeners) {
-			listener.reloadReward(parent, reward);
+			listener.onRewardReload(parent, reward);
 		}
 	}
 	public Reward loadReward(RewardGroup parent, Reward reward) {
 		CMRLogger.debug("Loading reward " + reward.getName());
 		for (RGCacheListener listener : listeners) {
-			listener.loadReward(parent, reward);
+			listener.onRewardLoad(parent, reward);
 		}
 		return reward;
 	}
 	public void unloadReward(RewardGroup parent, String name) {
 		CMRLogger.debug("Unloading reward " + name);
 		for (RGCacheListener listener : listeners) {
-			listener.unloadReward(parent, name);
+			listener.onRewardUnload(parent, name);
 		}
 	}
 	public Set<RewardGroup> getGroupCache() {

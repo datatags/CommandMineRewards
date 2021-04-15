@@ -58,5 +58,10 @@ public class RewardNamePrompt extends CMRPrompt {
 			return new RewardGUI(group, (Reward) cc.getSessionData("reward"));
 		}
 	}
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		if (this.group == null || reward != null) return false;
+		return this.group.getName().equals(group);
+	}
 
 }

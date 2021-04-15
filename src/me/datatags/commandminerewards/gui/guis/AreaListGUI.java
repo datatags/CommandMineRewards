@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.buttons.area.AreaButton;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
@@ -69,13 +71,19 @@ public abstract class AreaListGUI extends PaginatedGUI {
 	}
 	@Override
 	public String getTitle() {
-		String title = "Allowed " + getAreaType() + " - ";
+		String title = "Allowed " + getAreaType() + "s - ";
 		if (group == null) {
-			title += "Global";
+			title += ChatColor.GOLD + "Global";
 		} else {
-			title += "Group: " + group.getName();
+			title += ChatColor.BLUE + group.getName();
 		}
 		return title;
 	}
 	public abstract String getAreaType();
+	
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		if (this.group == null || reward != null) return false;
+		return this.group.getName().equals(group);
+	}
 }

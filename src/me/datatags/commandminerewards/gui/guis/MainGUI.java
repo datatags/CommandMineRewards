@@ -63,5 +63,9 @@ public class MainGUI extends PaginatedGUI implements RGCacheListener {
 	public CMRGUI getPreviousGUI() {
 		return null;
 	}
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		return false;
+	}
 	
 }

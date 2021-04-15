@@ -5,12 +5,12 @@ import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.BlockListGUI;
@@ -21,6 +21,7 @@ public class BlockListButton extends GUIButton {
 	public BlockListButton(RewardGroup group) {
 		this.group = group;
 	}
+	
 	@Override
 	public CMRPermission getPermission() {
 		return CMRPermission.BLOCK;
@@ -49,10 +50,10 @@ public class BlockListButton extends GUIButton {
 		}
 		return ib;
 	}
-
+	
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRGUI.delayOpenGUI(player, new BlockListGUI(group));
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+		parent.getGUIManager().delayOpenGUI(holder, new BlockListGUI(group));
 	}
 
 }

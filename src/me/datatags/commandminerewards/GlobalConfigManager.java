@@ -19,13 +19,13 @@ public class GlobalConfigManager {
 	private static GlobalConfigManager instance = null;
 	private File rewardsFile;
 	private YamlConfiguration rewardsConfig;
-	private CommandMineRewards cmr;
-	private GlobalConfigManager(CommandMineRewards cmr) {
-		this.cmr = cmr;
+	private CommandMineRewards cmr = CommandMineRewards.getInstance();
+	private GlobalConfigManager() {
+		load();
 	}
 	public static GlobalConfigManager getInstance() {
 		if (instance == null) {
-			instance = new GlobalConfigManager(CommandMineRewards.getInstance());
+			instance = new GlobalConfigManager();
 		}
 		return instance;
 	}
@@ -206,7 +206,7 @@ public class GlobalConfigManager {
 		getRewardsConfig().set("multiplier", newMultiplier);
 		saveRewardsConfig();
 	}
-	public boolean getDebug() {
+	public boolean isDebug() {
 		return getConfig().getInt("verbosity", 1) > 1;
 	}
 	public int getVerbosity() {

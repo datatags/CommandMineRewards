@@ -11,6 +11,7 @@ import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.Exceptions.CommandNotInListException;
 import me.datatags.commandminerewards.commands.RewardCommandEntry;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.conversations.CMRConversationFactory;
@@ -39,7 +40,6 @@ public class CommandButton extends GUIButton {
 		ItemBuilder ib;
 		if (entry == null) {
 			ib = new ItemBuilder(Material.WRITABLE_BOOK).name(ChatColor.RED + "No commands");
-			ib.lore(ChatColor.GREEN + "Click to add");
 		} else {
 			ib = new ItemBuilder(Material.PAPER).name(entry.getCommand());
 		}
@@ -48,13 +48,17 @@ public class CommandButton extends GUIButton {
 	
 	@Override
 	public void addClickableLore(Player player) {
-		base.lore(ChatColor.GREEN + "Click to insert after");
-		base.lore(ChatColor.GREEN + "Shift-click to insert before");
-		base.lore(ChatColor.RED + "Right-click to delete");
+		if (entry == null) {
+			base.lore(ChatColor.GREEN + "Click to add");
+		} else {
+			base.lore(ChatColor.GREEN + "Click to insert after");
+			base.lore(ChatColor.GREEN + "Shift-click to insert before");
+			base.lore(ChatColor.RED + "Right-click to delete");
+		}
 	}
 
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
 			int index;
 			if (entry == null) {
@@ -69,7 +73,7 @@ public class CommandButton extends GUIButton {
 					index++;
 				}
 			}
-			CMRConversationFactory.startConversation(player, new InsertCommandPrompt(reward, index));
+			CMRConversationFactory.startConversation(holder, new InsertCommandPrompt(reward, index));
 		} else if (clickType.isRightClick()) {
 			try {
 				reward.removeCommand(entry.getCommand());
@@ -77,7 +81,7 @@ public class CommandButton extends GUIButton {
 				e.printStackTrace();
 				return;
 			}
-			CMRGUI.refreshAll();
+			holder.updateGUI();
 		}
 	}
 	

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.conversations.CMRConversationFactory;
@@ -22,6 +23,7 @@ public class ChanceButton extends GUIButton {
 		this.group = group;
 		this.reward = reward;
 	}
+	
 	@Override
 	public CMRPermission getPermission() {
 		return CMRPermission.REWARD;
@@ -46,10 +48,10 @@ public class ChanceButton extends GUIButton {
 	public void addClickableLore(Player player) {
 		base.lore(ChatColor.YELLOW + "Click to modify");
 	}
-
+	
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRConversationFactory.startConversation(player, new RewardChancePrompt(group, reward));
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+		CMRConversationFactory.startConversation(holder, new RewardChancePrompt(group, reward));
 	}
 
 }

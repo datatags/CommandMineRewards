@@ -41,4 +41,5 @@ public abstract class CMRPrompt extends ValidatingPrompt {
 		return true;
 	}
 	public abstract CMRGUI getNextGUI(ConversationContext cc);
+	public abstract boolean isRewardInUse(String group, String reward);
 }

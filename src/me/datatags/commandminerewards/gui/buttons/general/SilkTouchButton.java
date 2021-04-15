@@ -11,6 +11,7 @@ import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.SilkTouchPolicy;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
@@ -71,7 +72,7 @@ public class SilkTouchButton extends GUIButton {
 	}
 
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
 		SilkTouchPolicy next;
 		if (clickType.isLeftClick()) {
 			next = nextPolicy(getLocalPolicy());
@@ -81,7 +82,7 @@ public class SilkTouchButton extends GUIButton {
 			return;
 		}
 		setLocalPolicy(next);
-		CMRGUI.refreshAll();
+		holder.updateGUI();
 	}
 	
 	private SilkTouchPolicy nextPolicy(SilkTouchPolicy stp) {

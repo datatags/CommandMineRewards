@@ -3,9 +3,6 @@ package me.datatags.commandminerewards.gui.guis;
 import java.util.List;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
@@ -20,7 +17,7 @@ public abstract class PaginatedGUI extends CMRGUI {
 		openFor(player, 1);
 	}
 	public void openFor(Player player, int page) {
-		openFor(getNewHolder(player), page);
+		openFor(gm.getNewHolder(player, this), page);
 	}
 	@Override
 	public void openFor(GUIUserHolder holder) {
@@ -44,7 +41,7 @@ public abstract class PaginatedGUI extends CMRGUI {
 						|| (page == getMaxPages() && button instanceof NextPageButton)) {
 					gui[y][x] = new FillerButton();
 				} else {
-					((PageButton)button).setPageTag(page);
+					((PageButton)button).setPage(page);
 				}
 			}
 		}
@@ -61,16 +58,5 @@ public abstract class PaginatedGUI extends CMRGUI {
 		for (int i = (pageN - 1) * itemsPerPage; i < pageN * itemsPerPage && i < buttons.size(); i++) { // don't go over page limit or group cache size
 			gui[((i % itemsPerPage) / 9) + startRow][i % 9] = buttons.get(i);
 		}
-	}
-	@Override
-	public CMRGUI refreshSelf(Player player) {
-		PaginatedGUI newSelf = (PaginatedGUI)PaginatedGUI.this.clone();
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				newSelf.openFor(player, recentPage);
-			}
-		}.runTaskLater(CommandMineRewards.getInstance(), 1);
-		return newSelf;
 	}
 }

@@ -2,7 +2,6 @@ package me.datatags.commandminerewards.gui.buttons.area;
 
 import java.util.List;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,6 +11,7 @@ import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.AreaAlreadyInListException;
 import me.datatags.commandminerewards.Exceptions.AreaNotInListException;
 import me.datatags.commandminerewards.Exceptions.InvalidAreaException;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
@@ -24,15 +24,15 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 		this.group = group;
 		this.gcm = GlobalConfigManager.getInstance();
 	}
-	
+
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (isInList()) {
 			removeArea();
 		} else {
 			addArea();
 		}
-		CMRGUI.refreshAll();
+		holder.updateGUI();
 	}
 	
 	protected abstract List<String> getAreas();

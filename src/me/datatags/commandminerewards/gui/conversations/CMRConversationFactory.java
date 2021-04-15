@@ -10,11 +10,12 @@ import org.bukkit.entity.Player;
 
 import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.GlobalConfigManager;
+import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.GUIUserHolder;
-import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class CMRConversationFactory {
 	private static ConversationFactory cf;
+	private static GUIManager gm = GUIManager.getInstance();
 	static {
 		cf = new ConversationFactory(CommandMineRewards.getInstance())
 			.thatExcludesNonPlayersWithMessage(ChatColor.RED + "Only players can use the GUI")
@@ -24,16 +25,16 @@ public class CMRConversationFactory {
 			.addConversationAbandonedListener(new AbandonListener());
 	}
 	public static void startConversation(Player player, CMRPrompt prompt) {
-		startConversation(CMRGUI.getHolder(player), prompt);
+		startConversation(gm.getHolder(player), prompt);
 	}
 	public static void startConversation(GUIUserHolder holder, CMRPrompt prompt) {
-		Player owner = Bukkit.getPlayer(holder.getOwner());
+		Player owner = holder.getOwner();
 		Conversation convo = cf.withFirstPrompt(prompt).buildConversation(owner);
 		holder.setConversation(convo);
-		CMRGUI.delayCloseGUI(owner);
+		gm.delayCloseGUI(owner);
 		for (UUID helper : holder.getHelpers()) {
 			Player player = Bukkit.getPlayer(helper);
-			CMRGUI.delayCloseGUI(player);
+			gm.delayCloseGUI(player);
 			player.sendMessage(ChatColor.YELLOW + "Please wait, " + ChatColor.GOLD + owner.getName() + ChatColor.YELLOW + " is typing a value for this prompt:");
 			player.sendMessage(prompt.getPromptText(convo.getContext()));
 		}

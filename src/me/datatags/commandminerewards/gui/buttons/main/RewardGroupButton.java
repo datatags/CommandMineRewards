@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
+import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
@@ -40,7 +41,7 @@ public class RewardGroupButton extends GUIButton {
 				}
 			}
 		}
-		ItemBuilder ib = new ItemBuilder(mat).name(ChatColor.YELLOW + group.getName());
+		ItemBuilder ib = new ItemBuilder(mat).name(ChatColor.BLUE + group.getName());
 		ib.lore(ChatColor.GREEN + "Rewards:");
 		if (group.getChildren().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
@@ -79,13 +80,14 @@ public class RewardGroupButton extends GUIButton {
 			base.lore(ChatColor.YELLOW + "this group before deleting it.");
 		}
 	}
+	
 	@Override
-	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
+	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
-			CMRGUI.delayOpenGUI(player, new RewardGroupGUI(group));
-		} else if (CMRPermission.REWARD_MODIFY.test(player) && clickType.isRightClick() && group.getChildrenNames().size() == 0) {
+			parent.getGUIManager().delayOpenGUI(holder, new RewardGroupGUI(group));
+		} else if (CMRPermission.REWARD_MODIFY.test(holder.getOwner()) && clickType.isRightClick() && group.getChildrenNames().size() == 0) {
 			group.delete();
-			CMRGUI.refreshAll();
+			holder.updateGUI();
 		}
 	}
 	public RewardGroup getRewardGroup() {

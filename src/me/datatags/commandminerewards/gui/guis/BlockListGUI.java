@@ -48,7 +48,7 @@ public class BlockListGUI extends PaginatedGUI {
 
 	@Override
 	public String getTitle() {
-		return ChatColor.GOLD + "Blocks list for group " + group.getName();
+		return ChatColor.GOLD + "Blocks list - " + ChatColor.BLUE + group.getName();
 	}
 	
 	@Override
@@ -80,7 +80,13 @@ public class BlockListGUI extends PaginatedGUI {
 		} catch (BlockAlreadyInListException ex) {
 			return true; // well, we tried
 		}
-		refreshAll();
+		gm.getHolder(player).updateGUI();
 		return true;
+	}
+
+	@Override
+	public boolean isRewardInUse(String group, String reward) {
+		if (reward != null) return false;
+		return this.group.getName().equals(group);
 	}
 }

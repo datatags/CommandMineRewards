@@ -1,7 +1,5 @@
 package me.datatags.commandminerewards.gui.guis;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -10,41 +8,24 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import me.datatags.commandminerewards.CMRLogger;
-import me.datatags.commandminerewards.CommandMineRewards;
 import me.datatags.commandminerewards.gui.CMRInventoryHolder;
+import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.buttons.general.BackButton;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
 
 public abstract class CMRGUI implements Cloneable {
-	protected static Map<UUID,GUIUserHolder> users = new HashMap<>();
+	protected static GUIManager gm = GUIManager.getInstance();
 	protected GUIButton[][] gui = new GUIButton[6][9];
-	
-	public static void removeUser(Player player) {
-		GUIUserHolder ownerHolder = users.remove(player.getUniqueId());
-		if (ownerHolder != null) {
-			ownerHolder.clear();
-			return;
-		}
-		for (GUIUserHolder holder : users.values()) {
-			if (holder.containsUser(player)) {
-				holder.removeHelper(player);
-				return;
-			}
-		}
-	}
-	
 	public void openFor(Player player) {
-		openFor(getNewHolder(player));
+		openFor(gm.getNewHolder(player, this));
 	}
 	
 	public void openFor(GUIUserHolder holder) {
 		holder.changeGUI(this);
-		Player owner = Bukkit.getPlayer(holder.getOwner());
+		Player owner = holder.getOwner();
 		Inventory inv = generateInventory(owner, gui);
 		owner.openInventory(inv);
 		for (UUID helper : holder.getHelpers()) {
@@ -52,29 +33,6 @@ public abstract class CMRGUI implements Cloneable {
 			CMRLogger.debug("Opening GUI for helper " + player.getName());
 			player.openInventory(inv);
 		}
-	}
-	
-	protected GUIUserHolder getNewHolder(Player player) {
-		GUIUserHolder playerHolder = getHolder(player);
-		boolean owner = playerHolder != null && playerHolder.getOwner().equals(player.getUniqueId());
-		if (playerHolder != null && !owner) {
-			playerHolder.removeHelper(player);
-			playerHolder = null;
-		}
-		if (playerHolder == null) {
-			playerHolder = new GUIUserHolder(player, this);
-			users.put(player.getUniqueId(), playerHolder);
-		}
-		return playerHolder;
-	}
-	
-	public static GUIUserHolder getHolder(Player player) {
-		for (GUIUserHolder holder : users.values()) {
-			if (holder.containsUser(player)) {
-				return holder;
-			}
-		}
-		return null;
 	}
 	
 	protected Inventory generateInventory(Player player, GUIButton[][] toOpen) {
@@ -104,8 +62,10 @@ public abstract class CMRGUI implements Cloneable {
 		return false;
 	}
 	public abstract CMRGUI getPreviousGUI();
+
+	public abstract boolean isRewardInUse(String group, String reward); // if reward is null, deleting group, otherwise, deleting reward
 	public void onClick(InventoryClickEvent e) {
-		findClicked(e, gui, getHolder((Player)e.getWhoClicked()));
+		findClicked(e, gui, gm.getHolder((Player)e.getWhoClicked()));
 	}
 	public void findClicked(InventoryClickEvent e, GUIButton[][] active, GUIUserHolder holder) {
 		if (e.getClickedInventory() == null || e.getClickedInventory().equals(e.getView().getBottomInventory())) return;
@@ -118,8 +78,8 @@ public abstract class CMRGUI implements Cloneable {
 				if (button == null) continue;
 				if (button.getClass().getSimpleName().equals(buttonClass) && button.isButton(item)) {
 					if (button.getClickPermission() != null && button.getClickPermission().test(e.getWhoClicked())) {
-						button.onClick(Bukkit.getPlayer(holder.getOwner()), item, this, e.getClick());
-						refreshAllExcept(holder);
+						button.onClick(holder, item, this, e.getClick());
+						gm.refreshAllExcept(holder);
 					}
 					return; // I don't think we need to tell more than one button it was clicked ever
 				}
@@ -129,35 +89,7 @@ public abstract class CMRGUI implements Cloneable {
 	public void addBackButton() {
 		gui[5][4] = new BackButton();
 	}
-	public static CMRGUI delayOpenGUI(Player player, CMRGUI gui) {
-		// you aren't supposed to open or close inventories while in the handler
-		// of an inventory click event, so use this method instead.
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				gui.openFor(player);
-			}
-		}.runTaskLater(CommandMineRewards.getInstance(), 1);
-		return gui; // convenience
-	}
-	public static void delayCloseGUI(Player player) {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				player.closeInventory();
-			}
-		}.runTaskLater(CommandMineRewards.getInstance(), 1);
-	}
-	public static void refreshAll() {
-		refreshAllExcept(null);
-	}
-	public static void refreshAllExcept(GUIUserHolder skip) {
-		for (GUIUserHolder holder : users.values()) {
-			if (holder.equals(skip)) continue;
-			holder.updateGUI();
-		}
-	}
-	public CMRGUI refreshSelf(Player player) {
-		return delayOpenGUI(player, this.clone());
+	public GUIManager getGUIManager() {
+		return gm;
 	}
 }

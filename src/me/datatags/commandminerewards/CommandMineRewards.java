@@ -1,5 +1,7 @@
 package me.datatags.commandminerewards;
 
+import java.util.concurrent.Callable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -8,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.datatags.commandminerewards.commands.CMRTabComplete;
 import me.datatags.commandminerewards.commands.CommandDispatcher;
 import me.datatags.commandminerewards.gui.GUIListener;
+import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.hook.McMMOHook;
 import me.datatags.commandminerewards.worldguard.WorldGuardManager;
 
@@ -26,10 +29,10 @@ public class CommandMineRewards extends JavaPlugin {
 		this.gcm = GlobalConfigManager.getInstance();
 		initVersion(); // this needs to be called before anything uses getMinecraftVersion()
 		this.wgm = new WorldGuardManager(); // this can probably actually run about anytime
-		gcm.load(); // this needs to run before RewardSections start loading
 		this.cbm = CMRBlockManager.getInstance(); // not a priority, just to get the sort timer ticking
+		boolean mcMMOPresent = getServer().getPluginManager().getPlugin("mcMMO") != null;
 		if (gcm.isMcMMOHookEnabled()) {
-			if (getServer().getPluginManager().getPlugin("mcMMO") != null) {
+			if (mcMMOPresent) {
 				mh = new McMMOHook();
 			} else {
 				CMRLogger.warning("mcMMO hooking is enabled in config.yml, but mcMMO was not found.");
@@ -39,7 +42,19 @@ public class CommandMineRewards extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new GUIListener(), this);
 		getCommand("cmr").setExecutor(CommandDispatcher.getInstance()); // initialize the commands
 		getCommand("cmr").setTabCompleter(new CMRTabComplete(this)); // this can run anytime really
-		new Metrics(this, 9691);
+		Metrics metrics = new Metrics(this, 9691);
+		metrics.addCustomChart(new Metrics.SimplePie("mcmmo", new Callable<String>() {
+			@Override
+			public String call() {
+				if (!mcMMOPresent) {
+					return "not present";
+				} else if (!gcm.isMcMMOHookEnabled()) {
+					return "present, hook disabled";
+				} else {
+					return "hook enabled";
+				}
+			}
+		}));
 		CMRLogger.info("CommandMineRewards is enabled!");
 		pluginReady = true;
 	}
@@ -54,7 +69,7 @@ public class CommandMineRewards extends JavaPlugin {
 	}
 	private void initVersion() {
 		String ver = getFullMinecraftVersion();
-		minecraftVersion = Integer.parseInt(ver.substring(2, ver.lastIndexOf('.'))); // group 0 is whole thing, group 1 is first group
+		minecraftVersion = Integer.parseInt(ver.substring(2, ver.lastIndexOf('.')));
 		CMRLogger.debug("Minecraft version: 1." + minecraftVersion);
 	}
 	public int getMinecraftVersion() {
@@ -71,6 +86,7 @@ public class CommandMineRewards extends JavaPlugin {
 	public void onDisable() {
 		CMRLogger.closeDebugLog();
 		getLogger().info("CommandMineRewards has been disabled!");
+		GUIManager.getInstance().closeAll();
 	}
 	@SuppressWarnings("deprecation") // because < 1.9 doesn't have main hand/offhand
 	public ItemStack getItemInHand(Player player) {

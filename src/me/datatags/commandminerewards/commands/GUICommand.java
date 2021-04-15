@@ -6,12 +6,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.datatags.commandminerewards.CMRPermission;
+import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.gui.GUIUserHolder;
-import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.MainGUI;
 
 public class GUICommand extends CMRCommand {
-
+	private GUIManager gm = GUIManager.getInstance();
 	@Override
 	public String getName() {
 		return "gui";
@@ -54,6 +54,11 @@ public class GUICommand extends CMRCommand {
 			return true;
 		}
 		Player player = (Player) sender;
+		GUIUserHolder holder = gm.getHolder(player);
+		if (player.isConversing() && holder == null) {
+			sender.sendMessage(ChatColor.RED + "Please exit any editors of other plugins before using the CMR GUI.");
+			return true;
+		}
 		if (args.length == 1) {
 			if (!CMRPermission.GUI_ASSIST.attempt(sender)) return true;
 			Player target = Bukkit.getPlayer(args[0]);
@@ -61,12 +66,13 @@ public class GUICommand extends CMRCommand {
 				sender.sendMessage(ChatColor.RED + "Invalid player: " + args[0]);
 				return true;
 			}
-			GUIUserHolder holder = CMRGUI.getHolder(target);
-			if (holder == null) {
+			gm.removeUser(player);
+			GUIUserHolder targetHolder = gm.getHolder(target);
+			if (targetHolder == null) {
 				sender.sendMessage(ChatColor.RED + target.getName() + " is not configuring CMR at the moment.");
 				return true;
 			}
-			holder.addHelper(player);
+			targetHolder.addHelper(player);
 			return true;
 		}
 		// TODO: open last GUI player was using instead of the main one every time?
