@@ -77,7 +77,7 @@ public class CommandButton extends GUIButton {
 				e.printStackTrace();
 				return;
 			}
-			parent.refreshAll();
+			CMRGUI.refreshAll();
 		}
 	}
 	

@@ -57,7 +57,7 @@ public class BlockButton extends GUIButton {
 			e.printStackTrace(); // ???
 			return;
 		}
-		parent.refreshAll();
+		CMRGUI.refreshAll();
 	}
 	
 }

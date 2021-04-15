@@ -16,6 +16,8 @@ import me.datatags.commandminerewards.state.LegacyStateManager;
 import me.datatags.commandminerewards.state.StateManager;
 
 public class CMRBlockManager {
+	private static final String HEADER = "----------START REWARD CALCS----------";
+	private static final String FOOTER = "-----------END REWARD CALCS-----------";
 	private List<CMRBlockHandler> handlers = new ArrayList<>();
 	private Set<RewardGroup> rewardGroupCache = new HashSet<RewardGroup>();
 	private static CMRBlockManager instance;
@@ -109,11 +111,16 @@ public class CMRBlockManager {
 	private void debug(String msg) {
 		CMRLogger.debug(msg);
 	}
-	public void executeAllSections(BlockState state, Player player) {
-		debug("----------START REWARD CALCS----------");
+	public void executeAllGroups(BlockState state, Player player) {
+		debug(HEADER);
 		debug("If nothing is listed here, no handlers were found.");
 		debug("Total available handlers: " + handlers.size());
 		int globalRewardLimit = gcm.getGlobalRewardLimit();
+		if (globalRewardLimit == 0) {
+			debug("Skipping all handlers, global reward limit is 0");
+			debug(FOOTER);
+			return;
+		}
 		int rewardsExecuted = 0;
 		for (CMRBlockHandler handler : handlers) {
 			if (handler.matches(state)) {
@@ -129,7 +136,7 @@ public class CMRBlockManager {
 				debug("Handler " + handler.toString() + " did not match block " + state.getType());
 			}
 		}
-		debug("-----------END REWARD CALCS-----------");
+		debug(FOOTER);
 	}
 	public CMRBlockHandler getHandler(CMRBlockState state) {
 		for (CMRBlockHandler handler : handlers) {
@@ -147,8 +154,8 @@ public class CMRBlockManager {
 			listener.reloadCache();
 		}
 	}
-	public void reloadSection(String name) {
-		unloadSection(name, true);
+	public void reloadGroup(String name) {
+		unloadGroup(name, true);
 		RewardGroup group = loadGroup(name, true);
 		for (RGCacheListener listener : listeners) {
 			listener.reloadGroup(group);
@@ -167,10 +174,10 @@ public class CMRBlockManager {
 		}
 		return group;
 	}
-	public void unloadSection(String name) {
-		unloadSection(name, false);
+	public void unloadGroup(String name) {
+		unloadGroup(name, false);
 	}
-	public void unloadSection(String name, boolean reload) {
+	public void unloadGroup(String name, boolean reload) {
 		CMRLogger.debug("Reloading group " + name);
 		RewardGroup reloading = null;
 		for (RewardGroup group : rewardGroupCache) {
@@ -210,6 +217,12 @@ public class CMRBlockManager {
 	}
 	public Set<RewardGroup> getGroupCache() {
 		return rewardGroupCache;
+	}
+	public RewardGroup getGroup(String name) {
+		for (RewardGroup group : rewardGroupCache) {
+			if (group.getName().equalsIgnoreCase(name)) return group;
+		}
+		return null;
 	}
 	public void registerListener(RGCacheListener listener) {
 		listeners.add(listener);

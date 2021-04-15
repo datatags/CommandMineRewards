@@ -71,7 +71,7 @@ public class RewardButton extends GUIButton {
 		if (clickType.isRightClick() && CMRPermission.COMMAND_MODIFY.test(player)) {
 			if (hasCommands()) return;
 			reward.delete();
-			parent.refreshSelf(player);
+			CMRGUI.refreshAll();
 			return;
 		} else if (clickType == ClickType.MIDDLE && CMRPermission.COMMAND_EXECUTE.test(player)) {
 			reward.execute(player, true);

@@ -1,22 +1,16 @@
 package me.datatags.commandminerewards.gui;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import me.datatags.commandminerewards.CommandMineRewards;
+import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class GUIListener implements Listener {
-	private CommandMineRewards cmr;
-	public GUIListener(CommandMineRewards cmr) {
-		this.cmr = cmr;
-	}
 	@EventHandler
 	public void onClick(InventoryClickEvent e) {
 		if (!(e.getInventory().getHolder() instanceof CMRInventoryHolder)) return;
@@ -27,16 +21,18 @@ public class GUIListener implements Listener {
 	@EventHandler
 	public void onClose(InventoryCloseEvent e) {
 		if (!(e.getInventory().getHolder() instanceof CMRInventoryHolder)) return;
+		CMRInventoryHolder invHolder = (CMRInventoryHolder) e.getInventory().getHolder();
 		Player player = (Player)e.getPlayer(); // why doesn't e.getPlayer return a player directly :?
 		GUIUserHolder holder = CMRGUI.getHolder(player);
-		if (Bukkit.getPlayer(holder.getOwner()).isConversing()) return; // TODO: check if they're actually conversing with CMR somehow?
-		new BukkitRunnable() { // we can't check the post-close inventory in the event handler, so wait a tick and then check
-			@Override
-			public void run() {
-				if (player.getOpenInventory().getTopInventory().getHolder() instanceof CMRInventoryHolder) return;
-				CMRGUI.removeUser(player);
-			}			
-		}.runTaskLater(cmr, 1);
+		if (holder == null) return; // can happen if a player disconnects while the GUI is open
+		if (holder.isConversing()) return; // we've moved to a conversation, ignore it
+		if (holder.getGUI() == invHolder.getGUI()) { // should all be pointing to the same thing, so == should work
+			// if the holder hasn't been updated by the time the event's been fired, it's been closed by the user
+			CMRGUI.removeUser(player);
+			CMRLogger.debug("Removing " + e.getPlayer().getName() + " from users");
+		} else {
+			CMRLogger.debug("Inventories for " + e.getPlayer().getName() + " did not match, must be update");
+		}
 	}
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {

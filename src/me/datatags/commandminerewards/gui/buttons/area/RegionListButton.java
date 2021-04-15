@@ -55,7 +55,7 @@ public class RegionListButton extends AreaListButton {
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (handleRightClick(clickType)) {
-			parent.refreshAll();
+			CMRGUI.refreshAll();
 			return;
 		}
 		if (wgm.getAllRegions().size() == 0) return;

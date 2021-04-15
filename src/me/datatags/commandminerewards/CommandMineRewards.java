@@ -36,7 +36,7 @@ public class CommandMineRewards extends JavaPlugin {
 			}
 		}
 		getServer().getPluginManager().registerEvents(new EventListener(mh), this); // initialize the block break listener
-		getServer().getPluginManager().registerEvents(new GUIListener(this), this);
+		getServer().getPluginManager().registerEvents(new GUIListener(), this);
 		getCommand("cmr").setExecutor(CommandDispatcher.getInstance()); // initialize the commands
 		getCommand("cmr").setTabCompleter(new CMRTabComplete(this)); // this can run anytime really
 		new Metrics(this, 9691);

@@ -2,7 +2,6 @@ package me.datatags.commandminerewards.gui.guis;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -120,6 +119,7 @@ public abstract class CMRGUI implements Cloneable {
 				if (button.getClass().getSimpleName().equals(buttonClass) && button.isButton(item)) {
 					if (button.getClickPermission() != null && button.getClickPermission().test(e.getWhoClicked())) {
 						button.onClick(Bukkit.getPlayer(holder.getOwner()), item, this, e.getClick());
+						refreshAllExcept(holder);
 					}
 					return; // I don't think we need to tell more than one button it was clicked ever
 				}
@@ -148,9 +148,13 @@ public abstract class CMRGUI implements Cloneable {
 			}
 		}.runTaskLater(CommandMineRewards.getInstance(), 1);
 	}
-	public void refreshAll() {
-		for (Entry<UUID,GUIUserHolder> entry : users.entrySet()) {
-			entry.getValue().updateGUI();
+	public static void refreshAll() {
+		refreshAllExcept(null);
+	}
+	public static void refreshAllExcept(GUIUserHolder skip) {
+		for (GUIUserHolder holder : users.values()) {
+			if (holder.equals(skip)) continue;
+			holder.updateGUI();
 		}
 	}
 	public CMRGUI refreshSelf(Player player) {

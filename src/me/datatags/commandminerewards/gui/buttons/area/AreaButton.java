@@ -32,7 +32,7 @@ public abstract class AreaButton extends GUIButton implements Comparable<AreaBut
 		} else {
 			addArea();
 		}
-		parent.refreshAll();
+		CMRGUI.refreshAll();
 	}
 	
 	protected abstract List<String> getAreas();

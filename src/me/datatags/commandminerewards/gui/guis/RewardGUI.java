@@ -3,6 +3,7 @@ package me.datatags.commandminerewards.gui.guis;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.datatags.commandminerewards.CMRBlockManager;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.commands.RewardCommandEntry;
@@ -15,20 +16,20 @@ public class RewardGUI extends PaginatedGUI {
 	private Reward reward;
 	private List<CommandButton> commands = new ArrayList<>();
 	public RewardGUI(RewardGroup group, Reward reward) {
-		this.group = group;
-		this.reward = reward;
-		gui[0][3] = new ChanceButton(group, reward);
-		gui[0][5] = new SilkTouchButton(group, reward);
-		for (RewardCommandEntry entry : reward.getCommands()) {
-			commands.add(new CommandButton(reward, entry));
+		this.group = CMRBlockManager.getInstance().getGroup(group.getName());
+		this.reward = this.group.getChild(reward.getName());
+		gui[0][3] = new ChanceButton(this.group, this.reward);
+		gui[0][5] = new SilkTouchButton(this.group, this.reward);
+		for (RewardCommandEntry entry : this.reward.getCommands()) {
+			commands.add(new CommandButton(this.reward, entry));
 		}
 		if (commands.size() == 0) {
-			commands.add(new CommandButton(reward, null));
+			commands.add(new CommandButton(this.reward, null));
 		}
 	}
 	
 	@Override
-	public RewardGUI clone() {
+	public CMRGUI clone() {
 		return new RewardGUI(group, reward);
 	}
 	

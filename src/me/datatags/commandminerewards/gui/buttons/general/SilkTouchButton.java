@@ -81,7 +81,7 @@ public class SilkTouchButton extends GUIButton {
 			return;
 		}
 		setLocalPolicy(next);
-		parent.refreshSelf(player);
+		CMRGUI.refreshAll();
 	}
 	
 	private SilkTouchPolicy nextPolicy(SilkTouchPolicy stp) {

@@ -57,7 +57,7 @@ public class RewardLimitButton extends GUIButton {
 			} else {
 				group.setRewardLimit(-1);
 			}
-			parent.refreshAll();
+			CMRGUI.refreshAll();
 			return;
 		}
 		CMRConversationFactory.startConversation(player, new RewardLimitPrompt(group));

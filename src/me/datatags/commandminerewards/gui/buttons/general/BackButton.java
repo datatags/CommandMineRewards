@@ -30,7 +30,9 @@ public class BackButton extends GUIButton {
 
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
-		parent.getPreviousGUI().openFor(player);
+		CMRGUI previous = parent.getPreviousGUI();
+		if (previous == null) return;
+		CMRGUI.delayOpenGUI(player, previous);
 	}
 
 }

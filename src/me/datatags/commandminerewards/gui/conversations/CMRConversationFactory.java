@@ -16,18 +16,19 @@ import me.datatags.commandminerewards.gui.guis.CMRGUI;
 public class CMRConversationFactory {
 	private static ConversationFactory cf;
 	static {
-		cf = new ConversationFactory(CommandMineRewards.getInstance());
-		cf.thatExcludesNonPlayersWithMessage(ChatColor.RED + "Only players can use the GUI");
-		cf.withEscapeSequence("cancel");
-		cf.withModality(false);
-		cf.withLocalEcho(false);
+		cf = new ConversationFactory(CommandMineRewards.getInstance())
+			.thatExcludesNonPlayersWithMessage(ChatColor.RED + "Only players can use the GUI")
+			.withEscapeSequence("cancel")
+			.withModality(false)
+			.withLocalEcho(false)
+			.addConversationAbandonedListener(new AbandonListener());
 	}
 	public static void startConversation(Player player, CMRPrompt prompt) {
 		startConversation(CMRGUI.getHolder(player), prompt);
 	}
 	public static void startConversation(GUIUserHolder holder, CMRPrompt prompt) {
 		Player owner = Bukkit.getPlayer(holder.getOwner());
-		Conversation convo = cf.addConversationAbandonedListener(new AbandonListener()).withFirstPrompt(prompt).buildConversation(owner);
+		Conversation convo = cf.withFirstPrompt(prompt).buildConversation(owner);
 		holder.setConversation(convo);
 		CMRGUI.delayCloseGUI(owner);
 		for (UUID helper : holder.getHelpers()) {

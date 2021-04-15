@@ -13,7 +13,6 @@ import org.bukkit.permissions.Permission;
 
 import me.datatags.commandminerewards.Exceptions.CommandNotInListException;
 import me.datatags.commandminerewards.Exceptions.InvalidRewardException;
-import me.datatags.commandminerewards.Exceptions.InvalidRewardGroupException;
 import me.datatags.commandminerewards.Exceptions.RewardAlreadyExistsException;
 import me.datatags.commandminerewards.commands.CommandDispatcher;
 import me.datatags.commandminerewards.commands.RewardCommandEntry;
@@ -32,11 +31,12 @@ public class Reward {
 		this(new RewardGroup(parent), reward, create);
 	}
 	public Reward(RewardGroup parent, String reward, boolean create) throws RewardAlreadyExistsException {
+		String badChar = isValidChars(reward);
+		if (badChar != null) {
+			throw new InvalidRewardException("You cannot use " + badChar + " in reward names!");
+		}
 		cmr = CommandMineRewards.getInstance();
 		cbm = CMRBlockManager.getInstance();
-		if (reward.contains(".")) {
-			throw new InvalidRewardGroupException("You cannot use periods in reward names!");
-		}
 		this.gcm = GlobalConfigManager.getInstance();
 		this.parentName = parent.getName();
 		boolean rewardExists = gcm.getRewardsConfig().isConfigurationSection(parent.getName() + ".rewards." + reward); 
@@ -51,12 +51,12 @@ public class Reward {
 		if (!rewardExists && create) {
 			this.group = gcm.getRewardsConfig().createSection(parent.getName() + ".rewards." + reward);
 			gcm.saveRewardsConfig();
-			getParent().loadChild(getName());
 		}
 		this.group = gcm.getRewardsConfig().getConfigurationSection(parent.getName() + ".rewards." + reward);
 		perm = new Permission("cmr.use." + parent.getName() + "." + reward);
 		buildCommands();
 		if (create) {
+			getParent().loadChild(this);
 			cbm.loadReward(parent, this);
 		}
 	}
@@ -65,6 +65,9 @@ public class Reward {
 	}
 	public Reward(RewardGroup parent, String reward) throws RewardAlreadyExistsException {
 		this(parent, reward, false);
+	}
+	public static String isValidChars(String chars) {
+		return RewardGroup.isValidChars(chars);
 	}
 	private void buildCommands() {
 		commands = new ArrayList<>();

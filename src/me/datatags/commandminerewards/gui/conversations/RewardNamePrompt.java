@@ -33,10 +33,6 @@ public class RewardNamePrompt extends CMRPrompt {
 	@Override
 	protected Prompt acceptValidatedInput(ConversationContext cc, String input) {
 		Player player = (Player)cc.getForWhom();
-		if (input.equalsIgnoreCase("cancel")) {
-			player.sendMessage("Aborting");
-			return Prompt.END_OF_CONVERSATION;
-		}
 		if (group == null) {
 			try {
 				cc.setSessionData("group", new RewardGroup(input, true));

@@ -51,7 +51,7 @@ public class EventListener implements Listener {
 			CMRLogger.debug("If this is not desired, set mcMMOHookEnabled to false in config.yml");
 			return;
 		}
-		cbm.executeAllSections(state, e.getPlayer());
+		cbm.executeAllGroups(state, e.getPlayer());
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void autopickupCompatListener(BlockBreakEvent e) {

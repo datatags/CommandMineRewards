@@ -32,10 +32,21 @@ public class RewardGroup {
 	// purpose of blocksCache is to not pass bad block values (i.e. invalid material, invalid growth state identifier, etc.)
 	private List<String> blocksCache = null;
 	private List<Reward> children = null;
+	public static String isValidChars(String name) {
+		String invalidChar = null;
+		if (name.contains(".")) {
+			invalidChar = "period";
+		}
+		if (name.contains(" ")) {
+			invalidChar = "space";
+		}
+		return invalidChar;
+	}
 	public RewardGroup(String path, boolean create) {
 		init();
-		if (path.contains(".")) {
-			throw new InvalidRewardGroupException("You cannot use periods in the reward group name!");
+		String badChar = isValidChars(path);
+		if (badChar != null) {
+			throw new InvalidRewardGroupException("You cannot use " + badChar + "s in reward group names!");
 		}
 		if (!gcm.getRewardsConfig().isConfigurationSection(path) && !create) { // if we couldn't find it easily and we're not supposed to create it,
 			if (gcm.searchIgnoreCase(path, "") == null) { // search for it
@@ -331,7 +342,7 @@ public class RewardGroup {
 		}
 		gcm.getRewardsConfig().set(this.getPath(), null);
 		gcm.saveRewardsConfig();
-		cbm.unloadSection(getName());
+		cbm.unloadGroup(getName());
 	}
 	public String getName() {
 		return this.group.getName();
@@ -383,6 +394,10 @@ public class RewardGroup {
 	}
 	public boolean isApplicable(BlockState state, Player player) {
 		// block type is checked by CMRBlockHandler
+		if (getRewardLimit() == 0) {
+			debug("Group " + this.getName() + " was skipped because it has a reward limit of 0");
+			return false;
+		}
 		if (!isWorldAllowed(player.getWorld().getName())) {
 			debug("Player was denied access to rewards in reward group because the reward group is not allowed in this world.");
 			return false;
@@ -430,7 +445,7 @@ public class RewardGroup {
 		this.group.set(path, value);
 		gcm.saveRewardsConfig();
 		if (!noReload) {
-			cbm.reloadSection(this.getName());
+			cbm.reloadGroup(this.getName());
 		}
 	}
 	public void unloadChild(String name) {
@@ -448,7 +463,10 @@ public class RewardGroup {
 		children.remove(reload);
 	}
 	public void loadChild(String name) {
-		children.add(new Reward(this, name, false));
+		loadChild(new Reward(this, name, false));
+	}
+	public void loadChild(Reward reward) {
+		children.add(reward);
 	}
 	public void reloadChild(String name) {
 		unloadChild(name);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 
+import me.datatags.commandminerewards.CMRBlockManager;
 import me.datatags.commandminerewards.Reward;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.buttons.GUIButton;
@@ -20,22 +21,22 @@ public class RewardGroupGUI extends PaginatedGUI {
 	private RewardGroup group;
 	private List<GUIButton> buttons = new ArrayList<>();
 	public RewardGroupGUI(RewardGroup group) {
-		this.group = group;
-		gui[0][0] = new BlockListButton(group);
-		gui[0][2] = new RewardLimitButton(group);
-		gui[0][4] = new SilkTouchButton(group, null);
-		gui[0][6] = new WorldListButton(group);
-		gui[0][8] = new RegionListButton(group);
+		this.group = CMRBlockManager.getInstance().getGroup(group.getName());
+		gui[0][0] = new BlockListButton(this.group);
+		gui[0][2] = new RewardLimitButton(this.group);
+		gui[0][4] = new SilkTouchButton(this.group, null);
+		gui[0][6] = new WorldListButton(this.group);
+		gui[0][8] = new RegionListButton(this.group);
 		addPageButtons();
-		buttons.add(new NewRewardButton(group));
-		for (Reward reward : group.getChildren()) {
+		buttons.add(new NewRewardButton(this.group));
+		for (Reward reward : this.group.getChildren()) {
 			buttons.add(new RewardButton(reward));
 		}
 		// we don't sort the buttons because the order can be important when using reward limits
 	}
 	
 	@Override
-	public RewardGroupGUI clone() {
+	public CMRGUI clone() {
 		return new RewardGroupGUI(group);
 	}
 	

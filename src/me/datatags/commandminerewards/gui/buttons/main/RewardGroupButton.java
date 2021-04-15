@@ -82,10 +82,10 @@ public class RewardGroupButton extends GUIButton {
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (clickType.isLeftClick()) {
-			new RewardGroupGUI(group).openFor(player);
+			CMRGUI.delayOpenGUI(player, new RewardGroupGUI(group));
 		} else if (CMRPermission.REWARD_MODIFY.test(player) && clickType.isRightClick() && group.getChildrenNames().size() == 0) {
 			group.delete();
-			parent.refreshAll();
+			CMRGUI.refreshAll();
 		}
 	}
 	public RewardGroup getRewardGroup() {

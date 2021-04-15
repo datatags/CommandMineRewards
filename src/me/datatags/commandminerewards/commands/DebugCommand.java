@@ -40,7 +40,7 @@ public class DebugCommand extends CMRCommand {
 
 	@Override
 	public CMRPermission getPermission() {
-		return CMRPermission.ADMIN;
+		return CMRPermission.DEBUG;
 	}
 	
 }

@@ -22,10 +22,6 @@ permissions:
             cmr.limit: true
             cmr.gui: true
             cmr.silktouchpolicy: true
-    cmr.admin:
-        description: Allows you to use any CMR commands
-        children:
-            cmr.*: true
     cmr.help:
         description: Allows you to see the help for commands you have permission to use.
         default: true

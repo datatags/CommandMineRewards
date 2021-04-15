@@ -30,12 +30,18 @@ public class GUIUserHolder {
 	public void removeHelper(Player helper) {
 		helpers.remove(helper.getUniqueId());
 	}
+	public CMRGUI getGUI() {
+		return currentGUI;
+	}
 	public void changeGUI(CMRGUI gui) {
 		currentGUI = gui;
 	}
 	public void updateGUI() {
 		if (currentGUI == null) return;
 		currentGUI = currentGUI.refreshSelf(Bukkit.getPlayer(owner));
+	}
+	public boolean isConversing() {
+		return currentGUI == null;
 	}
 	public void setConversation(Conversation convo) {
 		currentGUI = null;

@@ -55,7 +55,7 @@ public class GUICommand extends CMRCommand {
 		}
 		Player player = (Player) sender;
 		if (args.length == 1) {
-			if (!CMRPermission.ADMIN.attempt(sender)) return true;
+			if (!CMRPermission.GUI_ASSIST.attempt(sender)) return true;
 			Player target = Bukkit.getPlayer(args[0]);
 			if (target == null) {
 				sender.sendMessage(ChatColor.RED + "Invalid player: " + args[0]);

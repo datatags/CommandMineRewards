@@ -47,7 +47,7 @@ public class WorldListButton extends AreaListButton {
 	@Override
 	public void onClick(Player player, ItemStack is, CMRGUI parent, ClickType clickType) {
 		if (handleRightClick(clickType)) {
-			parent.refreshAll();
+			CMRGUI.refreshAll();
 			return; // if true, the click was handled sufficiently
 		}
 		CMRGUI.delayOpenGUI(player, new WorldListGUI(group));
