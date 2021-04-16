@@ -32,7 +32,7 @@ public class RegionListGUI extends AreaListGUI {
 		}
 	}
 	@Override
-	public RegionListGUI clone() {
+	public RegionListGUI getNewSelf() {
 		return new RegionListGUI(group);
 	}
 	private List<String> getRegions() {

@@ -52,7 +52,10 @@ public abstract class CMRGUI implements Cloneable {
 		}
 		return inv;
 	}
-	public abstract CMRGUI clone();
+	public CMRGUI clone() {
+		return getNewSelf();
+	}
+	public abstract CMRGUI getNewSelf();
 	protected Inventory createInventory() {
 		Inventory inv = Bukkit.createInventory(new CMRInventoryHolder(this), gui.length * 9, this.getTitle());
 		return inv;

@@ -21,7 +21,7 @@ public class MessageCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Simply sends the specified message. Color codes are supported. PLEASE SEE /cmr help special FOR USAGE INFORMATION.";
+		return "Simply sends the specified message. Color codes are supported.\n" + ChatColor.RED + "PLEASE SEE /cmr help special FOR USAGE INFORMATION.";
 	}
 	
 	@Override

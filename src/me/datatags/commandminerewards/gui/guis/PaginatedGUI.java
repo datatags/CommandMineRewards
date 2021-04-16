@@ -11,17 +11,17 @@ import me.datatags.commandminerewards.gui.buttons.paginated.PageButton;
 import me.datatags.commandminerewards.gui.buttons.paginated.PreviousPageButton;
 
 public abstract class PaginatedGUI extends CMRGUI {
-	protected int recentPage;
+	protected int recentPage = 1;
 	@Override
 	public void openFor(Player player) {
-		openFor(player, 1);
+		openFor(player, recentPage);
 	}
 	public void openFor(Player player, int page) {
 		openFor(gm.getNewHolder(player, this), page);
 	}
 	@Override
 	public void openFor(GUIUserHolder holder) {
-		openFor(holder, 1);
+		openFor(holder, recentPage);
 	}
 	public void openFor(GUIUserHolder holder, int page) {
 		if (page < 1) {
@@ -58,5 +58,18 @@ public abstract class PaginatedGUI extends CMRGUI {
 		for (int i = (pageN - 1) * itemsPerPage; i < pageN * itemsPerPage && i < buttons.size(); i++) { // don't go over page limit or group cache size
 			gui[((i % itemsPerPage) / 9) + startRow][i % 9] = buttons.get(i);
 		}
+	}
+	public int getRecentPage() {
+		return recentPage;
+	}
+	private PaginatedGUI setRecentPage(int recentPage) {
+		this.recentPage = recentPage;
+		return this; // convenience
+	}
+	@Override
+	public abstract PaginatedGUI getNewSelf();
+	@Override
+	public PaginatedGUI clone() {
+		return getNewSelf().setRecentPage(recentPage);
 	}
 }

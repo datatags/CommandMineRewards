@@ -13,16 +13,21 @@ import org.bukkit.inventory.ItemStack;
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.Exceptions.BlockAlreadyInListException;
+import me.datatags.commandminerewards.gui.buttons.GUIButton;
+import me.datatags.commandminerewards.gui.buttons.block.BlockButton;
+import me.datatags.commandminerewards.gui.buttons.block.BlockHelpButton;
 import me.datatags.commandminerewards.gui.buttons.general.FillerButton;
-import me.datatags.commandminerewards.gui.buttons.misc.BlockButton;
 
 public class BlockListGUI extends PaginatedGUI {
 	private RewardGroup group;
-	private List<BlockButton> buttons = new ArrayList<>();
+	private List<GUIButton> buttons = new ArrayList<>();
 	public BlockListGUI(RewardGroup group) {
 		this.group = group;
 		for (Entry<String,Boolean> entry : group.getBlocksWithData().entrySet()) {
 			buttons.add(new BlockButton(group, Material.matchMaterial(entry.getKey()), entry.getValue()));
+		}
+		if (buttons.size() == 0) {
+			buttons.add(new BlockHelpButton());
 		}
 		for (int i = 0; i < 9; i++) {
 			if (i % 4 == 0) continue;
@@ -32,7 +37,7 @@ public class BlockListGUI extends PaginatedGUI {
 	}
 	
 	@Override
-	public BlockListGUI clone() {
+	public BlockListGUI getNewSelf() {
 		return new BlockListGUI(group);
 	}
 	

@@ -1,4 +1,4 @@
-package me.datatags.commandminerewards.gui.buttons.misc;
+package me.datatags.commandminerewards.gui.buttons.block;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

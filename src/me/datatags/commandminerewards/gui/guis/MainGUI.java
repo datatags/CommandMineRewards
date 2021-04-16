@@ -43,7 +43,7 @@ public class MainGUI extends PaginatedGUI implements RGCacheListener {
 		groupButtons.add(0, new NewRewardButton(null));
 	}
 	@Override
-	public MainGUI clone() {
+	public MainGUI getNewSelf() {
 		return new MainGUI();
 	}
 	@Override

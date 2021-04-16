@@ -36,7 +36,7 @@ public class RewardGroupGUI extends PaginatedGUI {
 	}
 	
 	@Override
-	public CMRGUI clone() {
+	public RewardGroupGUI getNewSelf() {
 		return new RewardGroupGUI(group);
 	}
 	

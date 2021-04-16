@@ -19,7 +19,7 @@ public class TitleCommand extends SpecialCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Sends a title. You must enter both a title and a subtitle or put 'none' for whichever one you don't want to use.  Use underscores instead of spaces. This command is not supported in 1.8 or below and setting fadeIn/stay/fadeOut isn't supported in 1.10 or below. PLEASE SEE /cmr help special FOR USAGE INFORMATION.";
+		return "Sends a title. You must enter both a title and a subtitle or put 'none' for whichever one you don't want to use.  Use underscores instead of spaces. This command is not supported in 1.8 or below and setting fadeIn/stay/fadeOut isn't supported in 1.10 or below.\n" + ChatColor.RED + "PLEASE SEE /cmr help special FOR USAGE INFORMATION.";
 	}
 	
 	@Override

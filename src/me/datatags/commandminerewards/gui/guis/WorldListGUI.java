@@ -32,7 +32,7 @@ public class WorldListGUI extends AreaListGUI {
 	}
 	
 	@Override
-	public WorldListGUI clone() {
+	public WorldListGUI getNewSelf() {
 		return new WorldListGUI(group);
 	}
 

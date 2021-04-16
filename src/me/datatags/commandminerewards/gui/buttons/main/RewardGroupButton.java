@@ -46,8 +46,14 @@ public class RewardGroupButton extends GUIButton {
 		if (group.getChildren().size() == 0) {
 			ib.lore(ChatColor.RED + "- None");
 		} else {
+			int i = 0;
+			int children = group.getChildrenNames().size();
 			for (String child : group.getChildrenNames()) {
 				ib.lore(ChatColor.DARK_GREEN + "- " + child);
+				if (++i >= 10 && children > 10) {
+					ib.lore("...and " + (children - 10) + " more...");
+					break;
+				}
 			}
 		}
 		ib.lore("");
