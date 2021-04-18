@@ -67,3 +67,7 @@ permissions:
         description: The permission required to adjust reward limits.
     cmr.gui:
         description: The permission required to use the CMR GUI. Permission is still required for all actions in the interface.
+    cmr.gui.assist:
+        description: The permission required to join someone else's GUI session. The person joining will have all permissions of the original GUI opener while in their session.
+    cmr.debug:
+        description: The permission required to enable CMR debug mode.

@@ -42,7 +42,7 @@ public class RewardChancePrompt extends CMRPrompt {
 	@Override
 	public boolean isRewardInUse(String group, String reward) {
 		if (!this.group.getName().equals(group)) return false;
-		return this.reward.getName().equals(reward);
+		return reward == null || this.reward.getName().equals(reward);
 	}
 	
 }
