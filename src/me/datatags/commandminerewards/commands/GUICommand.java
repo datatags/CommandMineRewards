@@ -24,7 +24,7 @@ public class GUICommand extends CMRCommand {
 
 	@Override
 	public String getExtensiveDescription() {
-		return "Opens the CMR configuration GUI. Specify a player name to join their configuration session if you are an admin.";
+		return "Opens the CMR configuration GUI, or specify a player name to join their configuration session.";
 	}
 	
 	@Override
@@ -53,6 +53,10 @@ public class GUICommand extends CMRCommand {
 			sender.sendMessage(ChatColor.RED + "You can't use the GUI unless you're a player!");
 			return true;
 		}
+		if (getPlugin().isLegacyMinecraft()) {
+			sender.sendMessage(ChatColor.RED + "Sorry, the GUI is not available in legacy versions of minecraft. This may change as I get better stats on what minecraft versions are in use.");
+			return true;
+		}
 		Player player = (Player) sender;
 		GUIUserHolder holder = gm.getHolder(player);
 		if (player.isConversing() && holder == null) {
@@ -75,7 +79,6 @@ public class GUICommand extends CMRCommand {
 			targetHolder.addHelper(player);
 			return true;
 		}
-		// TODO: open last GUI player was using instead of the main one every time?
 		new MainGUI().openFor(player);
 		return true;
 	}

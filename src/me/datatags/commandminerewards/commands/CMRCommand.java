@@ -1,6 +1,5 @@
 package me.datatags.commandminerewards.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -35,7 +34,7 @@ public abstract class CMRCommand {
 	public abstract boolean onCommand(CommandSender sender, String[] args);
 	public abstract CMRPermission getPermission();
 	protected CommandMineRewards getPlugin() {
-		return (CommandMineRewards) Bukkit.getPluginManager().getPlugin("CommandMineRewards");
+		return CommandMineRewards.getInstance();
 	}
 	public void init() {
 		// Compound commands need this, direct subcommands don't really
