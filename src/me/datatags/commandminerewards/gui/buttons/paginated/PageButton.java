@@ -58,7 +58,7 @@ public abstract class PageButton extends GUIButton {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				((PaginatedGUI)pageParent.clone()).openFor(holder, page);
+				pageParent.clone().openFor(holder, page);
 			}
 		}.runTaskLater(CommandMineRewards.getInstance(), 1);
 	}

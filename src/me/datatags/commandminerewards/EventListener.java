@@ -17,6 +17,7 @@ public class EventListener implements Listener {
 	private GlobalConfigManager gcm;
 	private McMMOHook mh;
 	private Map<Integer,BlockState> autopickupCompatData = new HashMap<>();
+	private boolean airBlockWarned = false;
 	public EventListener(McMMOHook mh) {
 		this.gcm = GlobalConfigManager.getInstance();
 		this.cbm = CMRBlockManager.getInstance();
@@ -42,8 +43,11 @@ public class EventListener implements Listener {
 			return;
 		}
 		if (state.getType() == Material.AIR) {
-			CMRLogger.warning("Received air block in event handler??");
+			if (airBlockWarned) return;
+			CMRLogger.warning("CMR was told someone broke an air block?!");
 			CMRLogger.info("This can be caused by auto-pickup plugins, if this is the case, enable autopickupCompat in config.yml");
+			CMRLogger.info("This message will not show up again until the next server restart.");
+			airBlockWarned = true;
 			return;
 		}
 		if (mh != null && mh.getPlaceStore().isTrue(state)) {
