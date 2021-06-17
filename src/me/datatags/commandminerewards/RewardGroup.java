@@ -22,7 +22,7 @@ import me.datatags.commandminerewards.Exceptions.InvalidAreaException;
 import me.datatags.commandminerewards.Exceptions.InvalidMaterialException;
 import me.datatags.commandminerewards.Exceptions.InvalidRewardGroupException;
 import me.datatags.commandminerewards.Exceptions.RewardGroupAlreadyExistsException;
-import me.datatags.commandminerewards.worldguard.WorldGuardManager;
+import me.datatags.commandminerewards.hook.WorldGuardManager;
 
 public class RewardGroup {
 	private ConfigurationSection group;

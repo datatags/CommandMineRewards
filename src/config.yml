@@ -16,7 +16,8 @@ validateWorldsAndRegions: true
 # Please note that even with verbosity: 0 you will still receive command output in console.  ex. if you have in a reward /give %player% diamond, you will still receive the message "Gave 1 [Diamond] to %player%" every time it runs,
 # and there is no way to prevent this that I'm aware of. If you figure it out, please let me know.
 verbosity: 1
-# autopickupCompat: boolean (true or false): If true, will grab the broken block type at a lower priority than normal to allow compatibility with plugins such as auto pickup plugins. This setting should be disabled unless required as it may add a bit of overhead
+# autopickupCompat: boolean (true or false): If true, will grab the broken block type at a lower priority than normal to allow compatibility with plugins such as auto pickup plugins.
+# This setting should have basically no performance impact, so if you're getting a message about it, go ahead and turn it on.
 autopickupCompat: false
 # randomizeRewardOrder: boolean (true or false): If true, will randomize the order rewards are evaluated in, so it isn't weighted toward the first reward in the list. This usually only matters if you are using any sort of reward limit.
 randomizeRewardOrder: false

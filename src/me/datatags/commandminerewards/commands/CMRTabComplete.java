@@ -16,7 +16,7 @@ import me.datatags.commandminerewards.GlobalConfigManager;
 import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.SilkTouchPolicy;
 import me.datatags.commandminerewards.Exceptions.InvalidRewardGroupException;
-import me.datatags.commandminerewards.worldguard.WorldGuardManager;
+import me.datatags.commandminerewards.hook.WorldGuardManager;
 
 public class CMRTabComplete implements TabCompleter {
 	private CommandMineRewards cmr;

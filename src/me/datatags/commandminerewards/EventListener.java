@@ -1,7 +1,9 @@
 package me.datatags.commandminerewards;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -17,6 +19,7 @@ public class EventListener implements Listener {
 	private GlobalConfigManager gcm;
 	private McMMOHook mh;
 	private Map<Integer,BlockState> autopickupCompatData = new HashMap<>();
+	private Set<Integer> mcMMOPlayerBlockData = new HashSet<>();
 	private boolean airBlockWarned = false;
 	public EventListener(McMMOHook mh) {
 		this.gcm = GlobalConfigManager.getInstance();
@@ -25,6 +28,12 @@ public class EventListener implements Listener {
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockBreakEvent(BlockBreakEvent e) {
+		boolean mcMMOCheckPassed = true;
+		if (mcMMOPlayerBlockData.remove(e.hashCode())) {
+			CMRLogger.debug("Player was denied access to all sections because the block was player-placed according to mcMMO.");
+			CMRLogger.debug("If this is not desired, set mcMMOHookEnabled to false in config.yml");
+			mcMMOCheckPassed = false;
+		}
 		BlockState state;
 		if (gcm.isAutopickupCompat()) {
 			if (!autopickupCompatData.containsKey(e.hashCode())) {
@@ -36,6 +45,8 @@ public class EventListener implements Listener {
 		} else {
 			state = e.getBlock().getState();
 		}
+		// delay return so we also remove any applicable autopickup data
+		if (!mcMMOCheckPassed) return;
 		if (e.isCancelled()) {
 			CMRLogger.debug("Player was denied access to all sections because event was cancelled.");
 			CMRLogger.debug("This is often caused by block claim plugins, and is normal behavior of the plugin.");
@@ -50,17 +61,20 @@ public class EventListener implements Listener {
 			airBlockWarned = true;
 			return;
 		}
-		if (mh != null && mh.getPlaceStore().isTrue(state)) {
-			CMRLogger.debug("Player was denied access to all sections because the block was player-placed according to mcMMO.");
-			CMRLogger.debug("If this is not desired, set mcMMOHookEnabled to false in config.yml");
-			return;
-		}
 		cbm.executeAllGroups(state, e.getPlayer());
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void autopickupCompatListener(BlockBreakEvent e) {
+		// we have to do this because mcMMO also uses listener priority MONITOR to update the block store
+		// and sometimes mcMMO goes first, which causes CMR to always register the block as non-player-placed
+		if (isMcMMO() && mh.isTrue(e.getBlock().getState())) {
+			mcMMOPlayerBlockData.add(e.hashCode());
+		}
 		if (gcm.isAutopickupCompat()) {
 			autopickupCompatData.put(e.hashCode(), e.getBlock().getState());
 		}
+	}
+	private boolean isMcMMO() {
+		return mh != null && mh.isMcMMOEnabled();
 	}
 }

@@ -17,7 +17,7 @@ import me.datatags.commandminerewards.gui.GUIUserHolder;
 import me.datatags.commandminerewards.gui.ItemBuilder;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.RegionListGUI;
-import me.datatags.commandminerewards.worldguard.WorldGuardManager;
+import me.datatags.commandminerewards.hook.WorldGuardManager;
 
 public class RegionListButton extends AreaListButton {
 	private WorldGuardManager wgm;

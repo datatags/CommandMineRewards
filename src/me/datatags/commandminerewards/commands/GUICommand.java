@@ -53,8 +53,8 @@ public class GUICommand extends CMRCommand {
 			sender.sendMessage(ChatColor.RED + "You can't use the GUI unless you're a player!");
 			return true;
 		}
-		if (getPlugin().isLegacyMinecraft()) {
-			sender.sendMessage(ChatColor.RED + "Sorry, the GUI is not available in legacy versions of minecraft. This may change as I get better stats on what minecraft versions are in use.");
+		if (getPlugin().getMinecraftVersion() < 14) {
+			sender.sendMessage(ChatColor.RED + "Sorry, the GUI is not available in 1.13 or legacy versions of minecraft. This may change as I get better stats on what minecraft versions are in use.");
 			return true;
 		}
 		Player player = (Player) sender;

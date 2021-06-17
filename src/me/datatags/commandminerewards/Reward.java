@@ -182,7 +182,7 @@ public class Reward {
 	public boolean isApplicable(Player player) {
 		// does not check things that should be checked by RewardGroup
 		if (this.getChance() == 0) {
-			debug("Warning! Chance property was 0, invalid, or non-existant in reward " + this.getName() + " in group " + getParent().getName());
+			debug("Chance was 0 in reward " + this.getName() + " in group " + getParent().getName());
 			return false;
 		}
 		if (!hasPermission(player)) {
