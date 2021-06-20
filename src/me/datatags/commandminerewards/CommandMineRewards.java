@@ -63,8 +63,11 @@ public class CommandMineRewards extends JavaPlugin {
 		setupMcMMO();
 	}
 	private void initVersion() {
-		String ver = getFullMinecraftVersion();
-		minecraftVersion = Integer.parseInt(ver.substring(2, ver.lastIndexOf('.')));
+		String ver = getFullMinecraftVersion().substring(2);
+		if (ver.contains(".")) {
+			ver = ver.substring(0, ver.indexOf('.'));
+		}
+		minecraftVersion = Integer.parseInt(ver);
 		CMRLogger.debug("Minecraft version: 1." + minecraftVersion);
 	}
 	public int getMinecraftVersion() {
