@@ -13,26 +13,26 @@ import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class BackButton extends GUIButton {
 
-	@Override
-	public CMRPermission getPermission() {
-		return CMRPermission.GUI;
-	}
+    @Override
+    public CMRPermission getPermission() {
+        return CMRPermission.GUI;
+    }
 
-	@Override
-	public CMRPermission getClickPermission() {
-		return CMRPermission.GUI;
-	}
+    @Override
+    public CMRPermission getClickPermission() {
+        return CMRPermission.GUI;
+    }
 
-	@Override
-	protected ItemBuilder build() {
-		return new ItemBuilder(Material.BARRIER).name(ChatColor.RED + "Back");
-	}
+    @Override
+    protected ItemBuilder build() {
+        return new ItemBuilder(Material.BARRIER).name(ChatColor.RED + "Back");
+    }
 
-	@Override
-	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRGUI previous = parent.getPreviousGUI();
-		if (previous == null) return;
-		parent.getGUIManager().delayOpenGUI(holder, previous);
-	}
+    @Override
+    public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+        CMRGUI previous = parent.getPreviousGUI();
+        if (previous == null) return;
+        parent.getGUIManager().delayOpenGUI(holder, previous);
+    }
 
 }

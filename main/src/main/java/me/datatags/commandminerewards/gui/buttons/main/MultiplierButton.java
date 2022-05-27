@@ -16,38 +16,38 @@ import me.datatags.commandminerewards.gui.conversations.MultiplierPrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class MultiplierButton extends GUIButton {
-	private GlobalConfigManager gcm = GlobalConfigManager.getInstance();
-	@Override
-	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (clickType.isRightClick()) {
-			gcm.setMultiplier(1);
-			holder.updateGUI();
-			return;
-		}
-		CMRConversationFactory.startConversation(holder, new MultiplierPrompt());
-	}
+    private GlobalConfigManager gcm = GlobalConfigManager.getInstance();
+    @Override
+    public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+        if (clickType.isRightClick()) {
+            gcm.setMultiplier(1);
+            holder.updateGUI();
+            return;
+        }
+        CMRConversationFactory.startConversation(holder, new MultiplierPrompt());
+    }
 
-	@Override
-	public CMRPermission getPermission() {
-		return CMRPermission.MULTIPLIER;
-	}
+    @Override
+    public CMRPermission getPermission() {
+        return CMRPermission.MULTIPLIER;
+    }
 
-	@Override
-	public CMRPermission getClickPermission() {
-		return CMRPermission.MULTIPLIER_MODIFY;
-	}
+    @Override
+    public CMRPermission getClickPermission() {
+        return CMRPermission.MULTIPLIER_MODIFY;
+    }
 
-	@Override
-	protected ItemBuilder build() {
-		return new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.YELLOW + "Multiplier")
-				.lore(ChatColor.YELLOW + "Current multiplier: " + gcm.getMultiplier());
-	}
-	
-	@Override
-	public void addClickableLore(Player player) {
-		base.lore(ChatColor.YELLOW + "Click to modify");
-		if (gcm.getMultiplier() != 1) {
-			base.lore(ChatColor.RED + "Right-click to set to 1");
-		}
-	}
+    @Override
+    protected ItemBuilder build() {
+        return new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.YELLOW + "Multiplier")
+                .lore(ChatColor.YELLOW + "Current multiplier: " + gcm.getMultiplier());
+    }
+    
+    @Override
+    public void addClickableLore(Player player) {
+        base.lore(ChatColor.YELLOW + "Click to modify");
+        if (gcm.getMultiplier() != 1) {
+            base.lore(ChatColor.RED + "Right-click to set to 1");
+        }
+    }
 }

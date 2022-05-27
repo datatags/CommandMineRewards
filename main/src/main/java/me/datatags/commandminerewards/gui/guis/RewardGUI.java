@@ -14,49 +14,49 @@ import me.datatags.commandminerewards.gui.buttons.reward.ChanceButton;
 import me.datatags.commandminerewards.gui.buttons.reward.CommandButton;
 
 public class RewardGUI extends PaginatedGUI {
-	private RewardGroup group;
-	private Reward reward;
-	private List<CommandButton> commands = new ArrayList<>();
-	public RewardGUI(RewardGroup group, Reward reward) {
-		this.group = CMRBlockManager.getInstance().getGroup(group.getName());
-		this.reward = this.group.getChild(reward.getName());
-		gui[0][3] = new ChanceButton(this.group, this.reward);
-		gui[0][5] = new SilkTouchButton(this.group, this.reward);
-		for (RewardCommandEntry entry : this.reward.getCommands()) {
-			commands.add(new CommandButton(this.reward, entry));
-		}
-		if (commands.size() == 0) {
-			commands.add(new CommandButton(this.reward, null));
-		}
-	}
-	
-	@Override
-	public RewardGUI getNewSelf() {
-		return new RewardGUI(group, reward);
-	}
-	
-	@Override
-	public String getTitle() {
-		return "Reward - " + ChatColor.LIGHT_PURPLE + reward.getName();
-	}
+    private RewardGroup group;
+    private Reward reward;
+    private List<CommandButton> commands = new ArrayList<>();
+    public RewardGUI(RewardGroup group, Reward reward) {
+        this.group = CMRBlockManager.getInstance().getGroup(group.getName());
+        this.reward = this.group.getChild(reward.getName());
+        gui[0][3] = new ChanceButton(this.group, this.reward);
+        gui[0][5] = new SilkTouchButton(this.group, this.reward);
+        for (RewardCommandEntry entry : this.reward.getCommands()) {
+            commands.add(new CommandButton(this.reward, entry));
+        }
+        if (commands.size() == 0) {
+            commands.add(new CommandButton(this.reward, null));
+        }
+    }
+    
+    @Override
+    public RewardGUI getNewSelf() {
+        return new RewardGUI(group, reward);
+    }
+    
+    @Override
+    public String getTitle() {
+        return "Reward - " + ChatColor.LIGHT_PURPLE + reward.getName();
+    }
 
-	@Override
-	public CMRGUI getPreviousGUI() {
-		return new RewardGroupGUI(group);
-	}
-	@Override
-	public int getMaxPages() {
-		return (int)Math.max(Math.ceil(reward.getCommands().size() / 36d), 1);
-	}
-	@Override
-	public void preparePage(int pageN) {
-		generatePage(pageN, 1, 36, commands);
-	}
+    @Override
+    public CMRGUI getPreviousGUI() {
+        return new RewardGroupGUI(group);
+    }
+    @Override
+    public int getMaxPages() {
+        return (int)Math.max(Math.ceil(reward.getCommands().size() / 36d), 1);
+    }
+    @Override
+    public void preparePage(int pageN) {
+        generatePage(pageN, 1, 36, commands);
+    }
 
-	@Override
-	public boolean isRewardInUse(String group, String reward) {
-		if (!this.group.getName().equals(group)) return false;
-		return reward == null || this.reward.getName().equals(reward);
-	}
+    @Override
+    public boolean isRewardInUse(String group, String reward) {
+        if (!this.group.getName().equals(group)) return false;
+        return reward == null || this.reward.getName().equals(reward);
+    }
 
 }

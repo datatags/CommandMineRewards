@@ -17,50 +17,50 @@ import me.datatags.commandminerewards.gui.guis.CMRGUI;
 import me.datatags.commandminerewards.gui.guis.WorldListGUI;
 
 public class WorldListButton extends AreaListButton {
-	public WorldListButton(RewardGroup group) {
-		super(group);
-	}
+    public WorldListButton(RewardGroup group) {
+        super(group);
+    }
 
-	@Override
-	public CMRPermission getPermission() {
-		return CMRPermission.WORLD;
-	}
+    @Override
+    public CMRPermission getPermission() {
+        return CMRPermission.WORLD;
+    }
 
-	@Override
-	public CMRPermission getClickPermission() {
-		return CMRPermission.WORLD_MODIFY;
-	}
+    @Override
+    public CMRPermission getClickPermission() {
+        return CMRPermission.WORLD_MODIFY;
+    }
 
-	@Override
-	protected ItemBuilder build() {
-		ItemBuilder ib = new ItemBuilder(Material.FILLED_MAP);
-		MapMeta mm = (MapMeta) ib.getItemMeta();
-		mm.setColor(Color.AQUA);
-		ib.name(ChatColor.AQUA + "Allowed Worlds");
-		List<String> worlds = generateLore(ib, gcm.getGlobalAllowedWorlds(), group == null ? null : group.getAllowedWorlds());
-		for (String world : worlds) {
-			ib.lore(ChatColor.BLUE + "- " + world);
-		}
-		return ib;
-	}
+    @Override
+    protected ItemBuilder build() {
+        ItemBuilder ib = new ItemBuilder(Material.FILLED_MAP);
+        MapMeta mm = (MapMeta) ib.getItemMeta();
+        mm.setColor(Color.AQUA);
+        ib.name(ChatColor.AQUA + "Allowed Worlds");
+        List<String> worlds = generateLore(ib, gcm.getGlobalAllowedWorlds(), group == null ? null : group.getAllowedWorlds());
+        for (String world : worlds) {
+            ib.lore(ChatColor.BLUE + "- " + world);
+        }
+        return ib;
+    }
 
-	@Override
-	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (handleRightClick(clickType)) { // if true, the click was handled sufficiently
-			holder.updateGUI();
-			return;
-		}
-		parent.getGUIManager().delayOpenGUI(holder, new WorldListGUI(group));
-	}
+    @Override
+    public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+        if (handleRightClick(clickType)) { // if true, the click was handled sufficiently
+            holder.updateGUI();
+            return;
+        }
+        parent.getGUIManager().delayOpenGUI(holder, new WorldListGUI(group));
+    }
 
-	@Override
-	public void setLocalAreas(List<String> areas) {
-		group.setAllowedWorlds(areas);
-	}
+    @Override
+    public void setLocalAreas(List<String> areas) {
+        group.setAllowedWorlds(areas);
+    }
 
-	@Override
-	public void setGlobalAreas(List<String> areas) {
-		gcm.setGlobalAllowedWorlds(areas);
-	}
-	
+    @Override
+    public void setGlobalAreas(List<String> areas) {
+        gcm.setGlobalAllowedWorlds(areas);
+    }
+    
 }

@@ -15,29 +15,29 @@ import me.datatags.commandminerewards.gui.conversations.RewardNamePrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class NewRewardButton extends GUIButton {
-	private RewardGroup group;
-	public NewRewardButton(RewardGroup group) {
-		this.group = group;
-	}
-	
-	@Override
-	public CMRPermission getPermission() {
-		return CMRPermission.REWARD_MODIFY;
-	}
+    private RewardGroup group;
+    public NewRewardButton(RewardGroup group) {
+        this.group = group;
+    }
+    
+    @Override
+    public CMRPermission getPermission() {
+        return CMRPermission.REWARD_MODIFY;
+    }
 
-	@Override
-	public CMRPermission getClickPermission() {
-		return CMRPermission.REWARD_MODIFY;
-	}
+    @Override
+    public CMRPermission getClickPermission() {
+        return CMRPermission.REWARD_MODIFY;
+    }
 
-	@Override
-	protected ItemBuilder build() {
-		return new ItemBuilder(Material.EMERALD_BLOCK).name(ChatColor.GREEN + "New reward" + (group == null ? " group" : ""));
-	}
-	
-	@Override
-	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRConversationFactory.startConversation(holder, new RewardNamePrompt(group));
-	}
+    @Override
+    protected ItemBuilder build() {
+        return new ItemBuilder(Material.EMERALD_BLOCK).name(ChatColor.GREEN + "New reward" + (group == null ? " group" : ""));
+    }
+    
+    @Override
+    public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+        CMRConversationFactory.startConversation(holder, new RewardNamePrompt(group));
+    }
 
 }

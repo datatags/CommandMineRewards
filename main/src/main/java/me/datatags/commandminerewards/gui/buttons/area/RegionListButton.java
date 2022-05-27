@@ -20,56 +20,56 @@ import me.datatags.commandminerewards.gui.guis.RegionListGUI;
 import me.datatags.commandminerewards.hook.WorldGuardManager;
 
 public class RegionListButton extends AreaListButton {
-	private WorldGuardManager wgm;
-	public RegionListButton(RewardGroup group) {
-		super(group);
-		this.wgm = CommandMineRewards.getInstance().getWGManager();
-	}
+    private WorldGuardManager wgm;
+    public RegionListButton(RewardGroup group) {
+        super(group);
+        this.wgm = CommandMineRewards.getInstance().getWGManager();
+    }
 
-	@Override
-	public CMRPermission getPermission() {
-		return wgm.usingWorldGuard() ? CMRPermission.REGION : null;
-	}
+    @Override
+    public CMRPermission getPermission() {
+        return wgm.usingWorldGuard() ? CMRPermission.REGION : null;
+    }
 
-	@Override
-	public CMRPermission getClickPermission() {
-		return CMRPermission.REGION_MODIFY;
-	}
+    @Override
+    public CMRPermission getClickPermission() {
+        return CMRPermission.REGION_MODIFY;
+    }
 
-	@Override
-	protected ItemBuilder build() {
-		ItemBuilder ib = new ItemBuilder(Material.FILLED_MAP);
-		MapMeta mm = (MapMeta) ib.getItemMeta();
-		mm.setColor(Color.LIME);
-		ib.name(ChatColor.GREEN + "Allowed Regions");
-		if (wgm.getAllRegions().size() == 0) {
-			ib.lore(ChatColor.RED + "No regions exist");
-			return ib;
-		}
-		for (String region : generateLore(ib, gcm.getGlobalAllowedRegions(), group == null ? null : group.getAllowedRegions())) {
-			ib.lore(ChatColor.GREEN + "- " + region);
-		}
-		return ib;
-	}
+    @Override
+    protected ItemBuilder build() {
+        ItemBuilder ib = new ItemBuilder(Material.FILLED_MAP);
+        MapMeta mm = (MapMeta) ib.getItemMeta();
+        mm.setColor(Color.LIME);
+        ib.name(ChatColor.GREEN + "Allowed Regions");
+        if (wgm.getAllRegions().size() == 0) {
+            ib.lore(ChatColor.RED + "No regions exist");
+            return ib;
+        }
+        for (String region : generateLore(ib, gcm.getGlobalAllowedRegions(), group == null ? null : group.getAllowedRegions())) {
+            ib.lore(ChatColor.GREEN + "- " + region);
+        }
+        return ib;
+    }
 
-	@Override
-	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
-		if (handleRightClick(clickType)) {
-			holder.updateGUI();
-			return;
-		}
-		if (wgm.getAllRegions().size() == 0) return;
-		parent.getGUIManager().delayOpenGUI(holder, new RegionListGUI(group));
-	}
+    @Override
+    public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+        if (handleRightClick(clickType)) {
+            holder.updateGUI();
+            return;
+        }
+        if (wgm.getAllRegions().size() == 0) return;
+        parent.getGUIManager().delayOpenGUI(holder, new RegionListGUI(group));
+    }
 
-	@Override
-	public void setLocalAreas(List<String> areas) {
-		group.setAllowedRegions(areas);
-	}
+    @Override
+    public void setLocalAreas(List<String> areas) {
+        group.setAllowedRegions(areas);
+    }
 
-	@Override
-	public void setGlobalAreas(List<String> areas) {
-		GlobalConfigManager.getInstance().setGlobalAllowedRegions(areas);
-	}
+    @Override
+    public void setGlobalAreas(List<String> areas) {
+        GlobalConfigManager.getInstance().setGlobalAllowedRegions(areas);
+    }
 
 }

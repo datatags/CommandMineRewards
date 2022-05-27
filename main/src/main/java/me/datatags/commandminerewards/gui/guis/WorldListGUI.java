@@ -11,34 +11,34 @@ import me.datatags.commandminerewards.RewardGroup;
 import me.datatags.commandminerewards.gui.buttons.area.WorldButton;
 
 public class WorldListGUI extends AreaListGUI {
-	public WorldListGUI(RewardGroup group) {
-		super(group);
-		Set<String> worlds = new HashSet<>(); 
-		for (World world : Bukkit.getWorlds()) {
-			worlds.add(world.getName().toLowerCase());
-		}
-		if (group == null) {
-			for (String world : GlobalConfigManager.getInstance().getGlobalAllowedWorlds()) {
-				worlds.add(world.toLowerCase());
-			}
-		} else {
-			for (String world : group.getAllowedWorlds()) {
-				worlds.add(world.toLowerCase());
-			}
-		}
-		for (String world : worlds) {
-			buttons.add(new WorldButton(world, group));
-		}
-	}
-	
-	@Override
-	public WorldListGUI getNewSelf() {
-		return new WorldListGUI(group);
-	}
+    public WorldListGUI(RewardGroup group) {
+        super(group);
+        Set<String> worlds = new HashSet<>(); 
+        for (World world : Bukkit.getWorlds()) {
+            worlds.add(world.getName().toLowerCase());
+        }
+        if (group == null) {
+            for (String world : GlobalConfigManager.getInstance().getGlobalAllowedWorlds()) {
+                worlds.add(world.toLowerCase());
+            }
+        } else {
+            for (String world : group.getAllowedWorlds()) {
+                worlds.add(world.toLowerCase());
+            }
+        }
+        for (String world : worlds) {
+            buttons.add(new WorldButton(world, group));
+        }
+    }
+    
+    @Override
+    public WorldListGUI getNewSelf() {
+        return new WorldListGUI(group);
+    }
 
-	@Override
-	public String getAreaType() {
-		return "World";
-	}
+    @Override
+    public String getAreaType() {
+        return "World";
+    }
 
 }

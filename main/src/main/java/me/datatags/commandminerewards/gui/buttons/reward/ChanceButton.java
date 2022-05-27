@@ -17,41 +17,41 @@ import me.datatags.commandminerewards.gui.conversations.RewardChancePrompt;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class ChanceButton extends GUIButton {
-	private RewardGroup group;
-	private Reward reward;
-	public ChanceButton(RewardGroup group, Reward reward) {
-		this.group = group;
-		this.reward = reward;
-	}
-	
-	@Override
-	public CMRPermission getPermission() {
-		return CMRPermission.REWARD;
-	}
+    private RewardGroup group;
+    private Reward reward;
+    public ChanceButton(RewardGroup group, Reward reward) {
+        this.group = group;
+        this.reward = reward;
+    }
+    
+    @Override
+    public CMRPermission getPermission() {
+        return CMRPermission.REWARD;
+    }
 
-	@Override
-	public CMRPermission getClickPermission() {
-		return CMRPermission.REWARD_MODIFY;
-	}
+    @Override
+    public CMRPermission getClickPermission() {
+        return CMRPermission.REWARD_MODIFY;
+    }
 
-	@Override
-	protected ItemBuilder build() {
-		ItemBuilder ib = new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.GREEN + "Chance");
-		ib.lore(ChatColor.DARK_GREEN + "Base chance: " + reward.getRawChance() + "%");
-		if (reward.getRawChance() != reward.getChance()) {
-			ib.lore(ChatColor.BLUE + "Chance adjusted by multiplier: " + reward.getChance() + "%");
-		}
-		return ib;
-	}
-	
-	@Override
-	public void addClickableLore(Player player) {
-		base.lore(ChatColor.YELLOW + "Click to modify");
-	}
-	
-	@Override
-	public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
-		CMRConversationFactory.startConversation(holder, new RewardChancePrompt(group, reward));
-	}
+    @Override
+    protected ItemBuilder build() {
+        ItemBuilder ib = new ItemBuilder(Material.GOLD_INGOT).name(ChatColor.GREEN + "Chance");
+        ib.lore(ChatColor.DARK_GREEN + "Base chance: " + reward.getRawChance() + "%");
+        if (reward.getRawChance() != reward.getChance()) {
+            ib.lore(ChatColor.BLUE + "Chance adjusted by multiplier: " + reward.getChance() + "%");
+        }
+        return ib;
+    }
+    
+    @Override
+    public void addClickableLore(Player player) {
+        base.lore(ChatColor.YELLOW + "Click to modify");
+    }
+    
+    @Override
+    public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
+        CMRConversationFactory.startConversation(holder, new RewardChancePrompt(group, reward));
+    }
 
 }
