@@ -1,0 +1,17 @@
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    repositories {
+        mavenCentral()
+        // WorldGuard
+        maven { url "https://maven.enginehub.org/repo/" }
+        // mcMMO
+        maven { url "https://nexus.neetgames.com/repository/maven-public/" }
+    }
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
+        }
+    }
+}
