@@ -1,3 +1,11 @@
 plugins {
     id 'java-library'
 }
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+    // Version of WG here doesn't really matter, we just need to reference a couple core classes
+    compileOnly 'com.sk89q.worldguard:worldguard-legacy:6.2'
+    // 2.1.202 was the last version to use Java 8
+    compileOnly 'com.gmail.nossr50.mcMMO:mcMMO:2.1.202'
+}

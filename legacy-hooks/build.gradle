@@ -4,5 +4,9 @@ plugins {
 
 dependencies {
     api project(":api-interfaces")
-    implementation 'com.sk89q.worldguard:worldguard-legacy:6.2'
+    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+    compileOnly 'com.sk89q.worldguard:worldguard-legacy:6.2'
+    // I don't know why WorldGuard doesn't correctly declare a dependency
+    // on WorldEdit but it doesn't compile without this.
+    compileOnly 'com.sk89q.worldedit:worldedit-core:6.1'
 }
