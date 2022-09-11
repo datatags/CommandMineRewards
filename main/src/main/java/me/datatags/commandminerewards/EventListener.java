@@ -1,10 +1,5 @@
 package me.datatags.commandminerewards;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
@@ -12,20 +7,27 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import me.datatags.commandminerewards.hook.McMMOHook;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import me.datatags.commandminerewards.hook.McMMOManager;
 
 public class EventListener implements Listener {
     private CMRBlockManager cbm;
     private GlobalConfigManager gcm;
-    private McMMOHook mh;
+    private McMMOManager mcmmo;
     private Map<Integer,BlockState> autopickupCompatData = new HashMap<>();
     private Set<Integer> mcMMOPlayerBlockData = new HashSet<>();
     private boolean airBlockWarned = false;
-    public EventListener(McMMOHook mh) {
+
+    public EventListener(McMMOManager mcmmo) {
         this.gcm = GlobalConfigManager.getInstance();
         this.cbm = CMRBlockManager.getInstance();
-        this.mh = mh;
+        this.mcmmo = mcmmo;
     }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreakEvent(BlockBreakEvent e) {
         boolean mcMMOCheckPassed = true;
@@ -63,18 +65,16 @@ public class EventListener implements Listener {
         }
         cbm.executeAllGroups(state, e.getPlayer());
     }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void autopickupCompatListener(BlockBreakEvent e) {
         // we have to do this because mcMMO also uses listener priority MONITOR to update the block store
         // and sometimes mcMMO goes first, which causes CMR to always register the block as non-player-placed
-        if (isMcMMO() && mh.isTrue(e.getBlock().getState())) {
+        if (mcmmo.isTrue(e.getBlock().getState())) {
             mcMMOPlayerBlockData.add(e.hashCode());
         }
         if (gcm.isAutopickupCompat()) {
             autopickupCompatData.put(e.hashCode(), e.getBlock().getState());
         }
-    }
-    private boolean isMcMMO() {
-        return mh != null && mh.isMcMMOEnabled();
     }
 }

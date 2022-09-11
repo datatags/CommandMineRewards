@@ -9,4 +9,10 @@ dependencies {
     // I don't know why WorldGuard doesn't correctly declare a dependency
     // on WorldEdit but it doesn't compile without this.
     compileOnly 'com.sk89q.worldedit:worldedit-core:6.1'
+    // Last version of mcMMO to use the old ChunkManager (commit 01f31e7)
+    // This version of mcMMO depends on WE/WG v7 so we have to ignore those
+    compileOnly ('com.gmail.nossr50.mcMMO:mcMMO:2.1.164') {
+        exclude group: 'com.sk89q.worldguard'
+        exclude group: 'com.sk89q.worldedit'
+    }
 }

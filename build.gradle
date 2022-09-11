@@ -7,7 +7,7 @@ subprojects {
         // WorldGuard
         maven { url "https://maven.enginehub.org/repo/" }
         // mcMMO
-        maven { url "https://nexus.neetgames.com/repository/maven-public/" }
+        maven { url "https://repo.codemc.org/repository/maven-public" }
     }
     java {
         toolchain {
