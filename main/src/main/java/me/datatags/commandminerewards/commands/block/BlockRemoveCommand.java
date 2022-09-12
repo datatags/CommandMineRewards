@@ -78,7 +78,7 @@ public class BlockRemoveCommand extends BlockCommand {
         }
         if (args.length == 2) {
             try {
-                new RewardGroup(args[0]).removeBlockRaw(args[1], args[1].contains(":") ? true : false);
+                new RewardGroup(args[0]).removeBlockRaw(args[1]);
             } catch (InvalidRewardGroupException | BlockNotInListException e) {
                 sender.sendMessage(ChatColor.RED + e.getMessage());
                 return true;

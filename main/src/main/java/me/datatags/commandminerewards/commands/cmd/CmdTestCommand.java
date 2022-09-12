@@ -15,6 +15,7 @@ public class CmdTestCommand extends CmdCommand {
     public String getName() {
         return "test";
     }
+
     @Override
     public String getBasicDescription() {
         return "Runs all commands in the reward.";
@@ -29,10 +30,10 @@ public class CmdTestCommand extends CmdCommand {
     public String getUsage() {
         return "<rewardSection> <reward> [index]";
     }
-    
+
     @Override
     public String[] getExamples() {
-        return new String[] {"genericRewards bigReward 0", "genericRewards smallReward"};
+        return new String[] { "genericRewards bigReward 0", "genericRewards smallReward" };
     }
 
     @Override
@@ -44,14 +45,17 @@ public class CmdTestCommand extends CmdCommand {
     public int getMaxArgs() {
         return 3;
     }
+
     @Override
     public CMRPermission getPermission() {
         return CMRPermission.COMMAND_EXECUTE;
     }
+
     @Override
     public ArgType[] getArgs() {
-        return new ArgType[] {ArgType.REWARD_SECTION, ArgType.REWARD};
+        return new ArgType[] { ArgType.REWARD_SECTION, ArgType.REWARD };
     }
+
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         String rewardSection = args[0];
@@ -81,7 +85,7 @@ public class CmdTestCommand extends CmdCommand {
             return true;
         }
         if (index == -1) {
-            reward.execute(player, true);
+            reward.execute(player, Double.MAX_VALUE);
         } else {
             reward.getCommands().get(index).execute(player);
         }

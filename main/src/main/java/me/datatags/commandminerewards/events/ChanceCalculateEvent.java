@@ -9,10 +9,11 @@ public class ChanceCalculateEvent extends RewardEvent {
     private static final HandlerList handlers = new HandlerList();
     protected final Player player;
     protected double chance;
-    public ChanceCalculateEvent(Reward reward, Player player) {
+
+    public ChanceCalculateEvent(Reward reward, Player player, double chance) {
         super(reward);
         this.player = player;
-        this.chance = reward.getChance();
+        this.chance = chance;
     }
 
     public static HandlerList getHandlerList() {

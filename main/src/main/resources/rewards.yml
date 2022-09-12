@@ -1,7 +1,8 @@
 # (rewardSectionName): section: put rewards in this format:
 # (rewardSectionName):
 #   (name):
-#       blocks: string list: Name of block to trigger rewards.  You can use :s in name to indicate data values.  Note this will change in 1.13.
+#       blocks: string list: Name of block to trigger rewards. You can add `:true` or `:false` after the name to indicate whether the block should be fully-grown.
+#               Also, you may add a `%` and a number to create a multiplier for the block. `%3` would mean it has 3x the normal chance of happening, and `%0.25` means 1/4 the normal chance.
 #       rewardLimit: number: maximum amount of rewards in this section that can be issued from a single block break.
 #       allowedWorlds: string list: a list of worlds this reward section will operate in.  Defaults to "*", meaning it will operate in any world.
 #       allowedRegions: string list: same as allowedWorlds, but WorldGuard regions
@@ -27,36 +28,36 @@ globalRewardLimit: -1
 exampleReward1:
     rewardLimit: 1
     blocks:
-        - cobblestone
-        - stone
-        - mossy_cobblestone
+    - cobblestone
+    - stone
+    - mossy_cobblestone%3
     allowedWorlds:
-        - chicken_time
+    - chicken_time
     allowedRegions:
-        - dungeonA
-        - dungeonC
+    - dungeonA
+    - dungeonC
     silkTouch: DISALLOWED
     rewards:
         money_and_broadcast_reward:
             chance: 5
             commands:
-                - eco give %player% 2000
-                - broadcast %player% received rewards
+            - eco give %player% 2000
+            - broadcast %player% received rewards
         moneyreward:
             chance: 20
             commands:
-                - eco give %player% 500
+            - eco give %player% 500
 exampleReward2:
     blocks:
-        - "wheat:true"
+    - "wheat:true"
     allowedWorlds: 
-        - farming1
-        - farming23
-        - survival_world_the_end
+    - farming1
+    - farming23
+    - survival_world_the_end
     rewards:
         farming:
             chance: 1
             commands:
-                - eco give %player% 1000
-                - broadcast %player% likes to farm!
-                - "!msg &aGood job!"
+            - eco give %player% 1000
+            - broadcast %player% likes to farm!
+            - "!msg &aGood job!"

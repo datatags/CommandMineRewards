@@ -48,7 +48,7 @@ public class EventListener implements Listener {
         }
         // delay return so we also remove any applicable autopickup data
         if (!mcMMOCheckPassed) return;
-        if (e.isCancelled()) {
+        if (e.isCancelled() && !gcm.isDisableCancelledCheck()) {
             CMRLogger.debug("Player was denied access to all sections because event was cancelled.");
             CMRLogger.debug("This is often caused by block claim plugins, and is normal behavior of the plugin.");
             CMRLogger.debug("If this is outside a claim, you may have a misbehaving auto-pickup plugin, see CMR FAQ for more info.");

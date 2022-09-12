@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import me.datatags.commandminerewards.CMRBlockState;
 import me.datatags.commandminerewards.CMRLogger;
 import me.datatags.commandminerewards.CMRPermission;
 import me.datatags.commandminerewards.RewardGroup;
@@ -16,13 +17,12 @@ import me.datatags.commandminerewards.gui.buttons.GUIButton;
 import me.datatags.commandminerewards.gui.guis.CMRGUI;
 
 public class BlockButton extends GUIButton {
-    private RewardGroup group;
-    private Material block;
-    private Boolean data;
-    public BlockButton(RewardGroup group, Material block, Boolean data) {
+    private final RewardGroup group;
+    private final CMRBlockState state;
+
+    public BlockButton(RewardGroup group, CMRBlockState state) {
         this.group = group;
-        this.block = block;
-        this.data = data;
+        this.state = state;
     }
 
     @Override
@@ -37,13 +37,22 @@ public class BlockButton extends GUIButton {
 
     @Override
     protected ItemBuilder build() {
-        ItemBuilder ib = new ItemBuilder(block);
-        if (data != null) {
-            ib.lore(ChatColor.YELLOW + "Data: " + (data ? ChatColor.GREEN : ChatColor.RED) + data.toString());
+        ItemBuilder ib;
+        if (state.getType().isItem()) {
+            ib = new ItemBuilder(state.getType());
+        } else {
+            ib = new ItemBuilder(Material.PAPER).name(state.getType().toString());
+        }
+
+        if (state.getGrowth() != null) {
+            ib.lore(ChatColor.YELLOW + "Data: " + (state.getGrowth() ? ChatColor.GREEN : ChatColor.RED) + state.getGrowth());
+        }
+        if (state.getMultiplier() != 1) {
+            ib.lore(ChatColor.BLUE + "Multiplier: " + state.getMultiplier());
         }
         return ib;
     }
-    
+
     @Override
     public void addClickableLore(Player player) {
         base.lore(ChatColor.RED + "Click to delete");
@@ -52,7 +61,7 @@ public class BlockButton extends GUIButton {
     @Override
     public void onClick(GUIUserHolder holder, ItemStack is, CMRGUI parent, ClickType clickType) {
         try {
-            group.removeBlock(block.toString(), data);
+            group.removeBlockState(state);
         } catch (BlockNotInListException e) {
             CMRLogger.error("The GUI seems to have desynchronized from the current block list, please report this error!");
             e.printStackTrace(); // ???
@@ -60,5 +69,5 @@ public class BlockButton extends GUIButton {
         }
         holder.updateGUI();
     }
-    
+
 }

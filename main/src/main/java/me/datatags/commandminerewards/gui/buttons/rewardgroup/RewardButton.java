@@ -17,6 +17,7 @@ import me.datatags.commandminerewards.gui.guis.RewardGUI;
 
 public class RewardButton extends GUIButton {
     private Reward reward;
+
     public RewardButton(Reward reward) {
         this.reward = reward;
     }
@@ -51,7 +52,7 @@ public class RewardButton extends GUIButton {
         }
         return ib;
     }
-    
+
     @Override
     public void addClickableLore(Player player) {
         if (CMRPermission.COMMAND_MODIFY.test(player)) {
@@ -76,16 +77,16 @@ public class RewardButton extends GUIButton {
             holder.updateGUI();
             return;
         } else if (clickType == ClickType.MIDDLE && CMRPermission.COMMAND_EXECUTE.test(owner)) {
-            reward.execute(owner, true);
+            reward.execute(owner, Double.MAX_VALUE);
             return;
         }
         parent.getGUIManager().delayOpenGUI(holder, new RewardGUI(reward.getParent(), reward));
     }
-    
+
     public Reward getReward() {
         return reward;
     }
-    
+
     private boolean hasCommands() {
         return reward.getCommands().size() > 0;
     }

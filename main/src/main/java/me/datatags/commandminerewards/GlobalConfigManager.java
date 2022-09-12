@@ -1,15 +1,14 @@
 package me.datatags.commandminerewards;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.datatags.commandminerewards.Exceptions.AreaAlreadyInListException;
 import me.datatags.commandminerewards.Exceptions.AreaNotInListException;
@@ -20,24 +19,29 @@ public class GlobalConfigManager {
     private File rewardsFile;
     private YamlConfiguration rewardsConfig;
     private CommandMineRewards cmr = CommandMineRewards.getInstance();
+
     private GlobalConfigManager() {
         load();
     }
+
     public static GlobalConfigManager getInstance() {
         if (instance == null) {
             instance = new GlobalConfigManager();
         }
         return instance;
     }
+
     private ConfigurationSection getConfig() {
         return cmr.getConfig();
     }
+
     public void load() {
         loadRewardsConfig();
         cmr.saveDefaultConfig();
         cmr.reloadConfig();
         checkOldConfig();
     }
+
     private void loadRewardsConfig() {
         rewardsFile = new File(cmr.getDataFolder() + File.separator + "rewards.yml");
         if (!rewardsFile.exists()) {
@@ -46,6 +50,7 @@ public class GlobalConfigManager {
         }
         rewardsConfig = YamlConfiguration.loadConfiguration(rewardsFile);
     }
+
     public void saveRewardsConfig() {
         try {
             rewardsConfig.save(rewardsFile);
@@ -54,9 +59,11 @@ public class GlobalConfigManager {
             e.printStackTrace();
         }
     }
+
     public YamlConfiguration getRewardsConfig() {
         return rewardsConfig;
     }
+
     private void checkOldConfig() {
         // we don't clear the debug log setting because if the plugin is spamming the log,
         // the plugin is in verbosity: 2 which no one in their right mind would use except for troubleshooting
@@ -76,12 +83,17 @@ public class GlobalConfigManager {
         if (moveToRewards("multiplier") | moveToRewards("globalRewardLimit")) {
             changed = true;
         }
+        if (!getConfig().isBoolean("disableCancelledCheck")) {
+            getConfig().set("disableCancelledCheck", false);
+            changed = true;
+        }
         if (changed) {
             cmr.saveConfig();
             saveRewardsConfig();
             CMRLogger.info("Successfully migrated config!");
         }
     }
+
     private boolean moveToRewards(String key) {
         if (getConfig().contains(key)) {
             rewardsConfig.set(key, getConfig().get(key));
@@ -90,6 +102,7 @@ public class GlobalConfigManager {
         }
         return false;
     }
+
     public boolean containsIgnoreCase(List<String> list, String search) {
         for (String item : list) {
             if (item.equalsIgnoreCase(search)) {
@@ -98,15 +111,7 @@ public class GlobalConfigManager {
         }
         return false;
     }
-    public boolean containsMatch(List<String> list, String match) {
-        Pattern pattern = Pattern.compile(match, Pattern.CASE_INSENSITIVE);
-        for (String item : list) {
-            if (pattern.matcher(item).matches()) {
-                return true;
-            }
-        }
-        return false;
-    }
+
     public boolean removeIgnoreCase(List<String> list, String item) {
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).equalsIgnoreCase(item)) {
@@ -116,13 +121,16 @@ public class GlobalConfigManager {
         }
         return false;
     }
+
     public List<String> getGlobalAllowedWorlds() {
         return getConfig().getStringList("globalAllowedWorlds");
     }
+
     public void setGlobalAllowedWorlds(List<String> newAllowedWorlds) {
         getConfig().set("globalAllowedWorlds", newAllowedWorlds);
         cmr.saveConfig();
     }
+
     public void addGlobalAllowedWorld(String world) throws AreaAlreadyInListException, InvalidAreaException {
         if (containsIgnoreCase(getGlobalAllowedWorlds(), world)) {
             throw new AreaAlreadyInListException("The world " + world + " is already globally allowed.");
@@ -134,6 +142,7 @@ public class GlobalConfigManager {
         worlds.add(world);
         setGlobalAllowedWorlds(worlds);
     }
+
     public void removeGlobalAllowedWorld(String world) throws AreaNotInListException {
         if (!containsIgnoreCase(getGlobalAllowedWorlds(), world)) {
             throw new AreaNotInListException("The world " + world + " is not globally allowed.");
@@ -142,13 +151,16 @@ public class GlobalConfigManager {
         worlds.remove(world);
         setGlobalAllowedWorlds(worlds);
     }
+
     public List<String> getGlobalAllowedRegions() {
         return getConfig().getStringList("globalAllowedRegions");
     }
+
     public void setGlobalAllowedRegions(List<String> newAllowedRegions) {
         getConfig().set("globalAllowedRegions", newAllowedRegions);
         cmr.saveConfig();
     }
+
     public void addGlobalAllowedRegion(String region) throws AreaAlreadyInListException, InvalidAreaException {
         if (containsIgnoreCase(getGlobalAllowedRegions(), region)) {
             throw new AreaAlreadyInListException("The WorldGuard region " + region + " is already globally allowed.");
@@ -160,6 +172,7 @@ public class GlobalConfigManager {
         regions.add(region);
         setGlobalAllowedRegions(regions);
     }
+
     public void removeGlobalAllowedRegion(String region) throws AreaNotInListException {
         if (!containsIgnoreCase(getGlobalAllowedRegions(), region)) {
             throw new AreaNotInListException("The WorldGuard region " + region + " is not globally allowed!");
@@ -168,14 +181,17 @@ public class GlobalConfigManager {
         regions.remove(region);
         setGlobalAllowedRegions(regions);
     }
+
     public SilkTouchPolicy getGlobalSilkTouchPolicy() {
         SilkTouchPolicy stp = SilkTouchPolicy.getByName(getConfig().getString("globalSilkTouch"));
         return stp == null ? SilkTouchPolicy.INHERIT : stp;
     }
+
     public void setGlobalSilkTouchPolicy(SilkTouchPolicy newRequirement) {
         getConfig().set("globalSilkTouch", newRequirement.toString());
         cmr.saveConfig();
     }
+
     public SilkTouchPolicy getSilkTouchPolicy(RewardGroup rewardGroup, Reward reward) {
         if (reward != null && reward.getSilkTouchPolicy() != SilkTouchPolicy.INHERIT) {
             return reward.getSilkTouchPolicy();
@@ -187,6 +203,7 @@ public class GlobalConfigManager {
             return SilkTouchPolicy.IGNORED;
         }
     }
+
     public boolean silkStatusAllowed(RewardGroup rewardGroup, Reward reward, boolean silkTouch) {
         SilkTouchPolicy current = getSilkTouchPolicy(rewardGroup, reward);
         if (current == SilkTouchPolicy.IGNORED) {
@@ -199,53 +216,71 @@ public class GlobalConfigManager {
             return false;
         }
     }
+
     public double getMultiplier() {
         return getRewardsConfig().getDouble("multiplier");
     }
+
     public void setMultiplier(double newMultiplier) {
         getRewardsConfig().set("multiplier", newMultiplier);
         saveRewardsConfig();
     }
+
     public boolean isDebug() {
         return getConfig().getInt("verbosity", 1) > 1;
     }
+
     public int getVerbosity() {
         return getConfig().getInt("verbosity", 1);
     }
+
     public boolean getSurvivalOnly() {
         return getConfig().getBoolean("survivalOnly");
     }
+
     public boolean isValidatingWorldsAndRegions() {
         return getConfig().getBoolean("validateWorldsAndRegions");
     }
+
     public boolean removeInvalidValues() {
         return getConfig().getBoolean("removeInvalidValues");
     }
+
     public boolean isAutopickupCompat() {
         return getConfig().getBoolean("autopickupCompat", false);
     }
+
     public int getGlobalRewardLimit() {
         return Math.max(getRewardsConfig().getInt("globalRewardLimit", -1), -1); // return -1 if not found and return -1 if found is less than -1
     }
+
     public void setGlobalRewardLimit(int newLimit) {
         getRewardsConfig().set("globalRewardLimit", Math.max(newLimit, -1));
     }
+
     public boolean isRandomizingRewardOrder() {
         return getConfig().getBoolean("randomizeRewardOrder", false);
     }
+
     public boolean isMcMMOHookEnabled() {
         return getConfig().getBoolean("mcMMOHookEnabled", false);
     }
+
+    public boolean isDisableCancelledCheck() {
+        return getConfig().getBoolean("disableCancelledCheck", false);
+    }
+
     public List<String> getRewardSectionNames() {
         List<String> names = new ArrayList<>();
         for (String key : getRewardsConfig().getKeys(false)) {
-            if (!getRewardsConfig().isConfigurationSection(key)) { 
+            if (!getRewardsConfig().isConfigurationSection(key)) {
                 continue;
             }
             names.add(key);
         }
         return names;
     }
+
     public List<RewardGroup> getRewardGroups() {
         List<RewardGroup> rv = new ArrayList<>();
         for (String name : getRewardSectionNames()) {
@@ -253,9 +288,11 @@ public class GlobalConfigManager {
         }
         return rv;
     }
+
     public String getPrettyRewardSections() {
         return makePretty(getRewardSectionNames());
     }
+
     public boolean isValidWorld(String test) {
         if (!isValidatingWorldsAndRegions()) {
             return true;
@@ -268,6 +305,7 @@ public class GlobalConfigManager {
         }
         return false;
     }
+
     public String makePretty(List<String> strings) {
         String assembledList = "";
         for (String item : strings) {
@@ -284,6 +322,7 @@ public class GlobalConfigManager {
         }
         return assembledList;
     }
+
     public String searchIgnoreCase(String search, String origin) {
         if (cmr.getConfig().isConfigurationSection(search)) {
             return search;

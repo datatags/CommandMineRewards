@@ -23,3 +23,5 @@ autopickupCompat: false
 randomizeRewardOrder: false
 # mcMMOHookEnabled: boolean (true or false): If true, will only allow rewards to be issued from blocks not placed by players, as determined by mcMMO. (Requires mcMMO to be installed obviously)
 mcMMOHookEnabled: false
+# disableCancelledCheck: boolean (true or false): If true, will allow rewards even if other plugins cancel the block break event. (Not recommended)
+disableCancelledCheck: true
