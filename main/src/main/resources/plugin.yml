@@ -1,9 +1,12 @@
 name: CommandMineRewards
 main: me.datatags.commandminerewards.CommandMineRewards
 author: Datatags
-version: 7.1.1
+version: @VERSION@
 api-version: 1.13
-softdepend: [WorldGuard, mcMMO]
+softdepend:
+- WorldGuard
+- mcMMO
+- Vault
 commands:
     cmr:
         description: The command for utilizing CMR

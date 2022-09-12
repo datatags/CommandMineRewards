@@ -14,6 +14,7 @@ import me.datatags.commandminerewards.commands.CommandDispatcher;
 import me.datatags.commandminerewards.gui.GUIListener;
 import me.datatags.commandminerewards.gui.GUIManager;
 import me.datatags.commandminerewards.hook.McMMOManager;
+import me.datatags.commandminerewards.hook.VaultHook;
 import me.datatags.commandminerewards.hook.WorldGuardManager;
 
 public class CommandMineRewards extends JavaPlugin {
@@ -22,6 +23,7 @@ public class CommandMineRewards extends JavaPlugin {
     private WorldGuardManager wgm;
     private CMRBlockManager cbm;
     private McMMOManager mcmmo;
+    private VaultHook vault = null;
     private static CommandMineRewards instance;
     private boolean pluginReady = false;
 
@@ -32,6 +34,9 @@ public class CommandMineRewards extends JavaPlugin {
         initVersion(); // this needs to be called before anything uses getMinecraftVersion()
         this.wgm = new WorldGuardManager(); // this can probably actually run about anytime
         this.mcmmo = new McMMOManager();
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            vault = new VaultHook();
+        }
         this.cbm = CMRBlockManager.getInstance();
         getServer().getPluginManager().registerEvents(new EventListener(mcmmo), this); // initialize the block break listener
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
@@ -109,5 +114,9 @@ public class CommandMineRewards extends JavaPlugin {
 
     public WorldGuardManager getWGManager() {
         return wgm;
+    }
+
+    public VaultHook getVaultHook() {
+        return vault;
     }
 }

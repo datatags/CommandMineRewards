@@ -22,8 +22,9 @@ public class SpecialCommand extends CompoundCommand {
 
     @Override
     public void init() {
-        registerChildren(new MessageCommand(), new SoundCommand(), new TitleCommand());
+        registerChildren(new MessageCommand(), new SoundCommand(), new TitleCommand(), new GiveMoneyCommand());
     }
+
     @Override
     public CMRPermission getPermission() {
         return CMRPermission.SPECIAL;

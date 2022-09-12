@@ -15,12 +15,11 @@ import java.util.Set;
 import me.datatags.commandminerewards.hook.McMMOManager;
 
 public class EventListener implements Listener {
-    private CMRBlockManager cbm;
-    private GlobalConfigManager gcm;
-    private McMMOManager mcmmo;
+    private final GlobalConfigManager gcm;
+    private final CMRBlockManager cbm;
+    private final McMMOManager mcmmo;
     private Map<Integer,BlockState> autopickupCompatData = new HashMap<>();
     private Set<Integer> mcMMOPlayerBlockData = new HashSet<>();
-    private boolean airBlockWarned = false;
 
     public EventListener(McMMOManager mcmmo) {
         this.gcm = GlobalConfigManager.getInstance();
@@ -42,7 +41,7 @@ public class EventListener implements Listener {
                 CMRLogger.warning("No autopickup compat data found for block " + e.getBlock());
                 return;
             }
-            CMRLogger.debug("Loading block data from autopickup compat hash");
+            CMRLogger.debug("Loading block data from autopickup compat map");
             state = autopickupCompatData.remove(e.hashCode());
         } else {
             state = e.getBlock().getState();
@@ -56,11 +55,10 @@ public class EventListener implements Listener {
             return;
         }
         if (state.getType() == Material.AIR) {
-            if (airBlockWarned) return;
-            CMRLogger.warning("CMR was told someone broke an air block?!");
-            CMRLogger.info("This can be caused by auto-pickup plugins, if this is the case, enable autopickupCompat in config.yml");
-            CMRLogger.info("This message will not show up again until the next server restart.");
-            airBlockWarned = true;
+            CMRLogger.debug("CMR was told someone broke an air block?!");
+            if (!gcm.isAutopickupCompat()) {
+                CMRLogger.debug("This can be caused by auto-pickup plugins, if this is the case, enable autopickupCompat in config.yml");
+            }
             return;
         }
         cbm.executeAllGroups(state, e.getPlayer());

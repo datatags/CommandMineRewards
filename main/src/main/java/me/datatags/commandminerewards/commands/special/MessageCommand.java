@@ -1,9 +1,9 @@
 package me.datatags.commandminerewards.commands.special;
 
-import java.util.StringJoiner;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import java.util.StringJoiner;
 
 import me.datatags.commandminerewards.CMRLogger;
 
@@ -23,27 +23,27 @@ public class MessageCommand extends SpecialCommand {
     public String getExtensiveDescription() {
         return "Simply sends the specified message. Color codes are supported.\n" + ChatColor.RED + "PLEASE SEE /cmr help special FOR USAGE INFORMATION.";
     }
-    
+
     @Override
     public String getUsage() {
         return "<message>";
     }
-    
+
     @Override
     public String[] getExamples() {
-        return new String[] {"&aYou found a &8rock!"};
+        return new String[] { "&aYou found a &8rock!" };
     }
-    
+
     @Override
     public int getMinArgs() {
         return 1;
     }
-    
+
     @Override
     public int getMaxArgs() {
         return -1;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {

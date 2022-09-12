@@ -1,3 +1,5 @@
+defaultTasks 'shadowJar'
+
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'eclipse'
@@ -8,6 +10,8 @@ subprojects {
         maven { url "https://maven.enginehub.org/repo/" }
         // mcMMO
         maven { url "https://repo.codemc.org/repository/maven-public" }
+        // Vault
+        maven { url "https://jitpack.io" }
     }
     java {
         toolchain {
