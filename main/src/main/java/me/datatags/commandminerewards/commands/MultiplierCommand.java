@@ -25,7 +25,7 @@ public class MultiplierCommand extends CMRCommand {
     public String getUsage() {
         return "[multiplier]";
     }
-    
+
     @Override
     public String[] getExamples() {
         return new String[] {"3.0", "0.01"};
@@ -35,7 +35,7 @@ public class MultiplierCommand extends CMRCommand {
     public int getMaxArgs() {
         return 1;
     }
-    
+
     @Override
     public CMRPermission getPermission() {
         return CMRPermission.MULTIPLIER;
@@ -49,7 +49,7 @@ public class MultiplierCommand extends CMRCommand {
             return true;
         }
         // args.length == 1 unless something went wrong and we don't care anyway so
-        if (CMRPermission.MULTIPLIER_MODIFY.attempt(sender)) return true;
+        if (!CMRPermission.MULTIPLIER_MODIFY.attempt(sender)) return true;
         double multiplier;
         try {
             multiplier = Double.parseDouble(args[0]);
@@ -58,7 +58,7 @@ public class MultiplierCommand extends CMRCommand {
             return true;
         }
         gcm.setMultiplier(multiplier); // does bounds checking on its own
-        sender.sendMessage(ChatColor.GREEN + "Multiplier successfully updated!  New multiplier:  " + multiplier);
+        sender.sendMessage(ChatColor.GREEN + "Multiplier successfully updated! New multiplier: " + multiplier);
         return true;
     }
 
