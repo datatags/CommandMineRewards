@@ -1,1 +1,3 @@
-/build/
+# Gradle
+**/build/
+!src/**/build/

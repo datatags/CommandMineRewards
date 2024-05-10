@@ -1,10 +1,27 @@
-bin/
-.settings/
+# Eclipse
 .classpath
 .project
+.settings/
 
-# Ignore Gradle project-specific cache directory
+# IDE
+.idea/
+*.iml
+*.iws
+
+# Gradle
 .gradle
+gradle-app.setting
+**/build/
+!src/**/build/
+.gradletasknamecache
+!gradle-wrapper.jar
+!gradle-wrapper.properties
 
-# Ignore Gradle build output directory
-build
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
