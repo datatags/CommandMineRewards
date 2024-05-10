@@ -5,14 +5,6 @@ plugins {
 
 version = "7.2.1"
 
-processResources {
-    inputs.property("version", project.version)
-
-    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-            'VERSION': project.version
-    ]
-}
-
 dependencies {
     implementation project(':api-interfaces')
     implementation project(':legacy-hooks')
@@ -31,4 +23,12 @@ shadowJar {
     relocate ('org.bstats', path + '.bstats')
     
     archiveFileName = "CommandMineRewards-v${archiveVersion.get()}.${archiveExtension.get()}"
+}
+
+processResources {
+    inputs.property("version", project.version)
+
+    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+            'VERSION': project.version
+    ]
 }
