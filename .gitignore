@@ -9,6 +9,7 @@
 *.iws
 
 # Gradle
+bin/
 .gradle
 gradle-app.setting
 **/build/
