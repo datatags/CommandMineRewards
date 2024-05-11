@@ -7,6 +7,8 @@ subprojects {
 
     repositories {
         mavenCentral()
+        // Spigot
+        maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
         // WorldGuard
         maven { url "https://maven.enginehub.org/repo/" }
         // mcMMO
