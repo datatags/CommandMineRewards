@@ -4,6 +4,7 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
+
     repositories {
         mavenCentral()
         // WorldGuard
@@ -13,6 +14,7 @@ subprojects {
         // Vault
         maven { url "https://jitpack.io" }
     }
+
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(8)
