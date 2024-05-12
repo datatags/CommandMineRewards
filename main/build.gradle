@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java-library'
@@ -28,7 +30,7 @@ shadowJar {
 processResources {
     inputs.property("version", project.version)
 
-    filter org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+    filter ReplaceTokens, tokens: [
             'VERSION': project.version
     ]
 }
