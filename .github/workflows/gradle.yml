@@ -11,6 +11,9 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: read
+
     steps:
     # https://github.com/actions/checkout
     - name: Check out Git repositor
