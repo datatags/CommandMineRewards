@@ -25,6 +25,9 @@ jobs:
         cache: gradle
     - name: Configure Git
       run: git config --global user.name "Github Actions" && git config --global user.email "actions@github.com"
+    - name: Make Gradlew executable
+      run: chmod +x ./gradlew
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
